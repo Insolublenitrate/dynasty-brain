@@ -69,7 +69,7 @@ export default function RookieAnalyzerPage() {
   useEffect(() => {
     async function fetchRookies() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/quant/rookies?year=${seasonYear}`);
         const data = await res.json();
         setRookies(data);
@@ -95,7 +95,7 @@ export default function RookieAnalyzerPage() {
     async function fetchAnalytics() {
       setLoadingAnalytics(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const [res, resStats] = await Promise.all([
           fetch(`${apiUrl}/api/quant/rookie-analyzer/${selectedRookie}`),
           fetch(`${apiUrl}/api/quant/rookie-ncaa-stats/${selectedRookie}`)

@@ -23,7 +23,7 @@ export function LeagueProvider({ children }: { children: React.ReactNode }) {
     
     const verifyAndIngest = async (id: string) => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         // Ping the matrix endpoint to see if data exists
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${id}`);
         const data = await res.json();

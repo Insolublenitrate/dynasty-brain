@@ -20,7 +20,7 @@ export default function Login() {
     setError('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
       const res = await fetch(`${apiUrl}/api/league/ingest/${inputCode}`, {
         method: 'POST',
       });

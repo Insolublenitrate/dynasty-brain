@@ -37,7 +37,7 @@ export default function WarRoomPage() {
     async function fetchBaseData() {
       if (!leagueId) return;
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         
         // Fetch rosters
         const matrixRes = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
@@ -71,7 +71,7 @@ export default function WarRoomPage() {
         const teamAId = matchup.roster_id;
         const teamBId = rosters.find(r => r.roster_id !== teamAId)?.roster_id || rosters[0].roster_id;
         
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         try {
           const [resA, resB] = await Promise.all([
             fetch(`${apiUrl}/api/quant/team-analyzer/${leagueId}/${teamAId}`),
@@ -95,7 +95,7 @@ export default function WarRoomPage() {
     const autoFire = async () => {
       setLoading(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         let payload = {};
         let finalScenario = "LIVE TICKER"; // Start with a hot take
 
@@ -133,7 +133,7 @@ export default function WarRoomPage() {
     setLoading(true);
     setOutput("");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
       
       let payload = {};
       if (scenario === "MATCHUP PREVIEW" && recentMatchups.length > 0) {

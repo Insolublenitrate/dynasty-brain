@@ -33,7 +33,7 @@ export default function DynastyRoom() {
 
     async function fetchRosters() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -56,7 +56,7 @@ export default function DynastyRoom() {
       setLoadingTeam(true);
       setErrorMsg(null);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/quant/team-analyzer/${leagueId}/${selectedRosterId}`);
         const data = await res.json();
         if (data.error) {

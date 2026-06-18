@@ -36,7 +36,7 @@ export default function PlayerRadar() {
 
     async function fetchData() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2025`);
         const json = await res.json();
         setPlayersData(json);

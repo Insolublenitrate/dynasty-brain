@@ -15,7 +15,8 @@ export default function PlayerDatabase() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('http://localhost:8000/api/stats/advanced_player_metrics?year=2023');
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2024`);
         if (!res.ok) throw new Error('Failed to fetch players');
         const json = await res.json();
         setData(json);

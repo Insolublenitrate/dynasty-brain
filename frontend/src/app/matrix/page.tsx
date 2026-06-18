@@ -22,7 +22,7 @@ export default function PowerMatrix() {
 
     async function fetchData() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
         if (!res.ok) throw new Error("Failed to fetch matrix data");
         const json = await res.json();

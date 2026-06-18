@@ -22,7 +22,7 @@ export default function ActionCenter() {
     if (!leagueId) return;
     async function fetchMatrix() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
         if (!res.ok) throw new Error("Failed to fetch");
         const json = await res.json();
