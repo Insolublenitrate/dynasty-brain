@@ -1,0 +1,28 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+.env.local
+.env
+
+# Python / FastAPI
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Database & Data files
+*.db
+backend/data/
+backend/sqlite.db
+backend/test.db
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+.vercel
+Data Dumps/
+*.csv

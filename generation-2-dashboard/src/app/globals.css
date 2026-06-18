@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-madden-turf: #1a472a;
+  --color-madden-turf-dark: #102e1b;
+  --color-madden-chalk: #f8f9fa;
+  --color-madden-yellow: #ffcc00;
+  --color-madden-red: #ff3333;
+  --color-madden-blue: #0066cc;
+  
+  --font-retro: var(--font-vt323);
+  --font-athletic: var(--font-chakra-petch);
+}
+
+:root {
+  --background: #1a472a;
+  --foreground: #f8f9fa;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-athletic), sans-serif;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Chalk line utility class */
+.chalk-border {
+  border: 3px solid var(--color-madden-chalk);
+  border-radius: 4px;
+  position: relative;
+}
+
+.chalk-border::after {
+  content: '';
+  position: absolute;
+  top: -4px; left: -4px; right: -4px; bottom: -4px;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}

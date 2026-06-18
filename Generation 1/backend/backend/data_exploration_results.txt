@@ -1,0 +1,13 @@
+--- player_stats ---
+Columns: player_id, player_name, player_display_name, position, position_group, headshot_url, recent_team, season, week, season_type, opponent_team, completions, attempts, passing_yards, passing_tds, interceptions, sacks, sack_yards, sack_fumbles, sack_fumbles_lost, passing_air_yards, passing_yards_after_catch, passing_first_downs, passing_epa, passing_2pt_conversions, pacr, dakota, carries, rushing_yards, rushing_tds, rushing_fumbles, rushing_fumbles_lost, rushing_first_downs, rushing_epa, rushing_2pt_conversions, receptions, targets, receiving_yards, receiving_tds, receiving_fumbles, receiving_fumbles_lost, receiving_air_yards, receiving_yards_after_catch, receiving_first_downs, receiving_epa, receiving_2pt_conversions, racr, target_share, air_yards_share, wopr, special_teams_tds, fantasy_points, fantasy_points_ppr
+--- pfr_rec ---
+Failed to fetch pfr_rec: HTTP Error 404: Not Found
+
+--- snap_counts ---
+Failed to fetch snap_counts: HTTP Error 404: Not Found
+
+--- ftn_charting ---
+Columns: ftn_game_id, nflverse_game_id, season, week, ftn_play_id, nflverse_play_id, starting_hash, qb_location, n_offense_backfield, n_defense_box, is_no_huddle, is_motion, is_play_action, is_screen_pass, is_rpo, is_trick_play, is_qb_out_of_pocket, is_interception_worthy, is_throw_away, read_thrown, is_catchable_ball, is_contested_ball, is_created_reception, is_drop, is_qb_sneak, n_blitzers, n_pass_rushers, is_qb_fault_sack, date_pulled
+--- ngs_rec ---
+Failed to fetch ngs_rec: HTTP Error 404: Not Found
+
