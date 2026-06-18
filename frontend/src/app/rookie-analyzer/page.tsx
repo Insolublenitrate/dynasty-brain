@@ -64,7 +64,7 @@ export default function RookieAnalyzerPage() {
   const [loading, setLoading] = useState(true);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
-  const seasonYear = "2024";
+  const [seasonYear, setSeasonYear] = useState("2024");
 
   useEffect(() => {
     async function fetchRookies() {
@@ -146,7 +146,7 @@ export default function RookieAnalyzerPage() {
                 <GraduationCap size={32} className="text-emerald-500" />
                 Rookie Big Board
               </h1>
-              <SeasonSelector />
+              <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
             </div>
             <p className="text-slate-400 mt-2">Deep dive into NCAA college production, athletic profiles, and draft analytics.</p>
           </div>

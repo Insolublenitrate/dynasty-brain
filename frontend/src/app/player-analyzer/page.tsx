@@ -12,6 +12,7 @@ export default function PlayerAnalyzer() {
   const [playersData, setPlayersData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [seasonYear, setSeasonYear] = useState("2024");
 
   const [searchInput, setSearchInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -31,7 +32,7 @@ export default function PlayerAnalyzer() {
       setLoading(true);
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2024&t=${new Date().getTime()}`, { cache: "no-store" });
+        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=${seasonYear}&t=${new Date().getTime()}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to fetch from backend");
         const json = await res.json();
         if (json.error || !Array.isArray(json)) {
@@ -50,7 +51,7 @@ export default function PlayerAnalyzer() {
       }
     }
     fetchData();
-  }, [leagueId, isLeagueLoading, router]);
+  }, [leagueId, isLeagueLoading, router, seasonYear]);
 
   if (isLeagueLoading) return null;
 
@@ -128,7 +129,7 @@ export default function PlayerAnalyzer() {
             )}
           </div>
           <p className="text-slate-400 mt-2 mb-4">Explore league-wide leaderboards for targets, redzone usage, and advanced metrics inspired by NFL Savant.</p>
-          <SeasonSelector />
+          <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
         </div>
 
         {/* Player Search Bar */}

@@ -13,10 +13,6 @@ __pycache__/
 .pytest_cache/
 
 # Database & Data files
-*.db
-backend/data/
-backend/sqlite.db
-backend/test.db
 
 # OS / Editor
 .DS_Store
