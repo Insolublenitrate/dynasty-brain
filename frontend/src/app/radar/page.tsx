@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Radar as RadarIcon, Search } from "lucide-react";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useLeague } from '@/context/LeagueContext';
+import SeasonSelector from '@/components/SeasonSelector';
 import { useRouter } from 'next/navigation';
 
 const RADAR_METRICS = [
@@ -23,6 +24,7 @@ export default function PlayerRadar() {
   
   const [player1, setPlayer1] = useState<any>(null);
   const [player2, setPlayer2] = useState<any>(null);
+  const [seasonYear, setSeasonYear] = useState("2024");
 
   const { leagueId, isLoading: isLeagueLoading } = useLeague();
   const router = useRouter();
@@ -35,9 +37,10 @@ export default function PlayerRadar() {
     }
 
     async function fetchData() {
+      setLoading(true);
       try {
         const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
-        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2025`);
+        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=${seasonYear}`);
         const json = await res.json();
         setPlayersData(json);
       } catch (err) {
@@ -47,7 +50,7 @@ export default function PlayerRadar() {
       }
     }
     fetchData();
-  }, [leagueId, isLeagueLoading, router]);
+  }, [leagueId, isLeagueLoading, router, seasonYear]);
 
   useEffect(() => {
     if (playersData.length > 0) {
@@ -104,7 +107,8 @@ export default function PlayerRadar() {
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
           <RadarIcon className="text-indigo-500" /> Player Radar
         </h1>
-        <p className="text-slate-400 mt-2">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
+        <p className="text-slate-400 mt-2 mb-4">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
+        <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

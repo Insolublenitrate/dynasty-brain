@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { GitCompareArrows } from "lucide-react";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import SeasonSelector from '@/components/SeasonSelector';
 
 const METRICS = [
   { id: 'ppg', label: 'Points Per Game' },
@@ -19,12 +20,14 @@ export default function CrossReference() {
   const [xMetric, setXMetric] = useState('target_rate');
   const [yMetric, setYMetric] = useState('ppg');
   const [position, setPosition] = useState('WR');
+  const [seasonYear, setSeasonYear] = useState("2024");
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
         const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
-        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2025`);
+        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=${seasonYear}`);
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -34,7 +37,7 @@ export default function CrossReference() {
       }
     }
     fetchData();
-  }, []);
+  }, [seasonYear]);
 
   const chartData = data
     .filter(p => p.position === position && p.games_played > 5 && p[xMetric] != null && p[yMetric] != null)
@@ -64,7 +67,8 @@ export default function CrossReference() {
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
           <GitCompareArrows className="text-rose-500" /> Cross Reference
         </h1>
-        <p className="text-slate-400 mt-2">Deep dive into underlying metric correlations.</p>
+        <p className="text-slate-400 mt-2 mb-4">Deep dive into underlying metric correlations.</p>
+        <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
 
       <div className="flex gap-4 items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">

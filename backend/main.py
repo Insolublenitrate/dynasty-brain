@@ -137,19 +137,52 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 
             future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
             
-            # Mock expected points, actual points, and age score based on fpts
-            # Since we don't have historical weekly logs in DB yet, we use heuristic mocks
-            actual_pts = r.fpts or 1500.0
+            # Calculate expected points and max_pf based on actual player data in the roster
+            roster_expected_pts = 0.0
+            roster_max_pf = 0.0
+            age_sum = 0.0
+            age_count = 0
             
-            # Simple deterministic heuristic to generate interesting variance for the UI chart
+            # Since players is a list of player IDs
+            if r.players and len(r.players) > 0:
+                player_ids = r.players
+                # Fetch their 2024 or 2025 advanced stats
+                # Using a subquery or loop. We'll use simple summation for the heuristic.
+                # In a real heavy DB we'd do a joined load, but this is fine for ~10 teams.
+                stats = session.query(PlayerAdvancedStats).filter(
+                    PlayerAdvancedStats.player_id.in_(player_ids),
+                    PlayerAdvancedStats.season == 2024 # Or 2025 if data exists
+                ).all()
+                
+                for st in stats:
+                    pts = st.fantasy_points_ppr or 0.0
+                    roster_max_pf += pts
+                    
+                    # Estimate age
+                    age_sum += (st.age or 26.0)
+                    age_count += 1
+                    
+                # For expected points, we might just look at starters if r.starters is available
+                if r.starters and len(r.starters) > 0:
+                    starter_stats = [s for s in stats if s.player_id in r.starters]
+                    roster_expected_pts = sum(s.fantasy_points_ppr or 0.0 for s in starter_stats)
+                else:
+                    # If no starters defined, assume top 9 players
+                    top_players = sorted(stats, key=lambda x: x.fantasy_points_ppr or 0.0, reverse=True)[:9]
+                    roster_expected_pts = sum(p.fantasy_points_ppr or 0.0 for p in top_players)
+                    
+            if roster_max_pf == 0: roster_max_pf = 1500.0
+            if roster_expected_pts == 0: roster_expected_pts = 1200.0
+            
+            actual_pts = r.fpts or roster_expected_pts
+            expected_pts = roster_expected_pts
+            max_pf = roster_max_pf
+            point_differential = actual_pts - expected_pts
+            age_score = (age_sum / age_count) if age_count > 0 else 26.5
+            
+            # Mock Manager Habits (Still heuristic since we lack trade history DB)
             import random
             rng = random.Random(f"{league_id}-{r.roster_id}")
-            expected_pts = actual_pts * rng.uniform(0.85, 1.15)
-            max_pf = actual_pts * rng.uniform(1.0, 1.1)
-            point_differential = actual_pts - expected_pts
-            age_score = rng.uniform(24.0, 29.0) # mock avg age
-            
-            # Mock Manager Habits
             trade_frequency = rng.uniform(0, 40) # 0 to 40 trades a year
             draft_success_rate = rng.uniform(0.1, 0.6) # 10% to 60% hit rate
             

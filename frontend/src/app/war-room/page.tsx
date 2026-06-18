@@ -6,6 +6,7 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, 
   ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
+import { GitCompareArrows } from 'lucide-react';
 
 const SCENARIOS = [
   "MATCHUP PREVIEW",
@@ -197,11 +198,11 @@ export default function WarRoomPage() {
             {recentTrades.map((t, i) => (
               <span key={i} className="flex items-center gap-2">
                 <span className="text-red-300">BREAKING TRADE:</span> 
-                Team {Object.keys(t.consenter_roster_ids || {}).join(' & ')} swapped assets in Week {t.week}!
+                {Object.keys(t.consenter_roster_ids || {}).map(id => getTeamName(id)).join(' & ')} swapped assets in Week {t.week}!
                 <span className="opacity-50 px-4">•</span>
               </span>
             ))}
-            <span>RUMOR: AI Host preparing devastating statistical takedown of league average managers.</span>
+            <span>RUMOR: AI Host preparing devastating statistical takedown of {rosters.length > 0 ? getTeamName(rosters[0].roster_id) : "league average managers"}.</span>
           </div>
         </div>
       </div>
@@ -225,84 +226,75 @@ export default function WarRoomPage() {
           {/* Main Stage (Left) */}
           <div className="lg:col-span-8 space-y-6">
             
-            {/* The Anchor Desk (AI Output) */}
-            <div className="bg-black border-2 border-slate-800 rounded-2xl flex flex-col shadow-2xl relative overflow-hidden">
-              <div className="bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-800 p-4 flex items-center justify-between z-10">
-                <div className="flex items-center gap-3">
-                  <div className="bg-red-500 p-2 rounded-full">
-                    <Terminal size={20} className="text-white" />
-                  </div>
-                  <span className="text-lg font-black text-white tracking-widest uppercase">The Anchor Desk</span>
-                </div>
-                {loading && <div className="flex items-center gap-2 text-orange-500"><Zap size={18} className="animate-pulse" /> <span className="text-xs font-bold animate-pulse">GENERATING</span></div>}
-              </div>
+            {/* Visual Dashboard */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden min-h-[500px] flex flex-col justify-center">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
               
-              <div className="flex-1 p-6 md:p-10 overflow-y-auto min-h-[400px] relative">
-                {output ? (
-                  <div className="prose prose-invert max-w-none relative z-10">
-                    {output.split('\n').map((line, i) => {
-                      if (line.startsWith('#')) {
-                        return <h3 key={i} className="text-2xl font-black text-orange-400 mt-6 mb-2">{line.replace(/#/g, '')}</h3>
-                      }
-                      return (
-                        <p key={i} className="text-xl leading-relaxed text-slate-100 font-medium tracking-tight mb-4" 
-                           dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-black bg-red-600/30 px-2 py-0.5 rounded border border-red-500/20">$1</strong>') }} />
-                      )
-                    })}
+              {scenario === "MATCHUP PREVIEW" && teamAData && teamBData ? (
+                <div className="space-y-8 animate-in fade-in duration-500">
+                  <h3 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 mb-6">
+                    <Users size={24} className="text-indigo-400"/> Matchup Visualizer
+                  </h3>
+                  
+                  <div className="grid grid-cols-3 items-center text-center mb-8 bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <div className="space-y-2">
+                      <h4 className="text-2xl font-black text-blue-400">{getTeamName(teamAData.roster_id)}</h4>
+                      <div className="text-5xl font-black text-white">{Math.round(teamAData.power_index)}</div>
+                      <div className="text-sm text-slate-400 uppercase tracking-widest">Power Index</div>
+                    </div>
+                    <div className="text-4xl font-black text-slate-700 italic">VS</div>
+                    <div className="space-y-2">
+                      <h4 className="text-2xl font-black text-red-400">{getTeamName(teamBData.roster_id)}</h4>
+                      <div className="text-5xl font-black text-white">{Math.round(teamBData.power_index)}</div>
+                      <div className="text-sm text-slate-400 uppercase tracking-widest">Power Index</div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-600 space-y-4">
-                    <Flame size={64} className="opacity-20" />
-                    <p className="text-lg font-medium text-center max-w-sm">
-                      Awaiting segment selection...
-                    </p>
+
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[
+                        { name: 'Max PF', teamA: teamAData.max_pf, teamB: teamBData.max_pf },
+                        { name: 'Expected Pts', teamA: teamAData.expected_pts, teamB: teamBData.expected_pts },
+                        { name: 'Draft Capital', teamA: teamAData.future_capital_value, teamB: teamBData.future_capital_value }
+                      ]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                        <XAxis dataKey="name" stroke="#64748b" />
+                        <YAxis stroke="#64748b" />
+                        <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} />
+                        <Legend />
+                        <Bar name={getTeamName(teamAData.roster_id)} dataKey="teamA" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar name={getTeamName(teamBData.roster_id)} dataKey="teamB" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
-                )}
-                
-                {/* Network Bug Watermark */}
-                <div className="absolute bottom-6 right-6 opacity-10 pointer-events-none">
-                  <Flame size={120} />
                 </div>
-              </div>
+              ) : scenario === "TRADE AUTOPSY" && recentTrades.length > 0 ? (
+                <div className="space-y-8 animate-in fade-in duration-500 text-center">
+                   <h3 className="text-2xl font-black text-white uppercase tracking-wider flex justify-center items-center gap-2 mb-6">
+                    <GitCompareArrows size={24} className="text-green-400"/> Trade Analyzer
+                  </h3>
+                  <div className="bg-slate-950 p-8 rounded-xl border border-slate-800">
+                    <h4 className="text-xl font-bold text-slate-300 mb-4">Assets Exchanged in Week {recentTrades[selectedTradeIndex]?.week}</h4>
+                    <p className="text-lg text-slate-400">
+                      Teams involved: <span className="font-bold text-white">{Object.keys(recentTrades[selectedTradeIndex]?.consenter_roster_ids || {}).map(id => getTeamName(id)).join(' & ')}</span>
+                    </p>
+                    {/* Placeholder for complex trade visuals */}
+                    <div className="mt-8 p-6 bg-slate-900 border border-slate-800 rounded-lg text-slate-500">
+                       Select a trade to view exact player and pick movements (live integration pending).
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-slate-600 space-y-4 h-full">
+                  <Flame size={64} className="opacity-20" />
+                  <p className="text-lg font-medium text-center max-w-sm">
+                    Awaiting segment selection...
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Tale of the Tape (Matchup Visualizer) */}
-            {scenario === "MATCHUP PREVIEW" && teamAData && teamBData && (
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 bg-gradient-to-b from-blue-500 to-red-500 h-full"></div>
-                <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-wider flex items-center gap-2">
-                  <Users size={24} className="text-indigo-400"/> Tale of the Tape
-                </h3>
-                
-                <div className="grid grid-cols-3 items-center text-center mb-8">
-                  <div className="space-y-2">
-                    <h4 className="text-xl font-bold text-blue-400">{getTeamName(teamAData.roster_id)}</h4>
-                    <div className="text-4xl font-black text-white">{Math.round(teamAData.power_index)}</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Power Index</div>
-                  </div>
-                  <div className="text-3xl font-black text-slate-600 italic">VS</div>
-                  <div className="space-y-2">
-                    <h4 className="text-xl font-bold text-red-400">{getTeamName(teamBData.roster_id)}</h4>
-                    <div className="text-4xl font-black text-white">{Math.round(teamBData.power_index)}</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Power Index</div>
-                  </div>
-                </div>
 
-                <div className="h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={getComparativeRadarData()}>
-                      <PolarGrid stroke="#334155" />
-                      <PolarAngleAxis dataKey="position" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                      <PolarRadiusAxis angle={30} domain={[0, 'auto']} tick={false} axisLine={false} />
-                      <Radar name={getTeamName(teamAData.roster_id)} dataKey="teamA" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-                      <Radar name={getTeamName(teamBData.roster_id)} dataKey="teamB" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} />
-                      <Legend />
-                      <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Segment Producer Controls (Right) */}
@@ -375,10 +367,10 @@ export default function WarRoomPage() {
                   className="w-full py-4 mt-4 rounded-xl font-black text-lg bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-lg hover:shadow-orange-500/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
-                    <span className="animate-pulse flex items-center gap-2"><Activity size={20}/> BROADCASTING...</span>
+                    <span className="animate-pulse flex items-center gap-2"><Activity size={20}/> ANALYZING DATA...</span>
                   ) : (
                     <>
-                      <Play size={24} /> THROW TO ANCHOR
+                      <Play size={24} /> LOAD VISUALS
                     </>
                   )}
                 </button>
