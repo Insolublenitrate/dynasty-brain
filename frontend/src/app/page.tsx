@@ -202,7 +202,7 @@ export default function ActionCenter() {
           <Target className="text-indigo-500" /> Team Power Matrix
         </h2>
         
-        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl shadow-xl p-8 relative min-h-[500px]">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl p-8 relative h-[550px]">
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
