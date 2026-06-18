@@ -263,13 +263,53 @@ def get_team_analyzer(league_id: str, roster_id: int):
         ]
         
         # 2. Positional Radar
-        base_str = current_power / 10.0
+        roster_player_ids = roster.players or []
+        stats = session.query(PlayerAdvancedStats).filter(
+            PlayerAdvancedStats.player_id.in_(roster_player_ids),
+            PlayerAdvancedStats.season >= 2022
+        ).all()
+        
+        all_players_in_league = []
+        for r in all_rosters:
+            if r.players:
+                all_players_in_league.extend(r.players)
+                
+        all_stats = session.query(PlayerAdvancedStats).filter(
+            PlayerAdvancedStats.player_id.in_(all_players_in_league),
+            PlayerAdvancedStats.season >= 2022
+        ).all()
+        
+        def get_pos_scores(stat_list):
+            pos_totals = {"QB": 0.0, "RB": 0.0, "WR": 0.0, "TE": 0.0, "FLEX": 0.0}
+            player_avg = {}
+            player_pos = {}
+            for st in stat_list:
+                pid = st.player_id
+                pts = st.fantasy_points_ppr or 0.0
+                if pid not in player_avg:
+                    player_avg[pid] = []
+                    player_pos[pid] = st.position
+                player_avg[pid].append(pts)
+                
+            for pid, pts_list in player_avg.items():
+                avg_pts = sum(pts_list) / len(pts_list)
+                pos = player_pos[pid]
+                if pos in pos_totals:
+                    pos_totals[pos] += avg_pts
+                if pos in ["RB", "WR", "TE"]:
+                    pos_totals["FLEX"] += avg_pts
+            return pos_totals
+
+        team_pos_scores = get_pos_scores(stats)
+        league_pos_scores = get_pos_scores(all_stats)
+        num_teams = max(len(all_rosters), 1)
+
         positional_radar = [
-            {"position": "QB", "team_score": base_str * rng.uniform(0.7, 1.3), "league_avg": base_str},
-            {"position": "RB", "team_score": base_str * rng.uniform(0.5, 1.5), "league_avg": base_str},
-            {"position": "WR", "team_score": base_str * rng.uniform(0.6, 1.4), "league_avg": base_str},
-            {"position": "TE", "team_score": base_str * rng.uniform(0.4, 1.6), "league_avg": base_str},
-            {"position": "FLEX", "team_score": base_str * rng.uniform(0.8, 1.2), "league_avg": base_str},
+            {"position": "QB", "team_score": round(team_pos_scores["QB"], 1), "league_avg": round(league_pos_scores["QB"]/num_teams, 1)},
+            {"position": "RB", "team_score": round(team_pos_scores["RB"], 1), "league_avg": round(league_pos_scores["RB"]/num_teams, 1)},
+            {"position": "WR", "team_score": round(team_pos_scores["WR"], 1), "league_avg": round(league_pos_scores["WR"]/num_teams, 1)},
+            {"position": "TE", "team_score": round(team_pos_scores["TE"], 1), "league_avg": round(league_pos_scores["TE"]/num_teams, 1)},
+            {"position": "FLEX", "team_score": round(team_pos_scores["FLEX"], 1), "league_avg": round(league_pos_scores["FLEX"]/num_teams, 1)},
         ]
         
         def get_grade(score, avg):
@@ -423,10 +463,10 @@ def get_team_analyzer(league_id: str, roster_id: int):
                 if m.is_win == 0:
                     if -diff > max_diff_loss:
                         max_diff_loss = -diff
-                        most_dominated = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (-{-diff:.1f})"
+                        most_dominated = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} ({diff:.1f})"
                     if -diff < min_diff_loss:
                         min_diff_loss = -diff
-                        biggest_heartbreak = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (-{-diff:.1f})"
+                        biggest_heartbreak = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} ({diff:.1f})"
                     if m.points > max_pts_loss:
                         max_pts_loss = m.points
                         highest_scoring_loss = f"{m.points:.1f} pts vs {other_teams_map.get(m.opponent_roster_id, 'Unknown')}"
@@ -459,6 +499,41 @@ def get_team_analyzer(league_id: str, roster_id: int):
                 else:
                     whos_my_daddy = "No one (You dominate)"
                 
+        # Biggest Rival (most matchups)
+        rival_counts = {}
+        for m in matchups:
+            if m.opponent_roster_id:
+                rival_counts[m.opponent_roster_id] = rival_counts.get(m.opponent_roster_id, 0) + 1
+        
+        biggest_rival = "N/A"
+        if rival_counts:
+            best_rival_id = max(rival_counts.keys(), key=lambda k: rival_counts[k])
+            biggest_rival = f"{other_teams_map.get(best_rival_id, 'Unknown')} ({rival_counts[best_rival_id]} matchups)"
+
+        # Biggest Trade Partner
+        from models import SleeperTransaction
+        trades = session.query(SleeperTransaction).filter(
+            SleeperTransaction.league_id == league_id,
+            SleeperTransaction.type == 'trade',
+            SleeperTransaction.status == 'complete'
+        ).all()
+        
+        trade_counts = {}
+        for t in trades:
+            consenters = t.consenter_roster_ids or []
+            if roster.roster_id in consenters:
+                for partner in consenters:
+                    if partner != roster.roster_id:
+                        trade_counts[partner] = trade_counts.get(partner, 0) + 1
+        
+        biggest_trade_partner = "No one (Hold strong)"
+        if trade_counts:
+            best_partner_id = max(trade_counts.keys(), key=lambda k: trade_counts[k])
+            partner_roster = next((r for r in all_rosters if r.roster_id == best_partner_id), None)
+            if partner_roster:
+                p_name = partner_roster.user.display_name if partner_roster.user and partner_roster.user.display_name else f"Team {partner_roster.roster_id}"
+                biggest_trade_partner = f"{p_name} ({trade_counts[best_partner_id]} trades)"
+
         fun_metrics = {
             "easiest_win": easiest_win,
             "most_dominated": most_dominated,
@@ -470,6 +545,8 @@ def get_team_analyzer(league_id: str, roster_id: int):
             "longest_win_streak": longest_win_streak,
             "longest_loss_streak": longest_loss_streak,
             "hottest_run": round(hottest_run, 1),
+            "biggest_rival": biggest_rival,
+            "biggest_trade_partner": biggest_trade_partner,
             "trade_tendency": rng.choice(["Fleece Master", "Draft Pick Hoarder", "Veteran Chaser", "Taco", "The Godfather"])
         }
 

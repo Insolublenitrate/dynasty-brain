@@ -269,6 +269,16 @@ export default function DynastyRoom() {
                       <p className="text-md font-bold text-pink-500">{teamData.fun_metrics?.longest_loss_streak} games</p>
                     </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-slate-400">Biggest Rival</p>
+                      <p className="text-sm font-bold text-indigo-400">{teamData.fun_metrics?.biggest_rival}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Top Trade Partner</p>
+                      <p className="text-sm font-bold text-emerald-400">{teamData.fun_metrics?.biggest_trade_partner}</p>
+                    </div>
+                  </div>
                   <div>
                     <p className="text-xs text-slate-400">Hottest Run (Best 4-Week Stretch)</p>
                     <p className="text-md font-medium text-slate-200">{teamData.fun_metrics?.hottest_run} pts</p>
