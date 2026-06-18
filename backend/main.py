@@ -146,30 +146,38 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
             # Since players is a list of player IDs
             if r.players and len(r.players) > 0:
                 player_ids = r.players
-                # Fetch their 2024 or 2025 advanced stats
-                # Using a subquery or loop. We'll use simple summation for the heuristic.
-                # In a real heavy DB we'd do a joined load, but this is fine for ~10 teams.
+                # Fetch their advanced stats from 2022 onwards (historical dynasty timeline)
                 stats = session.query(PlayerAdvancedStats).filter(
                     PlayerAdvancedStats.player_id.in_(player_ids),
-                    PlayerAdvancedStats.season == 2024 # Or 2025 if data exists
+                    PlayerAdvancedStats.season >= 2022
                 ).all()
                 
+                # Aggregate historical points by player
+                player_pts = {}
+                player_age = {}
                 for st in stats:
+                    pid = st.player_id
                     pts = st.fantasy_points_ppr or 0.0
-                    roster_max_pf += pts
+                    if pid not in player_pts:
+                        player_pts[pid] = []
+                        player_age[pid] = []
+                    player_pts[pid].append(pts)
+                    player_age[pid].append(st.age or 26.0)
                     
-                    # Estimate age
-                    age_sum += (st.age or 26.0)
+                for pid, pts_list in player_pts.items():
+                    avg_pts = sum(pts_list) / len(pts_list)
+                    roster_max_pf += avg_pts
+                    age_sum += (sum(player_age[pid]) / len(player_age[pid]))
                     age_count += 1
                     
                 # For expected points, we might just look at starters if r.starters is available
                 if r.starters and len(r.starters) > 0:
-                    starter_stats = [s for s in stats if s.player_id in r.starters]
-                    roster_expected_pts = sum(s.fantasy_points_ppr or 0.0 for s in starter_stats)
+                    roster_expected_pts = sum((sum(player_pts[pid])/len(player_pts[pid])) for pid in r.starters if pid in player_pts)
                 else:
                     # If no starters defined, assume top 9 players
-                    top_players = sorted(stats, key=lambda x: x.fantasy_points_ppr or 0.0, reverse=True)[:9]
-                    roster_expected_pts = sum(p.fantasy_points_ppr or 0.0 for p in top_players)
+                    avg_player_pts = [(sum(pts)/len(pts)) for pts in player_pts.values()]
+                    top_players = sorted(avg_player_pts, reverse=True)[:9]
+                    roster_expected_pts = sum(top_players)
                     
             if roster_max_pf == 0: roster_max_pf = 1500.0
             if roster_expected_pts == 0: roster_expected_pts = 1200.0
