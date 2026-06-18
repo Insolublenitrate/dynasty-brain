@@ -36,20 +36,22 @@ export default function ActionCenter() {
     fetchMatrix();
   }, []);
 
-  // Assuming the user's roster is index 0 for demonstration purposes
-  const myRoster = matrixData.length > 0 ? matrixData[0] : null;
+  // Attempt to find the current user's roster by name, fallback to first
+  const myRoster = matrixData.length > 0 
+    ? (matrixData.find(r => r.team_name.toLowerCase() === 'insolublenitrate') || matrixData[0]) 
+    : null;
 
   // Generate dynamic actions based on league data
   const actions = matrixData
-    .filter(team => team.point_differential < -50 || team.lifecycle_state === 'Fraud')
+    .filter(team => team.point_differential < -50 || team.lifecycle_state === 'All-In Contender')
     .map(team => {
-      if (team.lifecycle_state === 'Fraud') {
+      if (team.lifecycle_state === 'All-In Contender') {
         return {
           id: team.roster_id,
           type: "alert",
           icon: <AlertTriangle className="text-rose-500" size={24} />,
           title: `Proactive Sell Target: ${team.team_name}`,
-          description: `This team is currently classified as a "Fraudulent Contender" because their actual points (${team.actual_points.toFixed(0)}) vastly outperform their Max PF (${team.max_pf.toFixed(0)}). Consider selling aging assets to them at a premium while they believe they are contending.`,
+          description: `This team is currently classified as an "All-In Contender". Consider selling aging assets to them at a premium while they believe they are in their championship window.`,
           timestamp: "Just now",
           bg: "bg-rose-500/10",
           border: "border-rose-500/20"
