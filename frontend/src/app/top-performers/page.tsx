@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { BarChart3, Trophy } from "lucide-react";
+import SeasonSelector from '@/components/SeasonSelector';
 
 export default function TopPerformers() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [seasonYear, setSeasonYear] = useState("2024");
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
         const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
-        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=2025`);
+        const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=${seasonYear}`);
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -21,7 +24,7 @@ export default function TopPerformers() {
       }
     }
     fetchData();
-  }, []);
+  }, [seasonYear]);
 
   const getTopN = (metric: string, n=5) => {
     return [...data]
@@ -63,10 +66,13 @@ export default function TopPerformers() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-          <BarChart3 className="text-emerald-500" /> Top Performers
-        </h1>
-        <p className="text-slate-400 mt-2">The most efficient players in the NFL across key underlying metrics (min 5 games).</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+            <BarChart3 className="text-emerald-500" /> Top Performers
+          </h1>
+        </div>
+        <p className="text-slate-400 mt-2 mb-4">The most efficient players in the NFL across key underlying metrics (min 5 games).</p>
+        <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -75,7 +81,7 @@ export default function TopPerformers() {
         <Leaderboard title="Est. Yards Per Route Run" metric="yprr_approx" formatFn={(v: number) => v.toFixed(2)} />
         <Leaderboard title="Target Rate" metric="target_rate" formatFn={(v: number) => `${(v * 100).toFixed(1)}%`} />
         <Leaderboard title="Catch Rate" metric="catch_rate" formatFn={(v: number) => `${(v * 100).toFixed(1)}%`} />
-        <Leaderboard title="Total Fantasy Points" metric="fantasy_points" formatFn={(v: number) => v.toFixed(1)} />
+        <Leaderboard title="Total Fantasy Points" metric="fantasy_points_ppr" formatFn={(v: number) => v.toFixed(1)} />
       </div>
     </div>
   );

@@ -102,13 +102,13 @@ export default function PlayerAnalyzer() {
   };
 
   // Live Metrics Calculations
-  const qbs = playersData.filter(p => p.position === 'QB' && (p.pass_attempts || 0) > 10).sort((a,b) => (b.pass_epa_per_play || 0) - (a.pass_epa_per_play || 0));
+  const qbs = playersData.filter(p => p.position === 'QB' && (p.pass_attempts || 0) > 100).sort((a,b) => (b.pass_epa_per_play || 0) - (a.pass_epa_per_play || 0));
   const qbLeader = qbs[0];
 
-  const wrs = playersData.filter(p => p.position && p.position.includes('WR') && (p.targets || 0) > 10).sort((a,b) => (b.air_yards_per_target || 0) - (a.air_yards_per_target || 0));
+  const wrs = playersData.filter(p => p.position && p.position.includes('WR') && (p.targets || 0) > 40).sort((a,b) => (b.air_yards_per_target || 0) - (a.air_yards_per_target || 0));
   const wrLeader = wrs[0];
 
-  const rbs = playersData.filter(p => p.position === 'RB' && (p.rush_attempts || 0) > 10).sort((a,b) => (b.rush_epa_per_attempt || 0) - (a.rush_epa_per_attempt || 0));
+  const rbs = playersData.filter(p => p.position === 'RB' && (p.rush_attempts || 0) > 50).sort((a,b) => (b.rush_epa_per_attempt || 0) - (a.rush_epa_per_attempt || 0));
   const rbLeader = rbs[0];
 
   const defs = playersData.filter(p => p.position === 'DEF').map(p => ({...p, pressures: (p.sacks || 0) + (p.qb_hits || 0)})).sort((a,b) => b.pressures - a.pressures);
