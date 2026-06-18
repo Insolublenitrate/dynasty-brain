@@ -162,7 +162,7 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                         player_pts[pid] = []
                         player_age[pid] = []
                     player_pts[pid].append(pts)
-                    player_age[pid].append(st.age or 26.0)
+                    player_age[pid].append(26.0) # PlayerAdvancedStats doesn't have age, we default to 26
                     
                 for pid, pts_list in player_pts.items():
                     avg_pts = sum(pts_list) / len(pts_list)
