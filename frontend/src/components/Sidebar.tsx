@@ -94,10 +94,6 @@ export default function Sidebar() {
             <Shuffle size={20} />
             <span>Cross Reference</span>
           </Link>
-          <Link href="/matrix" className={getLinkClasses("/matrix")} onClick={closeSidebar}>
-            <Swords size={20} />
-            <span>Team Power Matrix</span>
-          </Link>
           <Link href="/trade" className={getLinkClasses("/trade")} onClick={closeSidebar}>
             <Briefcase size={20} />
             <span>Trade Architect</span>
