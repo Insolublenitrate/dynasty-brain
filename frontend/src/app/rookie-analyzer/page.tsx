@@ -341,7 +341,7 @@ export default function RookieAnalyzerPage() {
                   NCAA College Statistics
                 </h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm text-slate-300">
+                  <table className="w-full min-w-[800px] text-left text-sm text-slate-300">
                     <thead className="text-xs text-slate-400 uppercase bg-slate-800/50 border-b border-slate-700">
                       <tr>
                         <th className="px-4 py-3 font-semibold">Season</th>

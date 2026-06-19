@@ -65,7 +65,7 @@ export default function PlayerAnalyzer() {
           <h3 className="font-semibold text-slate-200">{title}</h3>
         </div>
         <div className="overflow-x-auto flex-1 p-4">
-          <table className="w-full text-sm text-left">
+          <table className="w-full min-w-[600px] text-sm text-left">
             <thead>
               <tr className="text-slate-400 border-b border-slate-800">
                 <th className="pb-2 font-medium">Rank</th>

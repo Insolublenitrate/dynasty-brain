@@ -83,7 +83,7 @@ export default function PlayerDatabase() {
         <p className="text-slate-400 mt-2">Deep level cross-referenced stats. YPRR, Route %, Catch Rate, Target Rate, etc.</p>
       </div>
 
-      <div className="flex gap-4 items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">
+      <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input
@@ -97,7 +97,7 @@ export default function PlayerDatabase() {
         <div className="flex items-center gap-2">
           <Filter className="text-slate-500" size={18} />
           <select 
-            className="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+            className="w-full sm:w-auto bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
           >
@@ -112,7 +112,7 @@ export default function PlayerDatabase() {
 
       <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
         <div className="overflow-x-auto flex-1">
-          <table className="w-full text-sm text-left">
+          <table className="w-full min-w-[800px] text-sm text-left">
             <thead className="text-xs text-slate-400 bg-slate-950/50 uppercase font-bold sticky top-0">
               <tr>
                 <th className="px-6 py-4 cursor-pointer hover:text-white" onClick={() => handleSort('player_name')}>

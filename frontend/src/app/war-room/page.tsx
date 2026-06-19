@@ -236,17 +236,17 @@ export default function WarRoomPage() {
                     <Users size={24} className="text-indigo-400"/> Matchup Visualizer
                   </h3>
                   
-                  <div className="grid grid-cols-3 items-center text-center mb-8 bg-slate-950 p-6 rounded-xl border border-slate-800">
-                    <div className="space-y-2">
-                      <h4 className="text-2xl font-black text-blue-400">{getTeamName(teamAData.roster_id)}</h4>
-                      <div className="text-5xl font-black text-white">{Math.round(teamAData.power_index)}</div>
-                      <div className="text-sm text-slate-400 uppercase tracking-widest">Power Index</div>
+                  <div className="grid grid-cols-3 items-center text-center mb-8 bg-slate-950 p-4 sm:p-6 rounded-xl border border-slate-800">
+                    <div className="space-y-1 sm:space-y-2 overflow-hidden">
+                      <h4 className="text-sm sm:text-2xl font-black text-blue-400 truncate px-1">{getTeamName(teamAData.roster_id)}</h4>
+                      <div className="text-3xl sm:text-5xl font-black text-white">{Math.round(teamAData.power_index)}</div>
+                      <div className="text-[10px] sm:text-sm text-slate-400 uppercase tracking-widest hidden sm:block">Power Index</div>
                     </div>
-                    <div className="text-4xl font-black text-slate-700 italic">VS</div>
-                    <div className="space-y-2">
-                      <h4 className="text-2xl font-black text-red-400">{getTeamName(teamBData.roster_id)}</h4>
-                      <div className="text-5xl font-black text-white">{Math.round(teamBData.power_index)}</div>
-                      <div className="text-sm text-slate-400 uppercase tracking-widest">Power Index</div>
+                    <div className="text-2xl sm:text-4xl font-black text-slate-700 italic">VS</div>
+                    <div className="space-y-1 sm:space-y-2 overflow-hidden">
+                      <h4 className="text-sm sm:text-2xl font-black text-red-400 truncate px-1">{getTeamName(teamBData.roster_id)}</h4>
+                      <div className="text-3xl sm:text-5xl font-black text-white">{Math.round(teamBData.power_index)}</div>
+                      <div className="text-[10px] sm:text-sm text-slate-400 uppercase tracking-widest hidden sm:block">Power Index</div>
                     </div>
                   </div>
 
