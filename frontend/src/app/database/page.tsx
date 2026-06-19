@@ -113,7 +113,7 @@ export default function PlayerDatabase() {
       <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
         <div className="overflow-x-auto flex-1">
           <table className="w-full min-w-[800px] text-sm text-left">
-            <thead className="text-xs text-slate-400 bg-slate-950/50 uppercase font-bold sticky top-0">
+            <thead className="text-xs text-slate-400 bg-slate-950 uppercase font-bold sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-4 cursor-pointer hover:text-white" onClick={() => handleSort('player_name')}>
                   Player {sortConfig.key === 'player_name' && (sortConfig.direction === 'asc' ? '↑' : '↓')}

@@ -104,7 +104,7 @@ export default function CrossReference() {
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 h-[550px]">
+      <div className="flex-1 min-h-[500px] bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-8 w-full">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>

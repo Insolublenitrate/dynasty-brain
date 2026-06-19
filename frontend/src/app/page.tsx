@@ -251,16 +251,16 @@ export default function ActionCenter() {
           {/* Quadrant Labels */}
           {!loading && (
             <>
-              <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0">
+              <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
                 <span className="text-xl font-bold uppercase tracking-wider text-indigo-500">Dynasty Juggernaut</span>
               </div>
-              <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0">
+              <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
                 <span className="text-xl font-bold uppercase tracking-wider text-emerald-500">Rebuilding</span>
               </div>
-              <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0">
+              <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
                 <span className="text-xl font-bold uppercase tracking-wider text-slate-500">Purgatory</span>
               </div>
-              <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0">
+              <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
                 <span className="text-xl font-bold uppercase tracking-wider text-rose-500">All-In Contender</span>
               </div>
             </>
