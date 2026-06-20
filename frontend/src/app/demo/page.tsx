@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
