@@ -842,7 +842,7 @@ def get_trades(league_id: str):
             SleeperTransaction.league_id == league_id,
             SleeperTransaction.type == 'trade',
             SleeperTransaction.status == 'complete'
-        ).order_by(SleeperTransaction.week.desc()).limit(20).all()
+        ).order_by(SleeperTransaction.season.desc(), SleeperTransaction.week.desc()).limit(20).all()
         
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
@@ -876,7 +876,7 @@ def get_trade_autopsy(league_id: str, transaction_id: str = None):
         if transaction_id:
             trade = query.filter(SleeperTransaction.id == transaction_id).first()
         else:
-            trade = query.order_by(SleeperTransaction.week.desc()).first()
+            trade = query.order_by(SleeperTransaction.season.desc(), SleeperTransaction.week.desc()).first()
         
         if not trade or not trade.adds:
             return {"error": "No recent trades found"}
@@ -915,17 +915,24 @@ def get_trade_autopsy(league_id: str, transaction_id: str = None):
             if p: return f"{p.get('first_name', '')[0]}. {p.get('last_name', '')}"
             return str(pid)
             
-        def calc_pts_since(roster_id, player_id, trade_week):
+        def calc_pts_since(roster_id, player_id, trade_season, trade_week):
             global_r_id = f"{league_id}_{roster_id}"
             matchups = session.query(MatchupHistory).filter(
-                MatchupHistory.roster_id == global_r_id,
-                MatchupHistory.week > trade_week
+                MatchupHistory.roster_id == global_r_id
             ).all()
             
             pts = 0.0
             for m in matchups:
-                if m.players_points and str(player_id) in m.players_points:
-                    pts += m.players_points[str(player_id)]
+                try:
+                    m_season = int(m.season)
+                    t_season = int(trade_season)
+                except:
+                    m_season = 0
+                    t_season = 0
+                
+                if m_season > t_season or (m_season == t_season and m.week > trade_week):
+                    if m.players_points and str(player_id) in m.players_points:
+                        pts += m.players_points[str(player_id)]
             return round(pts, 1)
 
         team_a_total = 0.0
@@ -933,7 +940,7 @@ def get_trade_autopsy(league_id: str, transaction_id: str = None):
         
         if trade.adds:
             for player_id, receiving_roster_id in trade.adds.items():
-                pts = calc_pts_since(receiving_roster_id, player_id, trade.week or 0)
+                pts = calc_pts_since(receiving_roster_id, player_id, trade.season, trade.week or 0)
                 asset_obj = {"name": get_name(player_id), "pointsSince": pts}
                 
                 if receiving_roster_id == team_a_id:
