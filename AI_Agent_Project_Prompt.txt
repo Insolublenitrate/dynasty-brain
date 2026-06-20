@@ -1,0 +1,52 @@
+# Dynasty Brain: Project Overview & System Prompt
+
+**Instructions for the AI:** 
+You are an expert software architect, data scientist, and fantasy football strategist. I am providing you with a complete architectural breakdown and feature summary of my custom-built application, "Dynasty Brain." Please review the architecture, data pipelines, and UI/UX features below. 
+
+I am seeking your feedback on:
+1. **Feature Expansion:** What advanced dynasty fantasy football metrics, predictive models, or visualizations am I missing that would elevate this dashboard?
+2. **Data Science:** How can I better leverage my historical data (matchups, transactions) or nflverse data to find undervalued players?
+3. **Architectural Improvements:** Are there optimizations I should consider for my tech stack or data ingestion pipelines?
+
+---
+
+## 1. Project Mission
+"Dynasty Brain" is a highly advanced, custom-built web dashboard for analyzing Dynasty Fantasy Football leagues. It goes beyond the basic UI provided by platforms like Sleeper. It ingests historical and active league data, cross-references it with advanced on-field player statistics, and visualizes team strengths, player values, and league-wide trends to help managers make data-driven trade and draft decisions.
+
+## 2. Tech Stack
+*   **Frontend:** Next.js (React), TailwindCSS (for styling), Recharts (for data visualization), Lucide React (for iconography).
+*   **Backend:** Python, FastAPI, SQLAlchemy (ORM).
+*   **Database:** SQLite (dynastybrain.db).
+*   **External Data Sources:** 
+    *   Sleeper API (League metadata, rosters, matchups, transactions, brackets).
+    *   NFLVerse / nflfastR (Advanced weekly and seasonal on-field player statistics, PPR scoring, passing/rushing efficiency).
+    *   Draft Picks & Rookie Data (Custom JSON/DB mappings for rookie classes).
+
+## 3. Data Pipeline & Architecture
+The system operates on a dual-data ingestion model:
+1.  **Sleeper Sync (sleeper_ingest.py):** Pulls down league configurations. It recursively traces previous_league_id to map historical podium finishes (Champions, 2nd, 3rd, Last Place) into a LeagueHistory table. It also stores every roster, every matchup, and every transaction (trades/waivers) in the database.
+2.  **NFLVerse Sync:** Pulls massive datasets of real NFL player statistics and maps them to Sleeper's internal Player IDs. This creates the PlayerAdvancedStats table, allowing the application to calculate a team's actual output based on the specific players they hold.
+
+## 4. Core Features & UI Modules
+
+### A. League Analyzer (Macro View)
+*   **Team Power Rankings Table:** Evaluates all teams in the league. Calculates total Offensive Output by summing the points of every player currently on a roster. Calculates the weighted average age of the roster.
+*   **Positional Heatmap:** A visual color-coded breakdown showing how many points a team generates from QB vs RB vs WR vs TE.
+*   **True Power Matrix (Scatter Chart):** Plots every team on an X/Y axis of **Average Age vs. Total Output**. It divides the league into four quadrants: *Dynasty Juggernauts* (Young & High Scoring), *Win Now* (Old & High Scoring), *Productive Struggle* (Young & Low Scoring), and *Rebuilding* (Old & Low Scoring).
+
+### B. Dynasty Room (Micro View)
+*   **Active Roster Analysis:** Shows the specific manager's players, their ages, dynasty ranks, and actual scoring output.
+*   **Positional Strength vs League Avg (Radar Chart):** Normalizes the league average positional scoring to an index of 100. It plots the team's positional scoring (QB, RB, WR, TE, FLEX) as a polygon stretching outward (>100) or inward (<100) to identify exact roster vulnerabilities.
+*   **Key Metrics Engine:** Calculates "Avg Margin of Victory", "Total Trades Completed", "Waiver Adds", and "Biggest Heartbreak" (the smallest point differential in a loss, excluding unplayed bye weeks).
+*   **League Record Book:** A timeline gallery showing the 1st, 2nd, 3rd, and Last Place finishers for every historical season the league has existed.
+
+### C. Player Database & Cross-Reference Tool
+*   **Player Database:** A master table of all NFL players with deep metrics (Passing Yards, Interceptions, Targets, Receptions, Touchdowns) sortable by points and age.
+*   **Cross-Reference Matrix:** A dynamic scatter plot where users can map any two statistical variables against each other (e.g., Age vs. Targets, or Passing Yards vs. Interceptions) across the entire player pool to visually identify statistical outliers and buy-low/sell-high trade targets.
+
+### D. Rookie Analyzer
+*   Evaluates incoming rookie draft classes, cross-referencing projected draft capital with college metrics to prepare managers for their upcoming rookie drafts.
+
+---
+
+**Based on this architectural overview and feature set, please provide your comprehensive feedback, insights, and proposed next steps for the application.**

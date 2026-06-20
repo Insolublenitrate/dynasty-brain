@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutDashboard, Radar, Target, Settings, GitCompareArrows, BarChart3, Database, Trophy, Shuffle, Swords, Briefcase, Calendar, Search, GraduationCap, Flame } from "lucide-react";
+import { LayoutDashboard, Radar, Target, Settings, GitCompareArrows, BarChart3, Database, Trophy, Shuffle, Swords, Briefcase, Calendar, Search, GraduationCap, Flame, Activity } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLeague } from "@/context/LeagueContext";
@@ -58,6 +58,10 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4 md:mt-0 overflow-y-auto pt-6 md:pt-0">
+          <Link href="/demo" className={getLinkClasses("/demo")} onClick={closeSidebar}>
+            <Activity size={20} />
+            <span>Studio Demo</span>
+          </Link>
           <Link href="/" className={getLinkClasses("/")} onClick={closeSidebar}>
             <LayoutDashboard size={20} />
             <span>League Analyzer</span>
