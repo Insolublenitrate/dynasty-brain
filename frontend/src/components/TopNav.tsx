@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Database, GraduationCap, Radar, Trophy, Settings } from "lucide-react";
+import { Activity, Database, GraduationCap, Radar, Trophy, Settings, ArrowRightLeft, Search, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,7 +25,7 @@ export default function TopNav() {
           <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.6)]">
             <Activity size={20} className="text-slate-950" />
           </div>
-          <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden sm:block">
+          <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden lg:block">
             DYNASTY<span className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">BRAIN</span>
           </h1>
         </Link>
@@ -35,23 +35,32 @@ export default function TopNav() {
           <Link href="/dynasty-room" className={getLinkClasses("/dynasty-room")}>
             <Activity size={16} /> <span className="hidden md:inline">Dynasty Room</span>
           </Link>
+          <Link href="/league-analyzer" className={getLinkClasses("/league-analyzer")}>
+            <BarChart3 size={16} /> <span className="hidden md:inline">League Analyzer</span>
+          </Link>
+          <Link href="/trade" className={getLinkClasses("/trade")}>
+            <ArrowRightLeft size={16} /> <span className="hidden md:inline">Trade Architect</span>
+          </Link>
+          <Link href="/player-analyzer" className={getLinkClasses("/player-analyzer")}>
+            <Search size={16} /> <span className="hidden md:inline">Player Analyzer</span>
+          </Link>
+          <Link href="/cross-reference" className={getLinkClasses("/cross-reference")}>
+            <Radar size={16} /> <span className="hidden md:inline">Cross Reference</span>
+          </Link>
           <Link href="/top-performers" className={getLinkClasses("/top-performers")}>
-            <Trophy size={16} /> <span className="hidden md:inline">Top Performers</span>
+            <Trophy size={16} /> <span className="hidden xl:inline">Top Performers</span>
           </Link>
           <Link href="/database" className={getLinkClasses("/database")}>
-            <Database size={16} /> <span className="hidden md:inline">Database</span>
+            <Database size={16} /> <span className="hidden xl:inline">Database</span>
           </Link>
           <Link href="/rookie-analyzer" className={getLinkClasses("/rookie-analyzer")}>
-            <GraduationCap size={16} /> <span className="hidden md:inline">Rookies</span>
-          </Link>
-          <Link href="/radar" className={getLinkClasses("/radar")}>
-            <Radar size={16} /> <span className="hidden md:inline">Compare</span>
+            <GraduationCap size={16} /> <span className="hidden xl:inline">Rookies</span>
           </Link>
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
-          <button className="text-slate-500 hover:text-cyan-400 transition-colors p-2 rounded-full hover:bg-slate-800">
+        <div className="flex items-center gap-3 ml-4">
+          <button className="text-slate-500 hover:text-cyan-400 transition-colors p-2 rounded-full hover:bg-slate-800 shrink-0">
             <Settings size={20} />
           </button>
         </div>

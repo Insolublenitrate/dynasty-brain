@@ -629,17 +629,23 @@ def get_weekly_studio(league_id: str):
         owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
         
         # 1. Bounty Board (Sorted by Roster FPTS / MAX_PF)
+        from models import MatchupHistory
         bounty_board = []
         for r in rosters:
+            # Sum up real points
+            global_r_id = f"{league_id}_{r.roster_id}"
+            matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id == global_r_id).all()
+            total_pts = sum((m.points or 0.0) for m in matchups)
+            if total_pts == 0: total_pts = r.fpts or 1500.0 # fallback
+            
             bounty_board.append({
                 "roster_id": r.roster_id,
                 "name": owner_name_map[r.roster_id],
-                "cashWon": round((r.fpts or 1500) * 0.1) # Mock logic for cash won based on fpts
+                "cashWon": round(total_pts * 0.1) # Mock payout based on real points
             })
         bounty_board = sorted(bounty_board, key=lambda x: x["cashWon"], reverse=True)[:4]
         
         # 2. Marquee Matchup
-        from models import MatchupHistory
         latest_matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%")).order_by(MatchupHistory.week.desc()).limit(20).all()
         
         marquee_matchup = None
@@ -675,18 +681,43 @@ def get_weekly_studio(league_id: str):
                 
         if not marquee_matchup:
             marquee_matchup = {
-                "teamA": {"name": "Neon Nightmares", "proj": 112.4},
-                "teamB": {"name": "Waiver Warriors", "proj": 128.9},
-                "spread": 4.5
+                "teamA": {"name": "No Upcoming Matchups", "proj": 0},
+                "teamB": {"name": "Offseason Mode", "proj": 0},
+                "spread": 0
             }
             
-        # 3. Monday Autopsy (Mock logic for now, finding exact bench points requires massive computation)
-        monday_autopsy = {
-            "victim": bounty_board[-1]["name"] if bounty_board else "Rebuild Mode v4",
-            "margin": 4.2,
-            "started": {"name": "D. Adams", "points": 2.4, "share": "12%"},
-            "benched": {"name": "Q. Johnston", "points": 18.6, "share": "28%"}
-        }
+        # 3. Monday Autopsy (Find a manager who lost but had a high scoring bench player)
+        monday_autopsy = None
+        for m in latest_matchups:
+            if m.is_win == 0 and m.points > 0 and m.opponent_points > 0:
+                margin = m.opponent_points - m.points
+                if m.starters and m.players and m.starters_points and m.players_points:
+                    # Find bench players
+                    bench_players = [p for p in m.players if p not in m.starters]
+                    for bp in bench_players:
+                        bp_pts = m.players_points.get(str(bp), 0.0)
+                        # See if replacing the lowest scoring starter would win
+                        min_starter = min(m.starters, key=lambda s: m.starters_points.get(str(s), 0.0) if m.starters_points else 0.0)
+                        min_s_pts = m.starters_points.get(str(min_starter), 0.0) if m.starters_points else 0.0
+                        if bp_pts - min_s_pts > margin:
+                            r_id = int(m.roster_id.split('_')[1])
+                            monday_autopsy = {
+                                "victim": owner_name_map.get(r_id, "Unknown"),
+                                "margin": round(margin, 1),
+                                "started": {"name": str(min_starter), "points": round(min_s_pts, 1), "share": "N/A"},
+                                "benched": {"name": str(bp), "points": round(bp_pts, 1), "share": "N/A"}
+                            }
+                            break
+            if monday_autopsy:
+                break
+                
+        if not monday_autopsy:
+             monday_autopsy = {
+                "victim": "No Major Blunders Detected",
+                "margin": 0,
+                "started": {"name": "N/A", "points": 0, "share": "0%"},
+                "benched": {"name": "N/A", "points": 0, "share": "0%"}
+            }
         
         return {
             "bounty_board": bounty_board,
@@ -696,18 +727,50 @@ def get_weekly_studio(league_id: str):
     finally:
         session.close()
 
-@app.get("/api/quant/trade-autopsy/{league_id}")
-def get_trade_autopsy(league_id: str):
+@app.get("/api/quant/trades/{league_id}")
+def get_trades(league_id: str):
     session = SessionLocal()
     try:
-        # Find the most recent trade
-        from models import SleeperTransaction, MatchupHistory, Roster
-        
-        trade = session.query(SleeperTransaction).filter(
+        from models import SleeperTransaction, Roster
+        trades = session.query(SleeperTransaction).filter(
             SleeperTransaction.league_id == league_id,
             SleeperTransaction.type == 'trade',
             SleeperTransaction.status == 'complete'
-        ).order_by(SleeperTransaction.week.desc()).first()
+        ).order_by(SleeperTransaction.week.desc()).limit(20).all()
+        
+        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
+        
+        results = []
+        for t in trades:
+            if t.adds:
+                r_ids = list(set(t.adds.values()))
+                teams = [owner_name_map.get(r_id, f"Team {r_id}") for r_id in r_ids]
+                results.append({
+                    "transaction_id": t.id,
+                    "date": f"Week {t.week}, {t.season}",
+                    "teams": teams
+                })
+        return results
+    finally:
+        session.close()
+
+@app.get("/api/quant/trade-autopsy/{league_id}")
+def get_trade_autopsy(league_id: str, transaction_id: str = None):
+    session = SessionLocal()
+    try:
+        from models import SleeperTransaction, MatchupHistory, Roster
+        
+        query = session.query(SleeperTransaction).filter(
+            SleeperTransaction.league_id == league_id,
+            SleeperTransaction.type == 'trade',
+            SleeperTransaction.status == 'complete'
+        )
+        
+        if transaction_id:
+            trade = query.filter(SleeperTransaction.id == transaction_id).first()
+        else:
+            trade = query.order_by(SleeperTransaction.week.desc()).first()
         
         if not trade or not trade.adds:
             return {"error": "No recent trades found"}
@@ -715,11 +778,13 @@ def get_trade_autopsy(league_id: str):
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
         
-        # Sleeper trade adds format: {"player_id": roster_id_that_received_them, ...}
-        # Find the two main rosters involved
         roster_ids = list(set(trade.adds.values()))
         if len(roster_ids) < 2:
-            return {"error": "Trade only involved one known team"}
+            # Attempt to pull from draft_picks if adds is empty or one-sided
+            if trade.draft_picks:
+                roster_ids = list(set(dp.get("owner_id") for dp in trade.draft_picks) | set(dp.get("previous_owner_id") for dp in trade.draft_picks))
+            if len(roster_ids) < 2:
+                return {"error": "Trade only involved one known team"}
             
         team_a_id = roster_ids[0]
         team_b_id = roster_ids[1]
@@ -727,7 +792,6 @@ def get_trade_autopsy(league_id: str):
         team_a_assets = []
         team_b_assets = []
         
-        # Map sleeper player ids to names (using a simple mock map or sleeper cache)
         import requests
         if 'SLEEPER_PLAYERS_CACHE' not in globals() or not globals()['SLEEPER_PLAYERS_CACHE']:
             try:
@@ -745,10 +809,6 @@ def get_trade_autopsy(league_id: str):
             if p: return f"{p.get('first_name', '')[0]}. {p.get('last_name', '')}"
             return str(pid)
             
-        # Calculate points scored since trade
-        # For each player, we need to find matchups where week > trade.week
-        # and look at the players_points dictionary.
-        
         def calc_pts_since(roster_id, player_id, trade_week):
             global_r_id = f"{league_id}_{roster_id}"
             matchups = session.query(MatchupHistory).filter(
@@ -765,18 +825,18 @@ def get_trade_autopsy(league_id: str):
         team_a_total = 0.0
         team_b_total = 0.0
         
-        for player_id, receiving_roster_id in trade.adds.items():
-            pts = calc_pts_since(receiving_roster_id, player_id, trade.week or 0)
-            asset_obj = {"name": get_name(player_id), "pointsSince": pts}
-            
-            if receiving_roster_id == team_a_id:
-                team_a_assets.append(asset_obj)
-                team_a_total += pts
-            else:
-                team_b_assets.append(asset_obj)
-                team_b_total += pts
+        if trade.adds:
+            for player_id, receiving_roster_id in trade.adds.items():
+                pts = calc_pts_since(receiving_roster_id, player_id, trade.week or 0)
+                asset_obj = {"name": get_name(player_id), "pointsSince": pts}
                 
-        # Handle draft picks
+                if receiving_roster_id == team_a_id:
+                    team_a_assets.append(asset_obj)
+                    team_a_total += pts
+                else:
+                    team_b_assets.append(asset_obj)
+                    team_b_total += pts
+                
         if trade.draft_picks:
             for dp in trade.draft_picks:
                 receiving_roster_id = dp.get("owner_id")

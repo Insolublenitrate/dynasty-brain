@@ -19,6 +19,8 @@ export default function DynastyBrainApp() {
   const [studioData, setStudioData] = useState<any>(null);
   const [matrixData, setMatrixData] = useState<any[]>([]);
   const [autopsyData, setAutopsyData] = useState<any>(null);
+  const [tradesList, setTradesList] = useState<any[]>([]);
+  const [selectedTrade, setSelectedTrade] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -50,6 +52,13 @@ export default function DynastyBrainApp() {
           setMatrixData(scatter);
         }
 
+        // Fetch Trades List
+        const tradesRes = await fetch(`${apiUrl}/api/quant/trades/${leagueId}`);
+        if (tradesRes.ok) {
+          const tList = await tradesRes.json();
+          setTradesList(tList);
+        }
+
         // Fetch Autopsy Data
         const autopsyRes = await fetch(`${apiUrl}/api/quant/trade-autopsy/${leagueId}`);
         if (autopsyRes.ok) {
@@ -68,6 +77,22 @@ export default function DynastyBrainApp() {
 
     fetchData();
   }, [leagueId]);
+
+  const handleTradeSelect = async (transactionId: string) => {
+    setSelectedTrade(transactionId);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com';
+      const autopsyRes = await fetch(`${apiUrl}/api/quant/trade-autopsy/${leagueId}?transaction_id=${transactionId}`);
+      if (autopsyRes.ok) {
+        const aData = await autopsyRes.json();
+        if (!aData.error) {
+          setAutopsyData(aData);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch specific trade:", err);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -297,8 +322,22 @@ export default function DynastyBrainApp() {
               </div>
               <p className="text-slate-400 text-sm">Analyzing the most recent transaction based on actual points scored since execution.</p>
             </div>
-            <div className="px-4 py-2 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-slate-400 flex items-center gap-2">
-              <Activity size={14} className="text-cyan-500" /> LIVE DATA SYNC
+            <div className="flex items-center gap-4">
+              <select 
+                value={selectedTrade}
+                onChange={(e) => handleTradeSelect(e.target.value)}
+                className="bg-slate-950 border border-slate-700 text-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500"
+              >
+                <option value="">-- Most Recent Trade --</option>
+                {tradesList.map(t => (
+                  <option key={t.transaction_id} value={t.transaction_id}>
+                    {t.date}: {t.teams.join(' / ')}
+                  </option>
+                ))}
+              </select>
+              <div className="px-4 py-2 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-slate-400 flex items-center gap-2">
+                <Activity size={14} className="text-cyan-500" /> LIVE DATA SYNC
+              </div>
             </div>
           </div>
 
