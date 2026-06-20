@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from database import SessionLocal, get_db
-from models import Roster, User, DraftPick, League, PlayerAdvancedStats, ConsensusStat, NCAAStats, MatchupHistory, SleeperTransaction
+from models import Roster, User, DraftPick, League, PlayerAdvancedStats, ConsensusStat, NCAAStats
 from sqlalchemy.orm import Session
 from quant.roster_lifecycle import analyze_league_rosters
 from quant.draft_depreciation import DraftPick as QuantDraftPick, evaluate_pick_portfolio
@@ -137,60 +137,19 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 
             future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
             
-            # Calculate expected points and max_pf based on actual player data in the roster
-            roster_expected_pts = 0.0
-            roster_max_pf = 0.0
-            age_sum = 0.0
-            age_count = 0
+            # Mock expected points, actual points, and age score based on fpts
+            # Since we don't have historical weekly logs in DB yet, we use heuristic mocks
+            actual_pts = r.fpts or 1500.0
             
-            # Since players is a list of player IDs
-            if r.players and len(r.players) > 0:
-                player_ids = r.players
-                # Fetch their advanced stats from 2022 onwards (historical dynasty timeline)
-                stats = session.query(PlayerAdvancedStats).filter(
-                    PlayerAdvancedStats.player_id.in_(player_ids),
-                    PlayerAdvancedStats.season >= 2022
-                ).all()
-                
-                # Aggregate historical points by player
-                player_pts = {}
-                player_age = {}
-                for st in stats:
-                    pid = st.player_id
-                    pts = st.fantasy_points_ppr or 0.0
-                    if pid not in player_pts:
-                        player_pts[pid] = []
-                        player_age[pid] = []
-                    player_pts[pid].append(pts)
-                    player_age[pid].append(26.0) # PlayerAdvancedStats doesn't have age, we default to 26
-                    
-                for pid, pts_list in player_pts.items():
-                    avg_pts = sum(pts_list) / len(pts_list)
-                    roster_max_pf += avg_pts
-                    age_sum += (sum(player_age[pid]) / len(player_age[pid]))
-                    age_count += 1
-                    
-                # For expected points, we might just look at starters if r.starters is available
-                if r.starters and len(r.starters) > 0:
-                    roster_expected_pts = sum((sum(player_pts[pid])/len(player_pts[pid])) for pid in r.starters if pid in player_pts)
-                else:
-                    # If no starters defined, assume top 9 players
-                    avg_player_pts = [(sum(pts)/len(pts)) for pts in player_pts.values()]
-                    top_players = sorted(avg_player_pts, reverse=True)[:9]
-                    roster_expected_pts = sum(top_players)
-                    
-            if roster_max_pf == 0: roster_max_pf = 1500.0
-            if roster_expected_pts == 0: roster_expected_pts = 1200.0
-            
-            actual_pts = r.fpts or roster_expected_pts
-            expected_pts = roster_expected_pts
-            max_pf = roster_max_pf
-            point_differential = actual_pts - expected_pts
-            age_score = (age_sum / age_count) if age_count > 0 else 26.5
-            
-            # Mock Manager Habits (Still heuristic since we lack trade history DB)
+            # Simple deterministic heuristic to generate interesting variance for the UI chart
             import random
             rng = random.Random(f"{league_id}-{r.roster_id}")
+            expected_pts = actual_pts * rng.uniform(0.85, 1.15)
+            max_pf = actual_pts * rng.uniform(1.0, 1.1)
+            point_differential = actual_pts - expected_pts
+            age_score = rng.uniform(24.0, 29.0) # mock avg age
+            
+            # Mock Manager Habits
             trade_frequency = rng.uniform(0, 40) # 0 to 40 trades a year
             draft_success_rate = rng.uniform(0.1, 0.6) # 10% to 60% hit rate
             
@@ -257,59 +216,17 @@ def get_team_analyzer(league_id: str, roster_id: int):
         history = [
             {"year": 2022, "power_index": round(current_power * rng.uniform(0.7, 1.3)), "league_avg": round(avg_fpts * 0.96)},
             {"year": 2023, "power_index": round(current_power * rng.uniform(0.8, 1.2)), "league_avg": round(avg_fpts * 1.02)},
-            {"year": 2024, "power_index": round(current_power * rng.uniform(0.9, 1.1)), "league_avg": round(avg_fpts * 1.01)},
-            {"year": 2025, "power_index": round(current_power * rng.uniform(0.95, 1.05)), "league_avg": round(avg_fpts * 0.99)},
-            {"year": 2026, "power_index": round(current_power), "league_avg": round(avg_fpts)}
+            {"year": 2024, "power_index": round(current_power), "league_avg": round(avg_fpts)}
         ]
         
         # 2. Positional Radar
-        roster_player_ids = roster.players or []
-        stats = session.query(PlayerAdvancedStats).filter(
-            PlayerAdvancedStats.player_id.in_(roster_player_ids),
-            PlayerAdvancedStats.season >= 2022
-        ).all()
-        
-        all_players_in_league = []
-        for r in all_rosters:
-            if r.players:
-                all_players_in_league.extend(r.players)
-                
-        all_stats = session.query(PlayerAdvancedStats).filter(
-            PlayerAdvancedStats.player_id.in_(all_players_in_league),
-            PlayerAdvancedStats.season >= 2022
-        ).all()
-        
-        def get_pos_scores(stat_list):
-            pos_totals = {"QB": 0.0, "RB": 0.0, "WR": 0.0, "TE": 0.0, "FLEX": 0.0}
-            player_avg = {}
-            player_pos = {}
-            for st in stat_list:
-                pid = st.player_id
-                pts = st.fantasy_points_ppr or 0.0
-                if pid not in player_avg:
-                    player_avg[pid] = []
-                    player_pos[pid] = st.position
-                player_avg[pid].append(pts)
-                
-            for pid, pts_list in player_avg.items():
-                avg_pts = sum(pts_list) / len(pts_list)
-                pos = player_pos[pid]
-                if pos in pos_totals:
-                    pos_totals[pos] += avg_pts
-                if pos in ["RB", "WR", "TE"]:
-                    pos_totals["FLEX"] += avg_pts
-            return pos_totals
-
-        team_pos_scores = get_pos_scores(stats)
-        league_pos_scores = get_pos_scores(all_stats)
-        num_teams = max(len(all_rosters), 1)
-
+        base_str = current_power / 10.0
         positional_radar = [
-            {"position": "QB", "team_score": round((team_pos_scores["QB"] / max(league_pos_scores["QB"]/num_teams, 1)) * 100), "league_avg": 100},
-            {"position": "RB", "team_score": round((team_pos_scores["RB"] / max(league_pos_scores["RB"]/num_teams, 1)) * 100), "league_avg": 100},
-            {"position": "WR", "team_score": round((team_pos_scores["WR"] / max(league_pos_scores["WR"]/num_teams, 1)) * 100), "league_avg": 100},
-            {"position": "TE", "team_score": round((team_pos_scores["TE"] / max(league_pos_scores["TE"]/num_teams, 1)) * 100), "league_avg": 100},
-            {"position": "FLEX", "team_score": round((team_pos_scores["FLEX"] / max(league_pos_scores["FLEX"]/num_teams, 1)) * 100), "league_avg": 100},
+            {"position": "QB", "team_score": base_str * rng.uniform(0.7, 1.3), "league_avg": base_str},
+            {"position": "RB", "team_score": base_str * rng.uniform(0.5, 1.5), "league_avg": base_str},
+            {"position": "WR", "team_score": base_str * rng.uniform(0.6, 1.4), "league_avg": base_str},
+            {"position": "TE", "team_score": base_str * rng.uniform(0.4, 1.6), "league_avg": base_str},
+            {"position": "FLEX", "team_score": base_str * rng.uniform(0.8, 1.2), "league_avg": base_str},
         ]
         
         def get_grade(score, avg):
@@ -426,10 +343,6 @@ def get_team_analyzer(league_id: str, roster_id: int):
         easiest_win = "N/A"
         most_dominated = "N/A"
         whos_my_daddy = "N/A"
-        biggest_heartbreak = "N/A"
-        miracle_win = "N/A"
-        highest_scoring_loss = "N/A"
-        ugly_duckling_win = "N/A"
         longest_win_streak = 0
         longest_loss_streak = 0
         hottest_run = 0.0
@@ -437,41 +350,21 @@ def get_team_analyzer(league_id: str, roster_id: int):
         if matchups:
             max_diff_win = -1
             max_diff_loss = -1
-            min_diff_win = 9999
-            min_diff_loss = 9999
-            max_pts_loss = -1
-            min_pts_win = 9999
             opp_margins = {}
             curr_win_streak = 0
             curr_loss_streak = 0
             recent_points = []
             
             for m in matchups:
-                if m.points == 0 and m.opponent_points == 0:
-                    continue # Skip unplayed matchups (e.g. future weeks or byes)
                 diff = m.points - m.opponent_points
                 
-                if m.is_win == 1:
-                    if diff > max_diff_win:
-                        max_diff_win = diff
-                        easiest_win = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (+{diff:.1f})"
-                    if diff < min_diff_win:
-                        min_diff_win = diff
-                        miracle_win = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (+{diff:.1f})"
-                    if m.points < min_pts_win:
-                        min_pts_win = m.points
-                        ugly_duckling_win = f"{m.points:.1f} pts vs {other_teams_map.get(m.opponent_roster_id, 'Unknown')}"
+                if m.is_win == 1 and diff > max_diff_win:
+                    max_diff_win = diff
+                    easiest_win = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (+{diff:.1f})"
                 
-                if m.is_win == 0:
-                    if -diff > max_diff_loss:
-                        max_diff_loss = -diff
-                        most_dominated = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} ({diff:.1f})"
-                    if -diff < min_diff_loss:
-                        min_diff_loss = -diff
-                        biggest_heartbreak = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} ({diff:.1f})"
-                    if m.points > max_pts_loss:
-                        max_pts_loss = m.points
-                        highest_scoring_loss = f"{m.points:.1f} pts vs {other_teams_map.get(m.opponent_roster_id, 'Unknown')}"
+                if m.is_win == 0 and -diff > max_diff_loss:
+                    max_diff_loss = -diff
+                    most_dominated = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (-{-diff:.1f})"
                     
                 if m.opponent_roster_id:
                     if m.opponent_roster_id not in opp_margins:
@@ -501,54 +394,13 @@ def get_team_analyzer(league_id: str, roster_id: int):
                 else:
                     whos_my_daddy = "No one (You dominate)"
                 
-        # Biggest Rival (most matchups)
-        rival_counts = {}
-        for m in matchups:
-            if m.opponent_roster_id:
-                rival_counts[m.opponent_roster_id] = rival_counts.get(m.opponent_roster_id, 0) + 1
-        
-        biggest_rival = "N/A"
-        if rival_counts:
-            best_rival_id = max(rival_counts.keys(), key=lambda k: rival_counts[k])
-            biggest_rival = f"{other_teams_map.get(best_rival_id, 'Unknown')} ({rival_counts[best_rival_id]} matchups)"
-
-        # Biggest Trade Partner
-        from models import SleeperTransaction
-        trades = session.query(SleeperTransaction).filter(
-            SleeperTransaction.league_id == league_id,
-            SleeperTransaction.type == 'trade',
-            SleeperTransaction.status == 'complete'
-        ).all()
-        
-        trade_counts = {}
-        for t in trades:
-            consenters = t.consenter_roster_ids or []
-            if roster.roster_id in consenters:
-                for partner in consenters:
-                    if partner != roster.roster_id:
-                        trade_counts[partner] = trade_counts.get(partner, 0) + 1
-        
-        biggest_trade_partner = "No one (Hold strong)"
-        if trade_counts:
-            best_partner_id = max(trade_counts.keys(), key=lambda k: trade_counts[k])
-            partner_roster = next((r for r in all_rosters if r.roster_id == best_partner_id), None)
-            if partner_roster:
-                p_name = partner_roster.user.display_name if partner_roster.user and partner_roster.user.display_name else f"Team {partner_roster.roster_id}"
-                biggest_trade_partner = f"{p_name} ({trade_counts[best_partner_id]} trades)"
-
         fun_metrics = {
             "easiest_win": easiest_win,
             "most_dominated": most_dominated,
             "whos_my_daddy": whos_my_daddy,
-            "biggest_heartbreak": biggest_heartbreak,
-            "miracle_win": miracle_win,
-            "highest_scoring_loss": highest_scoring_loss,
-            "ugly_duckling_win": ugly_duckling_win,
             "longest_win_streak": longest_win_streak,
             "longest_loss_streak": longest_loss_streak,
             "hottest_run": round(hottest_run, 1),
-            "biggest_rival": biggest_rival,
-            "biggest_trade_partner": biggest_trade_partner,
             "trade_tendency": rng.choice(["Fleece Master", "Draft Pick Hoarder", "Veteran Chaser", "Taco", "The Godfather"])
         }
 
@@ -617,270 +469,6 @@ def get_league_insights(league_id: str = "1312567432052760576"):
     finally:
         session.close()
 
-@app.get("/api/quant/weekly-studio/{league_id}")
-def get_weekly_studio(league_id: str):
-    session = SessionLocal()
-    try:
-        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
-        if not rosters:
-            return {"error": "No rosters found"}
-            
-        roster_map = {r.roster_id: r for r in rosters}
-        owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
-        
-        # 1. Bounty Board (Sorted by Roster FPTS / MAX_PF)
-        bounty_board = []
-        for r in rosters:
-            bounty_board.append({
-                "roster_id": r.roster_id,
-                "name": owner_name_map[r.roster_id],
-                "cashWon": round((r.fpts or 1500) * 0.1) # Mock logic for cash won based on fpts
-            })
-        bounty_board = sorted(bounty_board, key=lambda x: x["cashWon"], reverse=True)[:4]
-        
-        # 2. Marquee Matchup
-        from models import MatchupHistory
-        latest_matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%")).order_by(MatchupHistory.week.desc()).limit(20).all()
-        
-        marquee_matchup = None
-        if latest_matchups:
-            # Group by matchup_id
-            games = {}
-            for m in latest_matchups:
-                if m.matchup_id not in games:
-                    games[m.matchup_id] = []
-                games[m.matchup_id].append(m)
-                
-            # Find the closest or highest scoring game
-            best_game = None
-            max_combined = 0
-            for mid, m_list in games.items():
-                if len(m_list) == 2:
-                    combined = m_list[0].points + m_list[1].points
-                    if combined > max_combined:
-                        max_combined = combined
-                        best_game = m_list
-            
-            if best_game:
-                team1 = best_game[0]
-                team2 = best_game[1]
-                t1_roster_id = int(team1.roster_id.split('_')[1])
-                t2_roster_id = int(team2.roster_id.split('_')[1])
-                
-                marquee_matchup = {
-                    "teamA": {"name": owner_name_map.get(t1_roster_id, "Unknown"), "proj": round(team1.points, 1)},
-                    "teamB": {"name": owner_name_map.get(t2_roster_id, "Unknown"), "proj": round(team2.points, 1)},
-                    "spread": round(abs(team1.points - team2.points), 1)
-                }
-                
-        if not marquee_matchup:
-            marquee_matchup = {
-                "teamA": {"name": "Neon Nightmares", "proj": 112.4},
-                "teamB": {"name": "Waiver Warriors", "proj": 128.9},
-                "spread": 4.5
-            }
-            
-        # 3. Monday Autopsy (Mock logic for now, finding exact bench points requires massive computation)
-        monday_autopsy = {
-            "victim": bounty_board[-1]["name"] if bounty_board else "Rebuild Mode v4",
-            "margin": 4.2,
-            "started": {"name": "D. Adams", "points": 2.4, "share": "12%"},
-            "benched": {"name": "Q. Johnston", "points": 18.6, "share": "28%"}
-        }
-        
-        return {
-            "bounty_board": bounty_board,
-            "marquee_matchup": marquee_matchup,
-            "monday_autopsy": monday_autopsy
-        }
-    finally:
-        session.close()
-
-@app.get("/api/quant/trade-autopsy/{league_id}")
-def get_trade_autopsy(league_id: str):
-    session = SessionLocal()
-    try:
-        # Find the most recent trade
-        from models import SleeperTransaction, MatchupHistory, Roster
-        
-        trade = session.query(SleeperTransaction).filter(
-            SleeperTransaction.league_id == league_id,
-            SleeperTransaction.type == 'trade',
-            SleeperTransaction.status == 'complete'
-        ).order_by(SleeperTransaction.week.desc()).first()
-        
-        if not trade or not trade.adds:
-            return {"error": "No recent trades found"}
-            
-        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
-        owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
-        
-        # Sleeper trade adds format: {"player_id": roster_id_that_received_them, ...}
-        # Find the two main rosters involved
-        roster_ids = list(set(trade.adds.values()))
-        if len(roster_ids) < 2:
-            return {"error": "Trade only involved one known team"}
-            
-        team_a_id = roster_ids[0]
-        team_b_id = roster_ids[1]
-        
-        team_a_assets = []
-        team_b_assets = []
-        
-        # Map sleeper player ids to names (using a simple mock map or sleeper cache)
-        import requests
-        if 'SLEEPER_PLAYERS_CACHE' not in globals() or not globals()['SLEEPER_PLAYERS_CACHE']:
-            try:
-                resp = requests.get("https://api.sleeper.app/v1/players/nfl", timeout=5)
-                if resp.status_code == 200:
-                    globals()['SLEEPER_PLAYERS_CACHE'] = resp.json()
-                else:
-                    globals()['SLEEPER_PLAYERS_CACHE'] = {}
-            except Exception:
-                globals()['SLEEPER_PLAYERS_CACHE'] = {}
-        sp_cache = globals().get('SLEEPER_PLAYERS_CACHE', {})
-        
-        def get_name(pid):
-            p = sp_cache.get(str(pid))
-            if p: return f"{p.get('first_name', '')[0]}. {p.get('last_name', '')}"
-            return str(pid)
-            
-        # Calculate points scored since trade
-        # For each player, we need to find matchups where week > trade.week
-        # and look at the players_points dictionary.
-        
-        def calc_pts_since(roster_id, player_id, trade_week):
-            global_r_id = f"{league_id}_{roster_id}"
-            matchups = session.query(MatchupHistory).filter(
-                MatchupHistory.roster_id == global_r_id,
-                MatchupHistory.week > trade_week
-            ).all()
-            
-            pts = 0.0
-            for m in matchups:
-                if m.players_points and str(player_id) in m.players_points:
-                    pts += m.players_points[str(player_id)]
-            return round(pts, 1)
-
-        team_a_total = 0.0
-        team_b_total = 0.0
-        
-        for player_id, receiving_roster_id in trade.adds.items():
-            pts = calc_pts_since(receiving_roster_id, player_id, trade.week or 0)
-            asset_obj = {"name": get_name(player_id), "pointsSince": pts}
-            
-            if receiving_roster_id == team_a_id:
-                team_a_assets.append(asset_obj)
-                team_a_total += pts
-            else:
-                team_b_assets.append(asset_obj)
-                team_b_total += pts
-                
-        # Handle draft picks
-        if trade.draft_picks:
-            for dp in trade.draft_picks:
-                receiving_roster_id = dp.get("owner_id")
-                asset_obj = {"name": f"{dp.get('season')} Round {dp.get('round')}", "pointsSince": 0.0}
-                if receiving_roster_id == team_a_id:
-                    team_a_assets.append(asset_obj)
-                elif receiving_roster_id == team_b_id:
-                    team_b_assets.append(asset_obj)
-
-        net_diff = round(abs(team_a_total - team_b_total), 1)
-        winner = team_a_id if team_a_total > team_b_total else team_b_id
-        winner_name = owner_name_map.get(winner, "Unknown")
-        
-        return {
-            "date": f"Week {trade.week}, {trade.season}",
-            "teamA": owner_name_map.get(team_a_id, "Unknown"),
-            "teamB": owner_name_map.get(team_b_id, "Unknown"),
-            "assetsA": team_a_assets,
-            "assetsB": team_b_assets,
-            "netDifference": f"+{net_diff} Points",
-            "winner_name": winner_name
-        }
-    finally:
-        session.close()
-
-from pydantic import BaseModel
-import os
-import json
-
-try:
-    from google import genai
-    from google.genai import types
-except ImportError:
-    pass
-
-class WarRoomRequest(BaseModel):
-    scenario: str
-    data_payload: dict
-
-WAR_ROOM_SYSTEM_PROMPT = """You are the Lead Quantitative Analyst and Broadcast Host for "The Dynasty War Room," an elite, high-stakes Fantasy Football dashboard. Your job is to generate ruthless, data-driven analysis, matchup previews, and post-game autopsies for a dynasty fantasy football league. 
-
-You are not a polite assistant. You are a cutthroat, highly intelligent sports media personality (think Stephen A. Smith's volume and hyperbole combined with a Pro Football Focus Data Scientist's brain). You do not offer generic insults like "Your team is bad." You weaponize advanced mathematics to prove EXACTLY why a manager is failing, exposing their poor roster management, terrible draft picks, and bad trades.
-
-# TONE & STYLE GUIDELINES
-1. **Hyperbolic but Clinical:** Use dramatic phrasing ("You are committing roster malpractice," "This is a statistical tragedy"), but back up every insult with hard data.
-2. **Ruthless Sarcasm:** Act as though poor fantasy management is a personal insult to the sport of football.
-3. **Advanced Slang:** Fluently use dynasty fantasy football terminology: FAAB, Taxi Squad, Superflex, Tier-break, Rebuilding, Purgatory, Fleeced, Buying Window, Sunk Cost Fallacy.
-4. **Punchy Formatting:** Keep your outputs concise. Use bold text to emphasize devastating metrics and player names. Do not write long, boring essays. Sound like you are speaking live on a sports broadcast.
-
-# THE ANALYTICAL ARSENAL (METRICS TO WEAPONIZE)
-When roasting or analyzing, you MUST incorporate advanced metrics. Never rely solely on generic fantasy points. Use metrics such as:
-*   **WOPR (Weighted Opportunity Rating) & Target Share:** Expose managers who start WRs with empty volume.
-*   **CPOE (Completion Percentage Over Expected) & EPA (Expected Points Added):** Use this to explain why a manager's QB is a fraud propped up by scheme.
-*   **High-Value Touches (HVT) & Yards Created:** Expose RBs who are entirely dependent on their offensive line, or praise RBs who are producing despite terrible situations.
-*   **Age/Production Cliffs:** Remind managers when their RB is approaching the 1,500 career-touch cliff, or their WR is past the age-29 apex.
-*   **Draft Capital:** Mock managers for holding onto "1st-Round Busts" and clogging their taxi squads.
-
-# SCENARIO INSTRUCTIONS
-Depending on the data fed to you, adjust your output to fit the specific broadcast segment:
-
-*   **[SCENARIO: MATCHUP PREVIEW]:** Highlight the "Vegas Odds," mock the underdog's roster construction, and identify the "Trap Game" factors. If a manager is starting a player against a manager who previously traded them away, hype up the "Revenge Game" narrative.
-*   **[SCENARIO: BENCH BLUNDER (Shoulda/Coulda)]:** Brutally break down the exact math of how a manager outsmarted themselves by leaving points on the bench. Attack their talent evaluation.
-*   **[SCENARIO: TRADE AUTOPSY]:** Review historical trades between two managers. Declare a definitive "Fleece" by comparing the exact point differential of the assets since the trade occurred.
-*   **[SCENARIO: LIVE TICKER]:** Generate 1-sentence, breaking-news style ticker updates that mock league-wide events (e.g., waiver wire overspends, injury panics).
-"""
-
-@app.post("/api/ai/war-room")
-def post_war_room(req: WarRoomRequest):
-    try:
-        from dotenv import load_dotenv
-        env_path = os.path.join(os.path.dirname(__file__), '.env')
-        load_dotenv(dotenv_path=env_path, override=True)
-    except ImportError:
-        pass
-        
-    gemini_key = os.environ.get("GEMINI_API_KEY")
-    if not gemini_key:
-        return {"error": "GEMINI_API_KEY not configured in backend"}
-        
-    try:
-        client = genai.Client(api_key=gemini_key)
-        user_prompt = f"[SCENARIO: {req.scenario}]\n\nDATA PAYLOAD:\n{json.dumps(req.data_payload, indent=2)}\n\nGenerate the broadcast script."
-        
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=WAR_ROOM_SYSTEM_PROMPT,
-                temperature=0.7,
-            )
-        )
-        return {"text": response.text}
-    except Exception as e:
-        return {"error": str(e)}
-
-@app.get("/api/ai/recent-trades")
-def get_recent_trades(db: Session = Depends(get_db)):
-    trades = db.query(SleeperTransaction).filter(SleeperTransaction.type == 'trade', SleeperTransaction.status == 'complete').order_by(SleeperTransaction.week.desc()).limit(5).all()
-    return [{"transaction_id": t.id, "week": t.week, "adds": t.adds, "drops": t.drops, "draft_picks": t.draft_picks, "consenter_roster_ids": t.consenter_roster_ids} for t in trades]
-
-@app.get("/api/ai/recent-matchups")
-def get_recent_matchups(db: Session = Depends(get_db)):
-    matchups = db.query(MatchupHistory).order_by(MatchupHistory.week.desc()).limit(10).all()
-    return [{"matchup_id": m.matchup_id, "week": m.week, "roster_id": m.roster_id, "points": m.points, "starters": m.starters, "starters_points": m.starters_points} for m in matchups]
 
 @app.get("/api/stats/advanced_player_metrics")
 def get_advanced_player_metrics(year: str = Query("2025", description="Season year to fetch stats for, or 'All'"), db: Session = Depends(get_db)):
@@ -1086,8 +674,6 @@ def get_league_history(league_id: str):
             result.append({
                 "season": h.season,
                 "champion": roster_map.get(h.champion_roster_id, "Unknown") if h.champion_roster_id else "TBD",
-                "second_place": roster_map.get(h.second_place_roster_id, "Unknown") if h.second_place_roster_id else "TBD",
-                "third_place": roster_map.get(h.third_place_roster_id, "Unknown") if h.third_place_roster_id else "TBD",
                 "worst_performer": roster_map.get(h.last_place_roster_id, "Unknown") if h.last_place_roster_id else "TBD"
             })
             
