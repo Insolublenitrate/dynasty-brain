@@ -13,6 +13,7 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import ActionCenterTab from '@/components/tabs/ActionCenterTab';
 import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
+import TeamAnalyzerTab from '@/components/tabs/TeamAnalyzerTab';
 
 export default function DynastyBrainApp() {
   const { leagueId } = useLeague();
@@ -507,6 +508,7 @@ export default function DynastyBrainApp() {
         <div className="flex gap-2 p-2 max-w-6xl mx-auto overflow-x-auto hide-scrollbar">
           {[
             { id: 'action', label: 'Action Center', icon: <Target size={18} /> },
+            { id: 'team', label: 'Team Analyzer', icon: <Search size={18} /> },
             { id: 'studio', label: 'The Studio', icon: <Activity size={18} /> },
             { id: 'matrix', label: 'Power Matrix', icon: <Crosshair size={18} /> },
             { id: 'trade', label: 'Trade Architect', icon: <Briefcase size={18} /> },
@@ -530,6 +532,7 @@ export default function DynastyBrainApp() {
       {/* Main Content Area */}
       <div className="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8 pb-24">
         {activeTab === 'action' && <ActionCenterTab />}
+        {activeTab === 'team' && <TeamAnalyzerTab />}
         {activeTab === 'studio' && <StudioTab />}
         {activeTab === 'matrix' && <MatrixTab />}
         {activeTab === 'trade' && <TradeArchitectTab />}
