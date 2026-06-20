@@ -8,13 +8,15 @@ import {
 import { 
   AlertTriangle, TrendingUp, Swords, 
   Banknote, Skull, Activity, MessageSquareWarning, ArrowRightLeft,
-  Flame, Crosshair, ShieldAlert, Zap
+  Flame, Crosshair, ShieldAlert, Zap, Target, Briefcase, Search
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
+import ActionCenterTab from '@/components/tabs/ActionCenterTab';
+import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
 
 export default function DynastyBrainApp() {
   const { leagueId } = useLeague();
-  const [activeTab, setActiveTab] = useState('studio');
+  const [activeTab, setActiveTab] = useState('action');
   
   const [studioData, setStudioData] = useState<any>(null);
   const [matrixData, setMatrixData] = useState<any[]>([]);
@@ -501,12 +503,14 @@ export default function DynastyBrainApp() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Tab Navigation Area */}
-      <div className="bg-slate-950 border-b border-slate-800/80 sticky top-0 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center gap-2 overflow-x-auto hide-scrollbar">
+      <div className="border-b border-slate-800 bg-slate-900/50 sticky top-0 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
+        <div className="flex gap-2 p-2 max-w-6xl mx-auto overflow-x-auto hide-scrollbar">
           {[
-            { id: 'studio', label: 'The Studio', icon: <MessageSquareWarning size={16} /> },
-            { id: 'matrix', label: 'Power Matrix', icon: <Crosshair size={16} /> },
-            { id: 'autopsy', label: 'Trade Autopsy', icon: <ArrowRightLeft size={16} /> }
+            { id: 'action', label: 'Action Center', icon: <Target size={18} /> },
+            { id: 'studio', label: 'The Studio', icon: <Activity size={18} /> },
+            { id: 'matrix', label: 'Power Matrix', icon: <Crosshair size={18} /> },
+            { id: 'trade', label: 'Trade Architect', icon: <Briefcase size={18} /> },
+            { id: 'autopsy', label: 'Trade Autopsy', icon: <ArrowRightLeft size={18} /> }
           ].map(tab => (
             <button
               key={tab.id}
@@ -524,9 +528,11 @@ export default function DynastyBrainApp() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-grow max-w-7xl w-full mx-auto px-4 md:px-6 py-8 pb-24">
+      <div className="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8 pb-24">
+        {activeTab === 'action' && <ActionCenterTab />}
         {activeTab === 'studio' && <StudioTab />}
         {activeTab === 'matrix' && <MatrixTab />}
+        {activeTab === 'trade' && <TradeArchitectTab />}
         {activeTab === 'autopsy' && <AutopsyTab />}
       </div>
 

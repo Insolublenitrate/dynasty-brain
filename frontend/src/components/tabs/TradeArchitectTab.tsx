@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useMemo } from 'react';
 import { Search, ArrowRightLeft, UserPlus, X, Briefcase } from 'lucide-react';
 
-export default function TradeArchitect() {
+export default function TradeArchitectTab() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

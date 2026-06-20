@@ -35,12 +35,6 @@ export default function TopNav() {
           <Link href="/dynasty-room" className={getLinkClasses("/dynasty-room")}>
             <Activity size={16} /> <span className="hidden md:inline">Dynasty Room</span>
           </Link>
-          <Link href="/league-analyzer" className={getLinkClasses("/league-analyzer")}>
-            <BarChart3 size={16} /> <span className="hidden md:inline">League Analyzer</span>
-          </Link>
-          <Link href="/trade" className={getLinkClasses("/trade")}>
-            <ArrowRightLeft size={16} /> <span className="hidden md:inline">Trade Architect</span>
-          </Link>
           <Link href="/player-analyzer" className={getLinkClasses("/player-analyzer")}>
             <Search size={16} /> <span className="hidden md:inline">Player Analyzer</span>
           </Link>

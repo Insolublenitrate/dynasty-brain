@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { AlertTriangle, TrendingUp, TrendingDown, Info, Target } from "lucide-react";
@@ -6,7 +6,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { useLeague } from '@/context/LeagueContext';
 import { useRouter } from 'next/navigation';
 
-export default function ActionCenter() {
+export default function ActionCenterTab() {
   const { leagueId, isLoading } = useLeague();
   const router = useRouter();
 
@@ -194,77 +194,6 @@ export default function ActionCenter() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      <div className="pt-12 border-t border-slate-800/50">
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3 mb-6">
-          <Target className="text-indigo-500" /> Team Power Matrix
-        </h2>
-        
-        <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl p-8 relative h-[550px]">
-          {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                
-                <XAxis 
-                  type="number" 
-                  dataKey="max_pf" 
-                  name="Max PF" 
-                  domain={['dataMin - 100', 'dataMax + 100']}
-                  stroke="#475569"
-                  tick={{fill: '#94a3b8', fontSize: 12}}
-                  tickFormatter={(value) => value.toFixed(0)}
-                  label={{ value: 'Current Contender Score (Max PF)', position: 'insideBottom', offset: -30, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
-                />
-                
-                <YAxis 
-                  type="number" 
-                  dataKey="future_capital_score" 
-                  name="Future Draft Capital" 
-                  domain={['dataMin - 1000', 'dataMax + 1000']}
-                  stroke="#475569"
-                  tick={{fill: '#94a3b8', fontSize: 12}}
-                  tickFormatter={(value) => value.toFixed(0)}
-                  label={{ value: 'Future Draft Capital Value', angle: -90, position: 'insideLeft', offset: -20, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
-                />
-
-                <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#334155' }} />
-                
-                <ReferenceLine x={xMedian} stroke="#334155" strokeDasharray="5 5" />
-                <ReferenceLine y={yMedian} stroke="#334155" strokeDasharray="5 5" />
-
-                <Scatter name="Teams" data={matrixData}>
-                  {matrixData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={getDotColor(entry.lifecycle_state)} />
-                  ))}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-          )}
-          
-          {/* Quadrant Labels */}
-          {!loading && (
-            <>
-              <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
-                <span className="text-xl font-bold uppercase tracking-wider text-indigo-500">Dynasty Juggernaut</span>
-              </div>
-              <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
-                <span className="text-xl font-bold uppercase tracking-wider text-emerald-500">Rebuilding</span>
-              </div>
-              <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
-                <span className="text-xl font-bold uppercase tracking-wider text-slate-500">Purgatory</span>
-              </div>
-              <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
-                <span className="text-xl font-bold uppercase tracking-wider text-rose-500">All-In Contender</span>
-              </div>
-            </>
-          )}
         </div>
       </div>
     </div>
