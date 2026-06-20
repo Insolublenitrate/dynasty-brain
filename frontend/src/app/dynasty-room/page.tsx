@@ -43,14 +43,7 @@ export default function DynastyBrainApp() {
         const matrixRes = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
         if (matrixRes.ok) {
           const mData = await matrixRes.json();
-          const scatter = mData.map((t: any) => ({
-            name: t.team_name,
-            owner: t.team_name,
-            x: t.roster_age_score,
-            y: t.expected_points,
-            status: t.health_score > 70 ? 'juggernaut' : (t.expected_points > 1250 ? 'win_now' : (t.roster_age_score < 26 ? 'rebuilding' : 'purgatory'))
-          }));
-          setMatrixData(scatter);
+          setMatrixData(mData);
         }
 
         // Fetch Trades List
@@ -280,24 +273,36 @@ export default function DynastyBrainApp() {
   };
 
   // --- MATRIX TAB ---
+  const getDotColor = (state: string) => {
+    switch (state) {
+      case 'Dynasty Juggernaut': return '#6366f1'; // indigo-500
+      case 'All-In Contender': return '#f43f5e'; // rose-500
+      case 'Rebuilding': return '#10b981'; // emerald-500
+      case 'Purgatory': return '#64748b'; // slate-500
+      case 'Middle of the Pack': return '#eab308'; // yellow-500
+      default: return '#94a3b8';
+    }
+  };
+
+  const xMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.max_pf - b.max_pf)[Math.floor(matrixData.length/2)].max_pf : 1500;
+  const yMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.future_capital_score - b.future_capital_score)[Math.floor(matrixData.length/2)].future_capital_score : 5000;
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const p = payload[0].payload;
       return (
-        <div className="bg-slate-950/95 backdrop-blur border border-cyan-900 p-4 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-          <p className="text-white font-bold text-lg">{data.name}</p>
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-2 mt-2">
+        <div className="bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
+          <div className="flex items-center gap-3 mb-3">
+            {p.avatar && <img src={`https://sleepercdn.com/avatars/${p.avatar}`} className="w-8 h-8 rounded-full" alt="avatar" />}
             <div>
-              <p className="text-slate-500 text-[10px] uppercase">Roster Age</p>
-              <p className="text-cyan-400 font-mono text-sm">{data.x.toFixed(1)}</p>
-            </div>
-            <div>
-              <p className="text-slate-500 text-[10px] uppercase">Total Output</p>
-              <p className="text-cyan-400 font-mono text-sm">{data.y.toFixed(1)}</p>
+              <p className="font-bold text-slate-100">{p.team_name}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-400">{p.lifecycle_state}</p>
             </div>
           </div>
-          <div className="mt-3 pt-2 border-t border-slate-800">
-            <p className="text-xs uppercase font-black tracking-widest text-slate-500">{data.status.replace('_', ' ')}</p>
+          <div className="space-y-1">
+            <p className="text-slate-400">Max PF: <span className="text-slate-200 font-mono">{p.max_pf?.toFixed(1)}</span></p>
+            <p className="text-slate-400">Future Draft Capital: <span className="text-slate-200 font-mono">{p.future_capital_score?.toFixed(0)}</span></p>
+            <p className="text-slate-400 pt-2 border-t border-slate-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
           </div>
         </div>
       );
@@ -311,62 +316,65 @@ export default function DynastyBrainApp() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h3 className="text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-              <Crosshair className="text-cyan-500" /> TRUE POWER MATRIX
+              <Crosshair className="text-indigo-500" /> TEAM POWER MATRIX
             </h3>
-            <p className="text-slate-400 text-sm mt-1">Roster Age vs. Total Scoring Output (The Purgatory Detector)</p>
+            <p className="text-slate-400 text-sm mt-1">Current Contender Score vs. Future Draft Capital</p>
           </div>
         </div>
         
-        <div className="h-[500px] w-full relative bg-slate-950/50 rounded-xl p-4 border border-slate-800">
-          <div className="absolute top-8 right-8 text-green-500/20 font-black text-3xl md:text-5xl uppercase pointer-events-none tracking-widest hidden sm:block">Juggernauts</div>
-          <div className="absolute top-8 left-8 text-yellow-500/20 font-black text-3xl md:text-5xl uppercase pointer-events-none tracking-widest hidden sm:block">Win Now</div>
-          <div className="absolute bottom-12 right-8 text-blue-500/20 font-black text-3xl md:text-5xl uppercase pointer-events-none tracking-widest hidden sm:block">Rebuilding</div>
-          <div className="absolute bottom-12 left-8 text-red-500/20 font-black text-3xl md:text-5xl uppercase pointer-events-none tracking-widest hidden sm:flex items-center gap-2">
-            <Flame size={48} /> Purgatory
-          </div>
-
+        <div className="h-[550px] w-full relative bg-slate-950/50 rounded-xl p-4 border border-slate-800">
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 40 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              
               <XAxis 
                 type="number" 
-                dataKey="x" 
-                name="Avg Age" 
-                domain={[22, 30]} 
-                stroke="#475569" 
-                tick={{fill: '#64748b', fontSize: 12}} 
-                tickLine={false}
-                axisLine={{stroke: '#334155'}}
+                dataKey="max_pf" 
+                name="Max PF" 
+                domain={['dataMin - 100', 'dataMax + 100']}
+                stroke="#475569"
+                tick={{fill: '#94a3b8', fontSize: 12}}
+                tickFormatter={(value) => value.toFixed(0)}
+                label={{ value: 'Current Contender Score (Max PF)', position: 'insideBottom', offset: -30, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
               />
+              
               <YAxis 
                 type="number" 
-                dataKey="y" 
-                name="Points" 
-                domain={[800, 1800]} 
-                stroke="#475569" 
-                tick={{fill: '#64748b', fontSize: 12}} 
-                tickLine={false}
-                axisLine={{stroke: '#334155'}}
+                dataKey="future_capital_score" 
+                name="Future Draft Capital" 
+                domain={['dataMin - 1000', 'dataMax + 1000']}
+                stroke="#475569"
+                tick={{fill: '#94a3b8', fontSize: 12}}
+                tickFormatter={(value) => value.toFixed(0)}
+                label={{ value: 'Future Draft Capital Value', angle: -90, position: 'insideLeft', offset: -20, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
               />
-              <RechartsTooltip cursor={{strokeDasharray: '3 3'}} content={<CustomTooltip />} />
-              <ReferenceLine x={26.5} stroke="#334155" strokeDasharray="5 5" strokeWidth={2} />
-              <ReferenceLine y={1250} stroke="#334155" strokeDasharray="5 5" strokeWidth={2} />
+
+              <RechartsTooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#334155' }} />
+              
+              <ReferenceLine x={xMedian} stroke="#334155" strokeDasharray="5 5" />
+              <ReferenceLine y={yMedian} stroke="#334155" strokeDasharray="5 5" />
+
               <Scatter name="Teams" data={matrixData}>
                 {matrixData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={
-                      entry.y > 1250 && entry.x < 26.5 ? '#22c55e' : // Juggernaut
-                      entry.y > 1250 && entry.x >= 26.5 ? '#eab308' : // Win Now
-                      entry.y <= 1250 && entry.x < 26.5 ? '#3b82f6' : // Rebuilding
-                      '#ef4444' // Purgatory
-                    } 
-                    className="drop-shadow-lg transition-all duration-300 hover:opacity-80 cursor-pointer"
-                  />
+                  <Cell key={`cell-${index}`} fill={getDotColor(entry.lifecycle_state)} className="drop-shadow-lg transition-all duration-300 hover:opacity-80 cursor-pointer" />
                 ))}
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
+          
+          {/* Quadrant Labels */}
+          <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
+            <span className="text-xl font-bold uppercase tracking-wider text-indigo-500">Dynasty Juggernaut</span>
+          </div>
+          <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
+            <span className="text-xl font-bold uppercase tracking-wider text-emerald-500">Rebuilding</span>
+          </div>
+          <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
+            <span className="text-xl font-bold uppercase tracking-wider text-slate-500">Purgatory</span>
+          </div>
+          <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
+            <span className="text-xl font-bold uppercase tracking-wider text-rose-500">All-In Contender</span>
+          </div>
         </div>
       </div>
     </div>
