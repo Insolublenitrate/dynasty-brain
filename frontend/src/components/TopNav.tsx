@@ -26,7 +26,7 @@ export default function TopNav() {
             <Activity size={20} className="text-slate-950" />
           </div>
           <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden lg:block">
-            DYNASTY<span className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">BRAIN</span>
+            WAIVER <span className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">WIRETAP</span>
           </h1>
         </Link>
         

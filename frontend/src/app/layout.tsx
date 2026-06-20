@@ -7,7 +7,7 @@ import { LeagueProvider } from "@/context/LeagueContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DynastyBrain | Quant Engine",
+  title: "Waiver WireTap | Quant Engine",
   description: "Advanced Fantasy Football Analytics",
 };
 
