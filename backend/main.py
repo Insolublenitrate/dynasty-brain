@@ -630,20 +630,125 @@ def get_weekly_studio(league_id: str):
         
         # 1. Bounty Board (Sorted by Roster FPTS / MAX_PF)
         from models import MatchupHistory
-        bounty_board = []
-        for r in rosters:
-            # Sum up real points
-            global_r_id = f"{league_id}_{r.roster_id}"
-            matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id == global_r_id).all()
-            total_pts = sum((m.points or 0.0) for m in matchups)
-            if total_pts == 0: total_pts = r.fpts or 1500.0 # fallback
+        import requests
+        
+        # Payout rules
+        # 1st: $600, 2nd: $200, Season High: $60, Weekly Top: $10. Started in 2024.
+        
+        # Helper: fetch historical league brackets
+        def get_historical_brackets(curr_league_id):
+            if 'BRACKETS_CACHE' not in globals():
+                globals()['BRACKETS_CACHE'] = {}
+            if curr_league_id in globals()['BRACKETS_CACHE']:
+                return globals()['BRACKETS_CACHE'][curr_league_id]
+                
+            brackets = {}
+            curr = curr_league_id
+            while curr:
+                try:
+                    resp = requests.get(f"https://api.sleeper.app/v1/league/{curr}", timeout=5)
+                    if not resp.ok: break
+                    league_data = resp.json()
+                    season = league_data.get('season')
+                    prev = league_data.get('previous_league_id')
+                    
+                    if int(season) >= 2024:
+                        bracket_resp = requests.get(f"https://api.sleeper.app/v1/league/{curr}/winners_bracket", timeout=5)
+                        if bracket_resp.ok:
+                            bracket_data = bracket_resp.json()
+                            champ_match = next((m for m in bracket_data if m.get('p') == 1), None)
+                            if champ_match and champ_match.get('w'):
+                                brackets[season] = {
+                                    '1st': champ_match.get('w'),
+                                    '2nd': champ_match.get('l')
+                                }
+                    curr = prev
+                except:
+                    break
+            globals()['BRACKETS_CACHE'][curr_league_id] = brackets
+            return brackets
+
+        brackets = get_historical_brackets(league_id)
+        
+        # We need matchups grouped by season and week to find weekly highs and season highs.
+        all_matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%")).all()
+        
+        # Calculate payouts
+        manager_payouts = {r.roster_id: {"total": 0, "breakdown": []} for r in rosters}
+        
+        # Group by season
+        season_matchups = {}
+        for m in all_matchups:
+            if not m.season or int(m.season) < 2024: continue
+            if m.season not in season_matchups:
+                season_matchups[m.season] = {}
+            if m.week not in season_matchups[m.season]:
+                season_matchups[m.season][m.week] = []
+            season_matchups[m.season][m.week].append(m)
             
+        weekly_history = [] # For the chart
+
+        for season, weeks in season_matchups.items():
+            season_roster_totals = {r.roster_id: 0.0 for r in rosters}
+            
+            # Find weekly highs
+            for week, matchups_in_week in weeks.items():
+                if not matchups_in_week: continue
+                # Omit weeks where no points were scored (e.g. offseason)
+                if all((m.points or 0.0) == 0 for m in matchups_in_week): continue
+                
+                top_matchup = max(matchups_in_week, key=lambda x: x.points or 0.0)
+                r_id = int(top_matchup.roster_id.split('_')[1])
+                
+                if (top_matchup.points or 0.0) > 0:
+                    if r_id in manager_payouts:
+                        manager_payouts[r_id]["total"] += 10
+                        manager_payouts[r_id]["breakdown"].append(f"{season} Wk {week} High ($10)")
+                    
+                    # expected points logic: if we don't have projections, we'll use a standard baseline or season average
+                    weekly_history.append({
+                        "season": season,
+                        "week": week,
+                        "roster_id": r_id,
+                        "owner": owner_name_map.get(r_id, f"Team {r_id}"),
+                        "actual": round(top_matchup.points or 0.0, 1),
+                        "expected": round((top_matchup.points or 0.0) * 0.92, 1) # Mocked expected
+                    })
+                
+                for m in matchups_in_week:
+                    m_r_id = int(m.roster_id.split('_')[1])
+                    if m_r_id in season_roster_totals:
+                        season_roster_totals[m_r_id] += (m.points or 0.0)
+            
+            # Season High Points Winner ($60)
+            if any(pts > 0 for pts in season_roster_totals.values()):
+                season_high_roster = max(season_roster_totals.items(), key=lambda x: x[1])[0]
+                if season_high_roster in manager_payouts:
+                    manager_payouts[season_high_roster]["total"] += 60
+                    manager_payouts[season_high_roster]["breakdown"].append(f"{season} Points Ldr ($60)")
+            
+            # 1st ($600) and 2nd ($200) Place
+            if season in brackets:
+                first_place = brackets[season].get('1st')
+                second_place = brackets[season].get('2nd')
+                if first_place and first_place in manager_payouts:
+                    manager_payouts[first_place]["total"] += 600
+                    manager_payouts[first_place]["breakdown"].append(f"{season} Champion ($600)")
+                if second_place and second_place in manager_payouts:
+                    manager_payouts[second_place]["total"] += 200
+                    manager_payouts[second_place]["breakdown"].append(f"{season} Runner-Up ($200)")
+
+        bounty_board = []
+        for r_id, data in manager_payouts.items():
             bounty_board.append({
-                "roster_id": r.roster_id,
-                "name": owner_name_map[r.roster_id],
-                "cashWon": round(total_pts * 0.1) # Mock payout based on real points
+                "roster_id": r_id,
+                "name": owner_name_map.get(r_id, f"Team {r_id}"),
+                "cashWon": data["total"],
+                "breakdown": data["breakdown"]
             })
-        bounty_board = sorted(bounty_board, key=lambda x: x["cashWon"], reverse=True)[:4]
+            
+        bounty_board = sorted(bounty_board, key=lambda x: x["cashWon"], reverse=True)[:5]
+        weekly_history = sorted(weekly_history, key=lambda x: (int(x["season"]), int(x["week"])))
         
         # 2. Marquee Matchup
         latest_matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%")).order_by(MatchupHistory.week.desc()).limit(20).all()
@@ -721,6 +826,7 @@ def get_weekly_studio(league_id: str):
         
         return {
             "bounty_board": bounty_board,
+            "weekly_history": weekly_history,
             "marquee_matchup": marquee_matchup,
             "monday_autopsy": monday_autopsy
         }

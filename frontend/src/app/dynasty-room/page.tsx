@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, ReferenceLine, Cell 
+  ResponsiveContainer, ReferenceLine, Cell, BarChart, Bar, Legend
 } from 'recharts';
 import { 
   AlertTriangle, TrendingUp, Swords, 
@@ -21,6 +21,7 @@ export default function DynastyBrainApp() {
   const [autopsyData, setAutopsyData] = useState<any>(null);
   const [tradesList, setTradesList] = useState<any[]>([]);
   const [selectedTrade, setSelectedTrade] = useState<string>('');
+  const [bountyView, setBountyView] = useState<'live' | 'all'>('live');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -105,7 +106,23 @@ export default function DynastyBrainApp() {
   // --- STUDIO TAB ---
   const StudioTab = () => {
     if (!studioData) return null;
-    const { marquee_matchup, bounty_board, monday_autopsy } = studioData;
+    const { marquee_matchup, bounty_board, monday_autopsy, weekly_history } = studioData;
+    
+    const currentSeason = (weekly_history || []).length > 0 ? Math.max(...(weekly_history || []).map((w: any) => parseInt(w.season))).toString() : new Date().getFullYear().toString();
+    
+    const filtered_history = bountyView === 'live' 
+      ? (weekly_history || []).filter((w: any) => w.season === currentSeason)
+      : (weekly_history || []);
+
+    const filtered_bounty = bountyView === 'live'
+      ? (bounty_board || []).map((b: any) => ({
+          ...b,
+          cashWon: b.breakdown.filter((str: string) => str.startsWith(currentSeason)).reduce((acc: number, str: string) => {
+            const match = str.match(/\$(\d+)/);
+            return acc + (match ? parseInt(match[1]) : 0);
+          }, 0)
+        })).filter((b: any) => b.cashWon > 0).sort((a: any, b: any) => b.cashWon - a.cashWon)
+      : (bounty_board || []);
 
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
@@ -145,25 +162,81 @@ export default function DynastyBrainApp() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Weekly Cash Tracker */}
           <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative hover:border-slate-700 transition-colors">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-green-950/50 rounded-lg">
-                <Banknote className="text-green-500" size={24} />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-950/50 rounded-lg">
+                  <Banknote className="text-green-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">The Bounty Board</h3>
+                  <p className="text-slate-400 text-xs mt-1 uppercase tracking-wider">Highest Output / Payouts</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">The Bounty Board</h3>
-                <p className="text-slate-400 text-xs mt-1 uppercase tracking-wider">Highest Output / Projected Payouts</p>
+              <div className="flex bg-slate-950 rounded-lg p-1 border border-slate-800">
+                <button
+                  onClick={() => setBountyView('live')}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'live' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                >
+                  LIVE SEASON
+                </button>
+                <button
+                  onClick={() => setBountyView('all')}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'all' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                >
+                  ALL TIME
+                </button>
               </div>
             </div>
+
+            <div className="h-48 mb-6 bg-slate-950/50 rounded-lg p-2 border border-slate-800/50">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={filtered_history}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                  <XAxis 
+                    dataKey={(v) => bountyView === 'live' ? `W${v.week}` : `S${v.season.slice(-2)}W${v.week}`} 
+                    stroke="#475569" 
+                    fontSize={10} 
+                    tickLine={false}
+                  />
+                  <YAxis stroke="#475569" fontSize={10} tickLine={false} width={30} />
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', borderRadius: '8px' }}
+                    itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    labelStyle={{ color: '#94a3b8', fontSize: '10px', marginBottom: '4px' }}
+                    cursor={{ fill: '#0f172a' }}
+                    labelFormatter={(label, payload) => payload?.[0]?.payload?.owner + ' (' + label + ')'}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
+                  <Bar dataKey="actual" name="Actual Points" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="expected" name="Expected Points" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
             <div className="space-y-3">
-              {(bounty_board || []).map((team: any, i: number) => (
-                <div key={team.roster_id} className="flex items-center justify-between bg-slate-950/50 p-4 rounded-lg border border-slate-800/50 hover:bg-slate-800/50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <span className={`font-black text-lg ${i === 0 ? 'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : 'text-slate-600'}`}>#{i+1}</span>
-                    <span className="text-slate-200 font-bold">{team.name}</span>
+              {(filtered_bounty || []).map((team: any, i: number) => (
+                <div key={team.roster_id} className="flex flex-col bg-slate-950/50 p-4 rounded-lg border border-slate-800/50 hover:bg-slate-800/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className={`font-black text-lg ${i === 0 ? 'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : 'text-slate-600'}`}>#{i+1}</span>
+                      <span className="text-slate-200 font-bold">{team.name}</span>
+                    </div>
+                    <span className="text-green-400 font-mono font-bold text-lg">${team.cashWon}</span>
                   </div>
-                  <span className="text-green-400 font-mono font-bold text-lg">${team.cashWon}</span>
+                  {bountyView === 'all' && team.breakdown && team.breakdown.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-slate-800/50 flex flex-wrap gap-1">
+                      {team.breakdown.map((b: string, j: number) => (
+                        <span key={j} className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-800">{b}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
+              {filtered_bounty.length === 0 && (
+                <div className="text-center py-6 text-slate-500 text-sm italic">
+                  No payouts tracked for this view.
+                </div>
+              )}
             </div>
           </div>
 
