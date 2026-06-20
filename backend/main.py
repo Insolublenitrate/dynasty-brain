@@ -459,6 +459,12 @@ def get_team_analyzer(league_id: str, roster_id: int):
             recent_points = []
             
             for m in matchups:
+                try:
+                    if int(m.season) < 2022:
+                        continue
+                except:
+                    pass
+
                 if m.points == 0 and m.opponent_points == 0:
                     continue # Skip unplayed matchups (e.g. future weeks or byes)
                 diff = m.points - m.opponent_points
@@ -501,6 +507,7 @@ def get_team_analyzer(league_id: str, roster_id: int):
                     longest_loss_streak = max(longest_loss_streak, curr_loss_streak)
                 
                 recent_points.append(m.points)
+
                 if len(recent_points) > 4:
                     recent_points.pop(0)
                 if len(recent_points) == 4:
@@ -586,7 +593,8 @@ def get_team_analyzer(league_id: str, roster_id: int):
                         age = 25
                 if not age: age = 25
                 
-                p_fpts = sum(s.fantasy_points_ppr for s in stats if s.player_id == str(pid))
+                # Filter points output to 2022+
+                p_fpts = sum(s.fantasy_points_ppr for s in stats if s.player_id == str(pid) and s.season and s.season >= 2022)
                 
                 roster_players_data.append({
                     "id": pid,
@@ -613,16 +621,42 @@ def get_team_analyzer(league_id: str, roster_id: int):
         }
 
         # 9. Manager Volumes
-        total_trades_completed = sum(1 for t in trades if roster.roster_id in (t.consenter_roster_ids or []))
+        total_trades_completed = 0
+        for t in trades:
+            try:
+                if int(t.season) < 2022:
+                    continue
+            except:
+                pass
+            involved = False
+            if t.adds and isinstance(t.adds, dict) and roster.roster_id in t.adds.values(): involved = True
+            if t.drops and isinstance(t.drops, dict) and roster.roster_id in t.drops.values(): involved = True
+            if t.draft_picks and isinstance(t.draft_picks, list):
+                for dp in t.draft_picks:
+                    if dp.get("owner_id") == roster.roster_id or dp.get("previous_owner_id") == roster.roster_id:
+                        involved = True
+            if involved:
+                total_trades_completed += 1
+
         waiver_txs = session.query(SleeperTransaction).filter(
             SleeperTransaction.league_id == league_id,
             SleeperTransaction.status == 'complete',
-            SleeperTransaction.type.in_(['waiver', 'free_agent']),
-            SleeperTransaction.creator_roster_id == roster.roster_id
+            SleeperTransaction.type.in_(['waiver', 'free_agent'])
         ).all()
+        
+        total_waiver_adds = 0
+        for w in waiver_txs:
+            try:
+                if int(w.season) < 2022:
+                    continue
+            except:
+                pass
+            if w.adds and isinstance(w.adds, dict) and roster.roster_id in w.adds.values():
+                total_waiver_adds += 1
+
         volumes = {
             "total_trades": total_trades_completed,
-            "waiver_adds": len(waiver_txs)
+            "waiver_adds": total_waiver_adds
         }
 
         # 10. League Record Book
@@ -630,6 +664,11 @@ def get_team_analyzer(league_id: str, roster_id: int):
         histories = session.query(LeagueHistory).filter(LeagueHistory.league_id == league_id).all()
         record_book = []
         for h in histories:
+            try:
+                if int(h.season) < 2022:
+                    continue
+            except:
+                pass
             finish = None
             if h.champion_roster_id == roster.id: finish = "Champion"
             elif h.second_place_roster_id == roster.id: finish = "Silver"
