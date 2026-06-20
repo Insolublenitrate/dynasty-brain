@@ -901,6 +901,8 @@ def get_league_history(league_id: str):
             result.append({
                 "season": h.season,
                 "champion": roster_map.get(h.champion_roster_id, "Unknown") if h.champion_roster_id else "TBD",
+                "second_place": roster_map.get(h.second_place_roster_id, "Unknown") if h.second_place_roster_id else "TBD",
+                "third_place": roster_map.get(h.third_place_roster_id, "Unknown") if h.third_place_roster_id else "TBD",
                 "worst_performer": roster_map.get(h.last_place_roster_id, "Unknown") if h.last_place_roster_id else "TBD"
             })
             

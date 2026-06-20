@@ -174,10 +174,14 @@ class LeagueHistory(Base):
     season = Column(String)
     
     champion_roster_id = Column(String, ForeignKey('rosters.id'), nullable=True)
+    second_place_roster_id = Column(String, ForeignKey('rosters.id'), nullable=True)
+    third_place_roster_id = Column(String, ForeignKey('rosters.id'), nullable=True)
     last_place_roster_id = Column(String, ForeignKey('rosters.id'), nullable=True)
     
     # Relationships
     champion = relationship("Roster", foreign_keys=[champion_roster_id])
+    second_place = relationship("Roster", foreign_keys=[second_place_roster_id])
+    third_place = relationship("Roster", foreign_keys=[third_place_roster_id])
     last_place = relationship("Roster", foreign_keys=[last_place_roster_id])
 
 

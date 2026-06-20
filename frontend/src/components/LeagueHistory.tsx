@@ -7,6 +7,8 @@ import { useLeague } from '@/context/LeagueContext';
 interface LeagueHistoryRecord {
   season: string;
   champion: string;
+  second_place: string;
+  third_place: string;
   worst_performer: string;
 }
 
@@ -21,7 +23,7 @@ export default function LeagueHistory() {
       try {
         setLoading(true);
         // Direct fetch or use api client if configured for this endpoint
-        const response = await fetch(`http://localhost:8000/api/quant/league-history/${leagueId}`);
+        const response = await fetch(`https://dynasty-brain.onrender.com/api/quant/league-history/${leagueId}`);
         if (response.ok) {
           const data = await response.json();
           setHistory(data);
@@ -71,9 +73,33 @@ export default function LeagueHistory() {
                   <Trophy size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Champion</p>
+                  <p className="text-xs text-yellow-500 font-semibold uppercase tracking-wider">Champion</p>
                   <p className="text-sm font-bold text-white truncate max-w-[150px]" title={record.champion}>
                     {record.champion}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-slate-300/10 rounded-full text-slate-300 shrink-0">
+                  <Trophy size={14} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">2nd Place</p>
+                  <p className="text-sm font-medium text-slate-200 truncate max-w-[150px]" title={record.second_place}>
+                    {record.second_place}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-700/10 rounded-full text-amber-600 shrink-0">
+                  <Trophy size={14} />
+                </div>
+                <div>
+                  <p className="text-xs text-amber-700 font-semibold uppercase tracking-wider">3rd Place</p>
+                  <p className="text-sm font-medium text-slate-200 truncate max-w-[150px]" title={record.third_place}>
+                    {record.third_place}
                   </p>
                 </div>
               </div>
