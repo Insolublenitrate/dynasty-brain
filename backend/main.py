@@ -453,6 +453,7 @@ def get_team_analyzer(league_id: str, roster_id: int):
             max_pts_loss = -1
             min_pts_win = 9999
             opp_margins = {}
+            win_margins = []
             curr_win_streak = 0
             curr_loss_streak = 0
             recent_points = []
@@ -463,6 +464,7 @@ def get_team_analyzer(league_id: str, roster_id: int):
                 diff = m.points - m.opponent_points
                 
                 if m.is_win == 1:
+                    win_margins.append(diff)
                     if diff > max_diff_win:
                         max_diff_win = diff
                         easiest_win = f"{other_teams_map.get(m.opponent_roster_id, 'Unknown')} (+{diff:.1f})"
@@ -560,8 +562,84 @@ def get_team_analyzer(league_id: str, roster_id: int):
             "hottest_run": round(hottest_run, 1),
             "biggest_rival": biggest_rival,
             "biggest_trade_partner": biggest_trade_partner,
-            "trade_tendency": rng.choice(["Fleece Master", "Draft Pick Hoarder", "Veteran Chaser", "Taco", "The Godfather"])
+            "trade_tendency": rng.choice(["Fleece Master", "Draft Pick Hoarder", "Veteran Chaser", "Taco", "The Godfather"]),
+            "avg_margin_of_victory": round(sum(win_margins) / max(len(win_margins), 1), 1) if win_margins else 0
         }
+
+        # 8. Demographics & Active Roster Grid
+        import datetime
+        current_year = datetime.datetime.now().year
+        roster_players_data = []
+        age_buckets = {"over_28": 0, "prime_25_28": 0, "youth_under_24": 0}
+        
+        for pid in roster_player_ids:
+            p_data = sp_cache.get(str(pid))
+            if p_data:
+                name = f"{p_data.get('first_name', '')[0]}. {p_data.get('last_name', '')}".strip() if p_data.get('first_name') else "Unknown"
+                pos = p_data.get("position", "UNK")
+                age = p_data.get("age")
+                if not age and p_data.get("birth_date"):
+                    try:
+                        b_year = int(p_data["birth_date"].split("-")[0])
+                        age = current_year - b_year
+                    except:
+                        age = 25
+                if not age: age = 25
+                
+                p_fpts = sum(s.fantasy_points_ppr for s in stats if s.player_id == str(pid))
+                
+                roster_players_data.append({
+                    "id": pid,
+                    "name": name,
+                    "position": pos,
+                    "age": age,
+                    "output": round(p_fpts, 1)
+                })
+                
+                if age > 28:
+                    age_buckets["over_28"] += 1
+                elif 25 <= age <= 28:
+                    age_buckets["prime_25_28"] += 1
+                else:
+                    age_buckets["youth_under_24"] += 1
+
+        top_players = sorted(roster_players_data, key=lambda x: x["output"], reverse=True)[:6]
+        for i, p in enumerate(top_players):
+            p["rank"] = i + 1
+
+        demographics = {
+            "active_grid": top_players,
+            "age_buckets": age_buckets
+        }
+
+        # 9. Manager Volumes
+        total_trades_completed = sum(1 for t in trades if roster.roster_id in (t.consenter_roster_ids or []))
+        waiver_txs = session.query(SleeperTransaction).filter(
+            SleeperTransaction.league_id == league_id,
+            SleeperTransaction.status == 'complete',
+            SleeperTransaction.type.in_(['waiver', 'free_agent']),
+            SleeperTransaction.creator_roster_id == roster.roster_id
+        ).all()
+        volumes = {
+            "total_trades": total_trades_completed,
+            "waiver_adds": len(waiver_txs)
+        }
+
+        # 10. League Record Book
+        from models import LeagueHistory
+        histories = session.query(LeagueHistory).filter(LeagueHistory.league_id == league_id).all()
+        record_book = []
+        for h in histories:
+            finish = None
+            if h.champion_roster_id == roster.id: finish = "Champion"
+            elif h.second_place_roster_id == roster.id: finish = "Silver"
+            elif h.third_place_roster_id == roster.id: finish = "Bronze"
+            elif h.last_place_roster_id == roster.id: finish = "Last Place"
+            
+            if finish:
+                record_book.append({"season": h.season, "finish": finish})
+        
+        record_book = sorted(record_book, key=lambda x: x["season"], reverse=True)
 
         return {
             "roster_id": roster.roster_id,
@@ -575,7 +653,10 @@ def get_team_analyzer(league_id: str, roster_id: int):
             "analog": selected_analog,
             "rookie_metrics": rookie_metrics,
             "weekly_metrics": weekly_metrics,
-            "fun_metrics": fun_metrics
+            "fun_metrics": fun_metrics,
+            "demographics": demographics,
+            "volumes": volumes,
+            "record_book": record_book
         }
     finally:
         session.close()

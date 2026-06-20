@@ -75,7 +75,7 @@ export default function TeamAnalyzerTab() {
 
   const {
     progression, position_grades, asset_allocation, league_asset_allocation, analog, 
-    rookie_metrics, weekly_metrics, fun_metrics
+    rookie_metrics, weekly_metrics, fun_metrics, demographics, volumes, record_book
   } = analyzerData;
 
   const posGradesOrder = ['QB', 'RB', 'WR', 'TE', 'FLEX'];
@@ -352,6 +352,140 @@ export default function TeamAnalyzerTab() {
         </div>
       </div>
 
+      {/* Tactical & Performance Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12 pt-8 border-t border-zinc-800">
+        {/* Left Column: Tactical Roster & Demographic Health */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold text-white mb-4">Tactical Roster & Demographic Health</h2>
+          
+          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-sm font-semibold text-zinc-400 mb-4 tracking-wider uppercase">The Active Roster Data Grid</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-zinc-300">
+                <thead className="text-xs text-zinc-500 uppercase border-b border-zinc-800">
+                  <tr>
+                    <th className="px-4 py-2 font-medium">Name</th>
+                    <th className="px-4 py-2 font-medium">Position</th>
+                    <th className="px-4 py-2 font-medium">Age</th>
+                    <th className="px-4 py-2 font-medium">Rank</th>
+                    <th className="px-4 py-2 font-medium text-right">Output</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800">
+                  {demographics?.active_grid?.map((player: any) => (
+                    <tr key={player.id} className="hover:bg-zinc-800/50 transition-colors">
+                      <td className="px-4 py-3 font-medium text-zinc-100">{player.name}</td>
+                      <td className="px-4 py-3">{player.position}</td>
+                      <td className="px-4 py-3">{player.age}</td>
+                      <td className="px-4 py-3">{player.rank}</td>
+                      <td className="px-4 py-3 text-right font-mono text-amber-500">{player.output}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-sm font-semibold text-zinc-400 mb-4 tracking-wider uppercase">Roster Health Age Demographics</h3>
+            <div className="h-64 relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'Over 28 (Vet Cliff)', value: demographics?.age_buckets?.over_28 || 0, color: '#a1a1aa' },
+                      { name: '25-28 (Prime)', value: demographics?.age_buckets?.prime_25_28 || 0, color: '#d97706' },
+                      { name: 'Under 24 (Youth)', value: demographics?.age_buckets?.youth_under_24 || 0, color: '#3b82f6' }
+                    ]}
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                  >
+                    {[
+                      { name: 'Over 28 (Vet Cliff)', value: demographics?.age_buckets?.over_28 || 0, color: '#a1a1aa' },
+                      { name: '25-28 (Prime)', value: demographics?.age_buckets?.prime_25_28 || 0, color: '#d97706' },
+                      { name: 'Under 24 (Youth)', value: demographics?.age_buckets?.youth_under_24 || 0, color: '#3b82f6' }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
+                    itemStyle={{ color: '#e4e4e7' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-zinc-400 text-xs font-semibold uppercase">Age</span>
+                <span className="text-white font-bold">Buckets</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Performance & History Analytics */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold text-white mb-4">Performance & History Analytics</h2>
+          
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-zinc-400 tracking-wider uppercase">Key Success Metrics</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-blue-600/20 border border-blue-500/30 rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center text-center hover:bg-blue-600/30 transition-all cursor-default">
+                <div className="text-4xl font-bold text-blue-400 mb-2">{fun_metrics?.avg_margin_of_victory}</div>
+                <div className="text-xs text-blue-200/70 uppercase tracking-wide">Avg Margin of Victory<br/>(Points per Win)</div>
+              </div>
+              <div className="bg-orange-600/20 border border-orange-500/30 rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center text-center hover:bg-orange-600/30 transition-all cursor-default">
+                <div className="text-4xl font-bold text-orange-400 mb-2">{fun_metrics?.biggest_heartbreak ? fun_metrics.biggest_heartbreak.split(' ')[1]?.replace('(-', '-').replace(')', '') : '-0.0'}</div>
+                <div className="text-xs text-orange-200/70 uppercase tracking-wide">Biggest Heartbreak<br/>(Smallest Loss)</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4">
+            <h3 className="text-sm font-semibold text-zinc-400 tracking-wider uppercase">Manager Volume Tracking</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-slate-700/30 border border-slate-600/50 rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center text-center hover:bg-slate-700/50 transition-all cursor-default">
+                <div className="text-4xl font-bold text-white mb-2">{volumes?.total_trades || 0}</div>
+                <div className="text-xs text-slate-300 uppercase tracking-wide">Total Trades Completed</div>
+              </div>
+              <div className="bg-amber-600/20 border border-amber-500/30 rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center text-center hover:bg-amber-600/30 transition-all cursor-default">
+                <div className="text-4xl font-bold text-amber-500 mb-2">{volumes?.waiver_adds || 0}</div>
+                <div className="text-xs text-amber-200/70 uppercase tracking-wide">Waiver Wire Adds</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4">
+            <h3 className="text-sm font-semibold text-zinc-400 tracking-wider uppercase">The League Record Book (Hall of Fame)</h3>
+            <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 rounded-2xl p-6 shadow-xl flex flex-wrap items-center justify-center gap-6">
+              {record_book && record_book.length > 0 ? (
+                record_book.map((record: any, idx: number) => (
+                  <div key={idx} className="flex flex-col items-center space-y-3">
+                    <div className={`w-14 h-14 rounded-lg rotate-45 flex items-center justify-center shadow-lg ${
+                      record.finish === 'Champion' ? 'bg-gradient-to-br from-yellow-400 to-amber-600' :
+                      record.finish === 'Silver' ? 'bg-gradient-to-br from-gray-300 to-gray-500' :
+                      record.finish === 'Bronze' ? 'bg-gradient-to-br from-amber-700 to-orange-900' :
+                      'bg-gradient-to-br from-zinc-700 to-zinc-900'
+                    }`}>
+                      <div className="-rotate-45 text-white font-bold text-xl">
+                        {record.finish === 'Champion' ? '1' : record.finish === 'Silver' ? '2' : record.finish === 'Bronze' ? '3' : 'L'}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">{record.finish === 'Champion' ? 'Champion' : record.finish === 'Last Place' ? 'Rebuild' : record.finish}</div>
+                      <div className="text-sm font-bold text-white">{record.season}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-zinc-500 italic py-8">No historical finishes recorded for this roster.</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
