@@ -334,8 +334,19 @@ def get_team_analyzer(league_id: str, roster_id: int):
         total_value = player_value + future_capital_value
         
         asset_allocation = [
-            {"name": "Current Players", "value": round((player_value / total_value) * 100)},
-            {"name": "Future Draft Capital", "value": round((future_capital_value / total_value) * 100)}
+            {"name": "Current Players", "value": round((player_value / total_value) * 100) if total_value else 0},
+            {"name": "Future Draft Capital", "value": round((future_capital_value / total_value) * 100) if total_value else 0}
+        ]
+
+        # Compute League Average Asset Allocation
+        all_future_picks = session.query(DraftPick).filter(DraftPick.league_id == league_id).all()
+        league_future_capital_value = sum(100 if p.round == 1 else (50 if p.round == 2 else 20) for p in all_future_picks) / num_teams
+        league_player_value = avg_fpts * 3.0
+        league_total_value = league_player_value + league_future_capital_value
+        
+        league_asset_allocation = [
+            {"name": "Current Players (Avg)", "value": round((league_player_value / league_total_value) * 100) if league_total_value else 0},
+            {"name": "Future Draft Capital (Avg)", "value": round((league_future_capital_value / league_total_value) * 100) if league_total_value else 0}
         ]
         
         # 4. NFL Team Analog
@@ -560,6 +571,7 @@ def get_team_analyzer(league_id: str, roster_id: int):
             "positional_radar": positional_radar,
             "position_grades": position_grades,
             "asset_allocation": asset_allocation,
+            "league_asset_allocation": league_asset_allocation,
             "analog": selected_analog,
             "rookie_metrics": rookie_metrics,
             "weekly_metrics": weekly_metrics,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis
+  ResponsiveContainer, PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend
 } from 'recharts';
 import { 
   ShieldAlert, Activity, Info, AlertTriangle, TrendingUp, Swords, Skull, Zap, Search
@@ -74,7 +74,7 @@ export default function TeamAnalyzerTab() {
   if (!analyzerData) return null;
 
   const {
-    progression, position_grades, asset_allocation, analog, 
+    progression, position_grades, asset_allocation, league_asset_allocation, analog, 
     rookie_metrics, weekly_metrics, fun_metrics
   } = analyzerData;
 
@@ -128,14 +128,14 @@ export default function TeamAnalyzerTab() {
         ))}
       </div>
 
-        {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Value Over Time */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md lg:col-span-2">
           <h4 className="text-white font-bold text-lg flex items-center gap-2 mb-4">
             <TrendingUp size={16} className="text-orange-500" /> Team Value Over Time
           </h4>
-          <div className="h-64">
+          <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={progression} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
@@ -145,8 +145,9 @@ export default function TeamAnalyzerTab() {
                   contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
                   itemStyle={{ fontSize: '14px', fontWeight: 'bold' }}
                 />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
                 <Line type="monotone" dataKey="power_index" name="Your Power" stroke="#f97316" strokeWidth={3} dot={{ r: 4, fill: '#f97316' }} />
-                <Line type="monotone" dataKey="league_avg" name="League Avg" stroke="#71717a" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                <Line type="monotone" dataKey="league_avg" name="League Avg" stroke="#71717a" strokeWidth={3} strokeDasharray="4 4" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -155,14 +156,30 @@ export default function TeamAnalyzerTab() {
         {/* Asset Allocation */}
         <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
           <h4 className="text-white font-bold text-lg w-full text-left mb-2">Asset Allocation</h4>
-          <p className="text-zinc-500 text-xs w-full text-left mb-4">Ratio of active player value vs future picks.</p>
-          <div className="h-48 w-full">
+          <p className="text-zinc-500 text-xs w-full text-left mb-4">Ratio of active player value vs future picks (Inner ring = League Avg).</p>
+          <div className="h-48 md:h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                {/* League Avg Inner Pie */}
+                {league_asset_allocation && (
+                  <Pie
+                    data={league_asset_allocation}
+                    innerRadius="40%"
+                    outerRadius="55%"
+                    paddingAngle={2}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {league_asset_allocation.map((entry: any, index: number) => (
+                      <Cell key={`cell-avg-${index}`} fill={index === 0 ? '#52525b' : '#3f3f46'} />
+                    ))}
+                  </Pie>
+                )}
+                {/* Team Outer Pie */}
                 <Pie
                   data={asset_allocation}
-                  innerRadius={60}
-                  outerRadius={80}
+                  innerRadius="65%"
+                  outerRadius="85%"
                   paddingAngle={5}
                   dataKey="value"
                   stroke="none"
@@ -177,13 +194,17 @@ export default function TeamAnalyzerTab() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center gap-4 text-xs font-bold w-full justify-center mt-2">
+          <div className="flex items-center gap-4 text-xs font-bold w-full justify-center mt-2 flex-wrap">
             {asset_allocation?.map((entry: any, index: number) => (
               <div key={index} className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
                 <span className="text-zinc-400">{entry.name}</span>
               </div>
             ))}
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-zinc-500"></div>
+              <span className="text-zinc-400">League Avg</span>
+            </div>
           </div>
         </div>
 
@@ -191,19 +212,25 @@ export default function TeamAnalyzerTab() {
         <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
           <h4 className="text-white font-bold text-lg w-full text-left mb-2">Positional Breakdown</h4>
           <p className="text-zinc-500 text-xs w-full text-left mb-4">Relative strength across core positions.</p>
-          <div className="h-48 w-full">
+          <div className="h-48 md:h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={posGradesOrder.map(pos => ({
-                subject: pos, 
-                A: position_grades[pos] === 'A+' ? 100 : position_grades[pos] === 'A' ? 95 : position_grades[pos] === 'A-' ? 90 :
-                   position_grades[pos] === 'B+' ? 85 : position_grades[pos] === 'B' ? 80 : position_grades[pos] === 'B-' ? 75 :
-                   position_grades[pos] === 'C+' ? 70 : position_grades[pos] === 'C' ? 65 : position_grades[pos] === 'D' ? 50 : 40,
-                fullMark: 100
-              }))}>
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={posGradesOrder.map(pos => {
+                const teamScore = position_grades[pos] === 'A+' ? 100 : position_grades[pos] === 'A' ? 95 : position_grades[pos] === 'A-' ? 90 :
+                                  position_grades[pos] === 'B+' ? 85 : position_grades[pos] === 'B' ? 80 : position_grades[pos] === 'B-' ? 75 :
+                                  position_grades[pos] === 'C+' ? 70 : position_grades[pos] === 'C' ? 65 : position_grades[pos] === 'D' ? 50 : 40;
+                return {
+                  subject: pos, 
+                  A: teamScore,
+                  league_avg: 75, // B- baseline for league average mapping
+                  fullMark: 100
+                };
+              })}>
                 <PolarGrid stroke="#27272a" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#71717a', fontSize: 10 }} />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#71717a', fontSize: 12 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Strength" dataKey="A" stroke="#f97316" fill="#f97316" fillOpacity={0.5} />
+                <Radar name="League Avg" dataKey="league_avg" stroke="#71717a" fill="#71717a" fillOpacity={0.2} />
+                <Radar name="Your Strength" dataKey="A" stroke="#f97316" fill="#f97316" fillOpacity={0.6} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', marginTop: '10px' }} />
                 <RechartsTooltip 
                   contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
                   itemStyle={{ fontSize: '14px', fontWeight: 'bold' }}
