@@ -305,11 +305,11 @@ def get_team_analyzer(league_id: str, roster_id: int):
         num_teams = max(len(all_rosters), 1)
 
         positional_radar = [
-            {"position": "QB", "team_score": round(team_pos_scores["QB"], 1), "league_avg": round(league_pos_scores["QB"]/num_teams, 1)},
-            {"position": "RB", "team_score": round(team_pos_scores["RB"], 1), "league_avg": round(league_pos_scores["RB"]/num_teams, 1)},
-            {"position": "WR", "team_score": round(team_pos_scores["WR"], 1), "league_avg": round(league_pos_scores["WR"]/num_teams, 1)},
-            {"position": "TE", "team_score": round(team_pos_scores["TE"], 1), "league_avg": round(league_pos_scores["TE"]/num_teams, 1)},
-            {"position": "FLEX", "team_score": round(team_pos_scores["FLEX"], 1), "league_avg": round(league_pos_scores["FLEX"]/num_teams, 1)},
+            {"position": "QB", "team_score": round((team_pos_scores["QB"] / max(league_pos_scores["QB"]/num_teams, 1)) * 100), "league_avg": 100},
+            {"position": "RB", "team_score": round((team_pos_scores["RB"] / max(league_pos_scores["RB"]/num_teams, 1)) * 100), "league_avg": 100},
+            {"position": "WR", "team_score": round((team_pos_scores["WR"] / max(league_pos_scores["WR"]/num_teams, 1)) * 100), "league_avg": 100},
+            {"position": "TE", "team_score": round((team_pos_scores["TE"] / max(league_pos_scores["TE"]/num_teams, 1)) * 100), "league_avg": 100},
+            {"position": "FLEX", "team_score": round((team_pos_scores["FLEX"] / max(league_pos_scores["FLEX"]/num_teams, 1)) * 100), "league_avg": 100},
         ]
         
         def get_grade(score, avg):
@@ -447,6 +447,8 @@ def get_team_analyzer(league_id: str, roster_id: int):
             recent_points = []
             
             for m in matchups:
+                if m.points == 0 and m.opponent_points == 0:
+                    continue # Skip unplayed matchups (e.g. future weeks or byes)
                 diff = m.points - m.opponent_points
                 
                 if m.is_win == 1:
