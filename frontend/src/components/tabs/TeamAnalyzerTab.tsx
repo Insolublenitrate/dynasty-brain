@@ -74,8 +74,8 @@ export default function TeamAnalyzerTab() {
   if (!analyzerData) return null;
 
   const {
-    history, position_grades, asset_allocation, selected_analog, 
-    rookie_metrics, weekly_metrics, matchups
+    progression, position_grades, asset_allocation, analog, 
+    rookie_metrics, weekly_metrics, fun_metrics
   } = analyzerData;
 
   const posGradesOrder = ['QB', 'RB', 'WR', 'TE', 'FLEX'];
@@ -108,8 +108,8 @@ export default function TeamAnalyzerTab() {
         <div className="relative z-10 w-full flex items-center justify-between">
           <div>
             <p className="text-zinc-400 text-xs font-bold tracking-widest uppercase mb-1">System Analysis: NFL Analog</p>
-            <h3 className="text-2xl font-black text-white mb-1">Your build resembles the <span className="text-orange-500">{selected_analog?.team}</span></h3>
-            <p className="text-zinc-500 italic text-sm">"{selected_analog?.desc}"</p>
+            <h3 className="text-2xl font-black text-white mb-1">Your build resembles the <span className="text-orange-500">{analog?.team}</span></h3>
+            <p className="text-zinc-500 italic text-sm">"{analog?.desc}"</p>
           </div>
           <div className="hidden sm:flex h-16 w-16 bg-zinc-950 rounded-full items-center justify-center border border-zinc-800 shrink-0 shadow-inner">
             <Info className="text-orange-500/50" size={32} />
@@ -137,7 +137,7 @@ export default function TeamAnalyzerTab() {
           </h4>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={history} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+              <LineChart data={progression} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
                 <XAxis dataKey="year" stroke="#71717a" fontSize={12} tickLine={false} />
                 <YAxis stroke="#71717a" fontSize={12} tickLine={false} />
@@ -292,34 +292,34 @@ export default function TeamAnalyzerTab() {
           <div className="grid grid-cols-2 gap-x-4 gap-y-4">
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Easiest Win</p>
-              <p className="text-orange-400 font-bold text-sm truncate" title={matchups?.easiest_win || 'N/A'}>{matchups?.easiest_win || 'N/A'}</p>
+              <p className="text-orange-400 font-bold text-sm truncate" title={fun_metrics?.easiest_win || 'N/A'}>{fun_metrics?.easiest_win || 'N/A'}</p>
             </div>
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Most Dominated</p>
-              <p className="text-red-400 font-bold text-sm truncate" title={matchups?.most_dominated || 'N/A'}>{matchups?.most_dominated || 'N/A'}</p>
+              <p className="text-red-400 font-bold text-sm truncate" title={fun_metrics?.most_dominated || 'N/A'}>{fun_metrics?.most_dominated || 'N/A'}</p>
             </div>
             
             <div className="col-span-2 py-1 border-t border-b border-zinc-800/50 my-1">
               <p className="text-zinc-500 text-[10px] uppercase">Who's My Daddy?</p>
-              <p className="text-white font-bold text-sm">{matchups?.whos_my_daddy || 'N/A'}</p>
+              <p className="text-white font-bold text-sm">{fun_metrics?.whos_my_daddy || 'N/A'}</p>
             </div>
             
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Miracle Win</p>
-              <p className="text-orange-400 text-xs truncate" title={matchups?.miracle_win || 'N/A'}>{matchups?.miracle_win || 'N/A'}</p>
+              <p className="text-orange-400 text-xs truncate" title={fun_metrics?.miracle_win || 'N/A'}>{fun_metrics?.miracle_win || 'N/A'}</p>
             </div>
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Biggest Heartbreak</p>
-              <p className="text-red-400 text-xs truncate" title={matchups?.biggest_heartbreak || 'N/A'}>{matchups?.biggest_heartbreak || 'N/A'}</p>
+              <p className="text-red-400 text-xs truncate" title={fun_metrics?.biggest_heartbreak || 'N/A'}>{fun_metrics?.biggest_heartbreak || 'N/A'}</p>
             </div>
             
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Longest Win Streak</p>
-              <p className="text-orange-400 text-xs font-bold">{matchups?.longest_win_streak || 0} games</p>
+              <p className="text-orange-400 text-xs font-bold">{fun_metrics?.longest_win_streak || 0} games</p>
             </div>
             <div>
               <p className="text-zinc-500 text-[10px] uppercase">Longest Loss Streak</p>
-              <p className="text-red-400 text-xs font-bold">{matchups?.longest_loss_streak || 0} games</p>
+              <p className="text-red-400 text-xs font-bold">{fun_metrics?.longest_loss_streak || 0} games</p>
             </div>
           </div>
         </div>
