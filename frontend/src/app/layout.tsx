@@ -18,9 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-950 text-slate-200 h-screen overflow-hidden`}>
+      <body className={`${inter.className} bg-zinc-950 text-zinc-200 h-screen overflow-hidden`}>
         <LeagueProvider>
-          <div className="flex flex-col h-full bg-slate-950">
+          <div className="flex flex-col h-full bg-zinc-950">
             <TopNav />
             <main className="flex-1 overflow-y-auto relative">
               {children}

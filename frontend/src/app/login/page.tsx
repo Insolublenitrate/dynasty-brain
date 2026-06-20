@@ -42,16 +42,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 space-y-6">
+    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center items-center p-4">
+      <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-8 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">
-            <div className="bg-indigo-500/20 p-4 rounded-full">
-              <Database className="text-indigo-500" size={32} />
+            <div className="bg-amber-500/20 p-4 rounded-full">
+              <Database className="text-amber-500" size={32} />
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Waiver WireTap</h1>
-          <p className="text-slate-400">Initialize your Quant Engine.</p>
+          <p className="text-zinc-400">Initialize your Quant Engine.</p>
         </div>
 
         {error && (
@@ -63,7 +63,7 @@ export default function Login() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="leagueId" className="block text-sm font-medium text-slate-300">
+            <label htmlFor="leagueId" className="block text-sm font-medium text-zinc-300">
               Sleeper League ID
             </label>
             <input
@@ -72,7 +72,7 @@ export default function Login() {
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value)}
               placeholder="e.g. 1312567432052760576"
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              className="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
               required
             />
           </div>
@@ -80,7 +80,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading || !inputCode}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -93,7 +93,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center text-xs text-slate-500 pt-4">
+        <p className="text-center text-xs text-zinc-500 pt-4">
           Data extraction takes approximately 5-10 seconds depending on league size and trading history.
         </p>
       </div>

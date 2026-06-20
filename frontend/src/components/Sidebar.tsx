@@ -15,8 +15,8 @@ export default function Sidebar() {
     const isActive = pathname === path;
     return `flex items-center space-x-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
       isActive 
-        ? "bg-indigo-500/10 text-indigo-400" 
-        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+        ? "bg-amber-500/10 text-amber-400" 
+        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
     }`;
   };
 
@@ -25,11 +25,11 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-40">
-        <h1 className="text-xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
+      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 p-4 flex items-center justify-between sticky top-0 z-40">
+        <h1 className="text-xl font-black bg-gradient-to-r from-amber-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
           The Waiver Wiretap
         </h1>
-        <button onClick={() => setIsOpen(!isOpen)} className="text-slate-400 hover:text-white p-2">
+        <button onClick={() => setIsOpen(!isOpen)} className="text-zinc-400 hover:text-white p-2">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {isOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -49,12 +49,12 @@ export default function Sidebar() {
       )}
 
       {/* Sidebar Panel */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-full transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col h-full transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 hidden md:block">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
+          <h1 className="text-2xl font-black bg-gradient-to-r from-amber-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
             The Waiver Wiretap
           </h1>
-          <p className="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">A KBD Product</p>
+          <p className="text-xs text-zinc-400 font-medium tracking-widest uppercase mt-1">A KBD Product</p>
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4 md:mt-0 overflow-y-auto pt-6 md:pt-0">
@@ -108,9 +108,9 @@ export default function Sidebar() {
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-slate-800 space-y-4">
+        <div className="p-4 border-t border-zinc-800 space-y-4">
           
-          <div className="flex items-center space-x-3 px-3 py-2 text-slate-400 hover:text-slate-200 cursor-pointer transition-colors">
+          <div className="flex items-center space-x-3 px-3 py-2 text-zinc-400 hover:text-zinc-200 cursor-pointer transition-colors">
             <Settings size={20} />
             <span className="text-sm font-medium">Settings</span>
           </div>

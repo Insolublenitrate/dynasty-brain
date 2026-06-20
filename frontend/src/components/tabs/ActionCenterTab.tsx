@@ -78,12 +78,12 @@ export default function ActionCenterTab() {
     actions.unshift({
       id: "my-status",
       type: "info",
-      icon: <Info className="text-indigo-500" size={24} />,
+      icon: <Info className="text-amber-500" size={24} />,
       title: "Your Roster Lifecycle Update",
       description: `Based on your Max PF and Draft Capital, your team has been classified as a '${myRoster.lifecycle_state}'. The AI recommends: ${myRoster.action_recommendation}.\n\nAI Coaching Insight: ${myRoster.ai_coaching}`,
       timestamp: "Live",
-      bg: "bg-indigo-500/10",
-      border: "border-indigo-500/20"
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/20"
     });
   }
 
@@ -95,18 +95,18 @@ export default function ActionCenterTab() {
     if (active && payload && payload.length) {
       const p = payload[0].payload;
       return (
-        <div className="bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
+        <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
           <div className="flex items-center gap-3 mb-3">
             {p.avatar && <img src={`https://sleepercdn.com/avatars/${p.avatar}`} className="w-8 h-8 rounded-full" alt="avatar" />}
             <div>
-              <p className="font-bold text-slate-100">{p.team_name}</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-400">{p.lifecycle_state}</p>
+              <p className="font-bold text-zinc-100">{p.team_name}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">{p.lifecycle_state}</p>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-slate-400">Max PF: <span className="text-slate-200 font-mono">{p.max_pf.toFixed(1)}</span></p>
-            <p className="text-slate-400">Future Draft Capital: <span className="text-slate-200 font-mono">{p.future_capital_score.toFixed(0)}</span></p>
-            <p className="text-slate-400 pt-2 border-t border-slate-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
+            <p className="text-zinc-400">Max PF: <span className="text-zinc-200 font-mono">{p.max_pf.toFixed(1)}</span></p>
+            <p className="text-zinc-400">Future Draft Capital: <span className="text-zinc-200 font-mono">{p.future_capital_score.toFixed(0)}</span></p>
+            <p className="text-zinc-400 pt-2 border-t border-zinc-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
           </div>
         </div>
       );
@@ -116,10 +116,10 @@ export default function ActionCenterTab() {
 
   const getDotColor = (state: string) => {
     switch (state) {
-      case 'Dynasty Juggernaut': return '#6366f1'; // indigo-500
+      case 'Dynasty Juggernaut': return '#6366f1'; // amber-500
       case 'All-In Contender': return '#f43f5e'; // rose-500
       case 'Rebuilding': return '#10b981'; // emerald-500
-      case 'Purgatory': return '#64748b'; // slate-500
+      case 'Purgatory': return '#64748b'; // zinc-500
       case 'Middle of the Pack': return '#eab308'; // yellow-500
       default: return '#94a3b8';
     }
@@ -130,24 +130,24 @@ export default function ActionCenterTab() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Action Center</h1>
-          <p className="text-slate-400 mt-2">Your AI-curated intelligence feed based on real-time market data and underlying metrics.</p>
+          <p className="text-zinc-400 mt-2">Your AI-curated intelligence feed based on real-time market data and underlying metrics.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-            <div className="text-sm font-medium text-slate-400 mb-1">Your Lifecycle State</div>
-            <div className="text-2xl font-bold text-indigo-400">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
+            <div className="text-sm font-medium text-zinc-400 mb-1">Your Lifecycle State</div>
+            <div className="text-2xl font-bold text-amber-400">
               {loading ? "..." : myRoster?.lifecycle_state || "Unknown"}
             </div>
           </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-            <div className="text-sm font-medium text-slate-400 mb-1">Your Draft Capital</div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
+            <div className="text-sm font-medium text-zinc-400 mb-1">Your Draft Capital</div>
             <div className="text-2xl font-bold text-emerald-400">
               {loading ? "..." : myRoster?.future_capital_score.toFixed(0)}
             </div>
           </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-            <div className="text-sm font-medium text-slate-400 mb-1">AI Recommendation</div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
+            <div className="text-sm font-medium text-zinc-400 mb-1">AI Recommendation</div>
             <div className="text-2xl font-bold text-rose-400">
               {loading ? "..." : myRoster?.action_recommendation}
             </div>
@@ -158,7 +158,7 @@ export default function ActionCenterTab() {
           <h2 className="text-xl font-bold tracking-tight text-white mb-4">AI Action Feed</h2>
           <div className="space-y-4">
             {loading ? (
-              <div className="text-slate-500 p-8 text-center animate-pulse">Analyzing the league data for discrepancies...</div>
+              <div className="text-zinc-500 p-8 text-center animate-pulse">Analyzing the league data for discrepancies...</div>
             ) : actions.length > 0 ? (
               actions.map(action => (
                 <div key={action.id} className={`flex gap-4 p-6 rounded-xl border shadow-xl ${action.bg} ${action.border}`}>
@@ -167,10 +167,10 @@ export default function ActionCenterTab() {
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold text-slate-200">{action.title}</h3>
-                      <span className="text-xs font-medium text-slate-500">{action.timestamp}</span>
+                      <h3 className="text-lg font-semibold text-zinc-200">{action.title}</h3>
+                      <span className="text-xs font-medium text-zinc-500">{action.timestamp}</span>
                     </div>
-                    <p className="mt-2 text-slate-400 leading-relaxed whitespace-pre-wrap">
+                    <p className="mt-2 text-zinc-400 leading-relaxed whitespace-pre-wrap">
                       {action.description}
                     </p>
                     <div className="mt-4 flex gap-3">
@@ -189,7 +189,7 @@ export default function ActionCenterTab() {
                 </div>
               ))
             ) : (
-              <div className="text-slate-500 p-8 bg-slate-900 rounded-xl border border-slate-800 shadow-xl text-center">
+              <div className="text-zinc-500 p-8 bg-zinc-900 rounded-xl border border-zinc-800 shadow-xl text-center">
                 The market is completely efficient. No action required.
               </div>
             )}

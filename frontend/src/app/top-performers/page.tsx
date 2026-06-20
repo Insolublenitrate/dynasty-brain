@@ -34,26 +34,26 @@ export default function TopPerformers() {
   };
 
   const Leaderboard = ({ title, metric, formatFn }: any) => (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+      <h3 className="text-lg font-bold text-zinc-200 mb-4 flex items-center gap-2">
         <Trophy className="text-amber-400" size={18} /> {title}
       </h3>
       <div className="space-y-4">
         {loading ? (
           <div className="animate-pulse space-y-3">
-            {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-slate-800 rounded"></div>)}
+            {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-zinc-800 rounded"></div>)}
           </div>
         ) : (
           getTopN(metric).map((p, i) => (
-            <div key={p.player_id} className="flex justify-between items-center border-b border-slate-800/50 pb-2 last:border-0 last:pb-0">
+            <div key={p.player_id} className="flex justify-between items-center border-b border-zinc-800/50 pb-2 last:border-0 last:pb-0">
               <div className="flex items-center gap-3">
-                <span className="text-slate-500 font-bold w-4">{i + 1}.</span>
+                <span className="text-zinc-500 font-bold w-4">{i + 1}.</span>
                 <div>
-                  <div className="font-medium text-slate-200">{p.player_name}</div>
-                  <div className="text-xs text-slate-500">{p.position} • {p.recent_team}</div>
+                  <div className="font-medium text-zinc-200">{p.player_name}</div>
+                  <div className="text-xs text-zinc-500">{p.position} • {p.recent_team}</div>
                 </div>
               </div>
-              <div className="font-bold text-indigo-400">
+              <div className="font-bold text-amber-400">
                 {formatFn ? formatFn(p[metric]) : p[metric]}
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function TopPerformers() {
             <BarChart3 className="text-emerald-500" /> Top Performers
           </h1>
         </div>
-        <p className="text-slate-400 mt-2 mb-4">The most efficient players in the NFL across key underlying metrics (min 5 games).</p>
+        <p className="text-zinc-400 mt-2 mb-4">The most efficient players in the NFL across key underlying metrics (min 5 games).</p>
         <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
       

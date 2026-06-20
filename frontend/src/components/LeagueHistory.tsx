@@ -39,8 +39,8 @@ export default function LeagueHistory() {
 
   if (loading) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mt-8 animate-pulse flex items-center justify-center min-h-[150px]">
-        <p className="text-slate-500">Loading League History...</p>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mt-8 animate-pulse flex items-center justify-center min-h-[150px]">
+        <p className="text-zinc-500">Loading League History...</p>
       </div>
     );
   }
@@ -50,20 +50,20 @@ export default function LeagueHistory() {
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mt-8">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mt-8">
       <div className="mb-6">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
           <Trophy size={20} className="text-yellow-500" />
           League Record Book
         </h3>
-        <p className="text-xs text-slate-400 mt-1">A timeline of your league's past champions and last place finishers.</p>
+        <p className="text-xs text-zinc-400 mt-1">A timeline of your league's past champions and last place finishers.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {history.map((record) => (
-          <div key={record.season} className="bg-slate-950 border border-slate-800 rounded-lg p-4 relative overflow-hidden group">
+          <div key={record.season} className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 relative overflow-hidden group">
             {/* Year Badge */}
-            <div className="absolute top-0 right-0 bg-slate-800 text-slate-400 text-xs font-bold px-2 py-1 rounded-bl-lg flex items-center gap-1">
+            <div className="absolute top-0 right-0 bg-zinc-800 text-zinc-400 text-xs font-bold px-2 py-1 rounded-bl-lg flex items-center gap-1">
               <CalendarDays size={12} /> {record.season}
             </div>
             
@@ -81,12 +81,12 @@ export default function LeagueHistory() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-slate-300/10 rounded-full text-slate-300 shrink-0">
+                <div className="p-2 bg-zinc-300/10 rounded-full text-zinc-300 shrink-0">
                   <Trophy size={14} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">2nd Place</p>
-                  <p className="text-sm font-medium text-slate-200 truncate max-w-[150px]" title={record.second_place}>
+                  <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">2nd Place</p>
+                  <p className="text-sm font-medium text-zinc-200 truncate max-w-[150px]" title={record.second_place}>
                     {record.second_place}
                   </p>
                 </div>
@@ -98,19 +98,19 @@ export default function LeagueHistory() {
                 </div>
                 <div>
                   <p className="text-xs text-amber-700 font-semibold uppercase tracking-wider">3rd Place</p>
-                  <p className="text-sm font-medium text-slate-200 truncate max-w-[150px]" title={record.third_place}>
+                  <p className="text-sm font-medium text-zinc-200 truncate max-w-[150px]" title={record.third_place}>
                     {record.third_place}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-slate-800 rounded-full text-slate-500 shrink-0">
+                <div className="p-2 bg-zinc-800 rounded-full text-zinc-500 shrink-0">
                   <Frown size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Last Place</p>
-                  <p className="text-sm font-medium text-slate-300 truncate max-w-[150px]" title={record.worst_performer}>
+                  <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Last Place</p>
+                  <p className="text-sm font-medium text-zinc-300 truncate max-w-[150px]" title={record.worst_performer}>
                     {record.worst_performer}
                   </p>
                 </div>

@@ -93,7 +93,7 @@ export default function DynastyBrainApp() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
       </div>
     );
   }
@@ -122,41 +122,41 @@ export default function DynastyBrainApp() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         {/* Marquee Matchup */}
-        <div className="bg-slate-900/80 backdrop-blur-md border-l-4 border-cyan-500 p-6 rounded-r-xl shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 p-4 opacity-5 text-cyan-500 transform rotate-12 pointer-events-none">
+        <div className="bg-zinc-900/80 backdrop-blur-md border-l-4 border-orange-500 p-6 rounded-r-xl shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 p-4 opacity-5 text-orange-500 transform rotate-12 pointer-events-none">
             <Swords size={250} />
           </div>
           <div className="flex items-center gap-2 mb-2 relative z-10">
-            <Activity className="text-cyan-500 animate-pulse" size={20} />
-            <h2 className="text-cyan-500 font-bold tracking-[0.2em] text-xs uppercase">Marquee Matchup of the Week</h2>
+            <Activity className="text-orange-500 animate-pulse" size={20} />
+            <h2 className="text-orange-500 font-bold tracking-[0.2em] text-xs uppercase">Marquee Matchup of the Week</h2>
           </div>
           <h3 className="text-4xl md:text-5xl font-black text-white italic mb-6 tracking-tight relative z-10 drop-shadow-lg">THE FRAUD CHECK</h3>
           
-          <div className="flex flex-col md:flex-row items-center justify-between bg-slate-950/80 p-6 rounded-lg border border-slate-800 relative z-10 shadow-inner">
+          <div className="flex flex-col md:flex-row items-center justify-between bg-zinc-950/80 p-6 rounded-lg border border-zinc-800 relative z-10 shadow-inner">
             <div className="text-center w-full md:w-1/3 mb-4 md:mb-0">
-              <p className="text-slate-400 font-mono text-sm mb-1 tracking-wider">TEAM 1</p>
+              <p className="text-zinc-400 font-mono text-sm mb-1 tracking-wider">TEAM 1</p>
               <p className="text-2xl font-black text-white">{marquee_matchup?.teamA?.name || 'Unknown'}</p>
-              <p className="text-cyan-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamA?.proj || 0}</p>
+              <p className="text-orange-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamA?.proj || 0}</p>
             </div>
             
             <div className="w-full md:w-1/3 flex flex-col items-center justify-center my-4 md:my-0">
-              <div className="text-4xl font-black text-slate-700 italic">VS</div>
-              <div className="mt-3 px-4 py-1 bg-slate-900 rounded text-xs text-slate-400 font-mono border border-slate-800">
+              <div className="text-4xl font-black text-zinc-700 italic">VS</div>
+              <div className="mt-3 px-4 py-1 bg-zinc-900 rounded text-xs text-zinc-400 font-mono border border-zinc-800">
                 SPREAD: {marquee_matchup?.spread || 0}
               </div>
             </div>
             
             <div className="text-center w-full md:w-1/3">
-              <p className="text-slate-400 font-mono text-sm mb-1 tracking-wider">TEAM 2</p>
+              <p className="text-zinc-400 font-mono text-sm mb-1 tracking-wider">TEAM 2</p>
               <p className="text-2xl font-black text-white">{marquee_matchup?.teamB?.name || 'Unknown'}</p>
-              <p className="text-cyan-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamB?.proj || 0}</p>
+              <p className="text-orange-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamB?.proj || 0}</p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Weekly Cash Tracker */}
-          <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative hover:border-slate-700 transition-colors">
+          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 relative hover:border-zinc-700 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-950/50 rounded-lg">
@@ -164,26 +164,26 @@ export default function DynastyBrainApp() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">The Bounty Board</h3>
-                  <p className="text-slate-400 text-xs mt-1 uppercase tracking-wider">Highest Output / Payouts</p>
+                  <p className="text-zinc-400 text-xs mt-1 uppercase tracking-wider">Highest Output / Payouts</p>
                 </div>
               </div>
-              <div className="flex bg-slate-950 rounded-lg p-1 border border-slate-800">
+              <div className="flex bg-zinc-950 rounded-lg p-1 border border-zinc-800">
                 <button
                   onClick={() => setBountyView('live')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'live' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'live' ? 'bg-green-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
                 >
                   LIVE SEASON
                 </button>
                 <button
                   onClick={() => setBountyView('all')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'all' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'all' ? 'bg-green-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
                 >
                   ALL TIME
                 </button>
               </div>
             </div>
 
-            <div className="h-48 mb-6 bg-slate-950/50 rounded-lg p-2 border border-slate-800/50">
+            <div className="h-48 mb-6 bg-zinc-950/50 rounded-lg p-2 border border-zinc-800/50">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={filtered_history}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
@@ -210,25 +210,25 @@ export default function DynastyBrainApp() {
 
             <div className="space-y-3">
               {(filtered_bounty || []).map((team: any, i: number) => (
-                <div key={team.roster_id} className="flex flex-col bg-slate-950/50 p-4 rounded-lg border border-slate-800/50 hover:bg-slate-800/50 transition-colors">
+                <div key={team.roster_id} className="flex flex-col bg-zinc-950/50 p-4 rounded-lg border border-zinc-800/50 hover:bg-zinc-800/50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <span className={`font-black text-lg ${i === 0 ? 'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : 'text-slate-600'}`}>#{i+1}</span>
-                      <span className="text-slate-200 font-bold">{team.name}</span>
+                      <span className={`font-black text-lg ${i === 0 ? 'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : 'text-zinc-600'}`}>#{i+1}</span>
+                      <span className="text-zinc-200 font-bold">{team.name}</span>
                     </div>
                     <span className="text-green-400 font-mono font-bold text-lg">${team.cashWon}</span>
                   </div>
                   {bountyView === 'all' && team.breakdown && team.breakdown.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-slate-800/50 flex flex-wrap gap-1">
+                    <div className="mt-2 pt-2 border-t border-zinc-800/50 flex flex-wrap gap-1">
                       {team.breakdown.map((b: string, j: number) => (
-                        <span key={j} className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-800">{b}</span>
+                        <span key={j} className="text-[10px] bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800">{b}</span>
                       ))}
                     </div>
                   )}
                 </div>
               ))}
               {filtered_bounty.length === 0 && (
-                <div className="text-center py-6 text-slate-500 text-sm italic">
+                <div className="text-center py-6 text-zinc-500 text-sm italic">
                   No payouts tracked for this view.
                 </div>
               )}
@@ -236,35 +236,35 @@ export default function DynastyBrainApp() {
           </div>
 
           {/* Monday Autopsy */}
-          <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-6 relative hover:border-slate-700 transition-colors">
+          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 relative hover:border-zinc-700 transition-colors">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-red-950/50 rounded-lg">
                 <Skull className="text-red-500" size={24} />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Monday Autopsy</h3>
-                <p className="text-slate-400 text-xs mt-1 uppercase tracking-wider">Brutal Bench Blunder</p>
+                <p className="text-zinc-400 text-xs mt-1 uppercase tracking-wider">Brutal Bench Blunder</p>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-red-950/40 to-slate-950 border border-red-900/30 rounded-lg p-5 shadow-inner">
+            <div className="bg-gradient-to-br from-red-950/40 to-zinc-950 border border-red-900/30 rounded-lg p-5 shadow-inner">
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle size={16} className="text-red-500" />
                 <p className="text-red-400 font-bold text-sm">Victim: {monday_autopsy?.victim || 'Unknown'} (Margin: {monday_autopsy?.margin || 0} pts)</p>
               </div>
               
               <div className="flex justify-between items-center text-sm mb-3 border-b border-red-900/20 pb-3">
-                <span className="text-slate-300 font-medium">Started: {monday_autopsy?.started?.name} <span className="text-slate-500">({monday_autopsy?.started?.points} pts)</span></span>
+                <span className="text-zinc-300 font-medium">Started: {monday_autopsy?.started?.name} <span className="text-zinc-500">({monday_autopsy?.started?.points} pts)</span></span>
               </div>
               <div className="flex justify-between items-center text-sm mb-4">
-                <span className="text-slate-300 font-medium">Benched: {monday_autopsy?.benched?.name} <span className="text-green-500">({monday_autopsy?.benched?.points} pts)</span></span>
+                <span className="text-zinc-300 font-medium">Benched: {monday_autopsy?.benched?.name} <span className="text-green-500">({monday_autopsy?.benched?.points} pts)</span></span>
               </div>
               
-              <div className="mt-5 p-3 bg-slate-950 rounded border-l-2 border-red-500 relative">
-                <Zap size={14} className="absolute -left-[9px] top-1/2 -translate-y-1/2 text-red-500 bg-slate-950" />
-                <p className="text-xs text-slate-400 italic leading-relaxed">
+              <div className="mt-5 p-3 bg-zinc-950 rounded border-l-2 border-red-500 relative">
+                <Zap size={14} className="absolute -left-[9px] top-1/2 -translate-y-1/2 text-red-500 bg-zinc-950" />
+                <p className="text-xs text-zinc-400 italic leading-relaxed">
                   "You outsmarted yourself. The data was there, but you went with your gut. Now you're holding an L. Revoke your GM credentials." 
-                  <br/><span className="text-cyan-600 font-bold mt-1 inline-block">— AI Analyst</span>
+                  <br/><span className="text-orange-600 font-bold mt-1 inline-block">— AI Analyst</span>
                 </p>
               </div>
             </div>
@@ -277,10 +277,10 @@ export default function DynastyBrainApp() {
   // --- MATRIX TAB ---
   const getDotColor = (state: string) => {
     switch (state) {
-      case 'Dynasty Juggernaut': return '#6366f1'; // indigo-500
+      case 'Dynasty Juggernaut': return '#6366f1'; // amber-500
       case 'All-In Contender': return '#f43f5e'; // rose-500
       case 'Rebuilding': return '#10b981'; // emerald-500
-      case 'Purgatory': return '#64748b'; // slate-500
+      case 'Purgatory': return '#64748b'; // zinc-500
       case 'Middle of the Pack': return '#eab308'; // yellow-500
       default: return '#94a3b8';
     }
@@ -293,18 +293,18 @@ export default function DynastyBrainApp() {
     if (active && payload && payload.length) {
       const p = payload[0].payload;
       return (
-        <div className="bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
+        <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
           <div className="flex items-center gap-3 mb-3">
             {p.avatar && <img src={`https://sleepercdn.com/avatars/${p.avatar}`} className="w-8 h-8 rounded-full" alt="avatar" />}
             <div>
-              <p className="font-bold text-slate-100">{p.team_name}</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-400">{p.lifecycle_state}</p>
+              <p className="font-bold text-zinc-100">{p.team_name}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">{p.lifecycle_state}</p>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-slate-400">Max PF: <span className="text-slate-200 font-mono">{p.max_pf?.toFixed(1)}</span></p>
-            <p className="text-slate-400">Future Draft Capital: <span className="text-slate-200 font-mono">{p.future_capital_score?.toFixed(0)}</span></p>
-            <p className="text-slate-400 pt-2 border-t border-slate-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
+            <p className="text-zinc-400">Max PF: <span className="text-zinc-200 font-mono">{p.max_pf?.toFixed(1)}</span></p>
+            <p className="text-zinc-400">Future Draft Capital: <span className="text-zinc-200 font-mono">{p.future_capital_score?.toFixed(0)}</span></p>
+            <p className="text-zinc-400 pt-2 border-t border-zinc-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
           </div>
         </div>
       );
@@ -314,17 +314,17 @@ export default function DynastyBrainApp() {
 
   const MatrixTab = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h3 className="text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-              <Crosshair className="text-indigo-500" /> TEAM POWER MATRIX
+              <Crosshair className="text-amber-500" /> TEAM POWER MATRIX
             </h3>
-            <p className="text-slate-400 text-sm mt-1">Current Contender Score vs. Future Draft Capital</p>
+            <p className="text-zinc-400 text-sm mt-1">Current Contender Score vs. Future Draft Capital</p>
           </div>
         </div>
         
-        <div className="h-[550px] w-full relative bg-slate-950/50 rounded-xl p-4 border border-slate-800">
+        <div className="h-[550px] w-full relative bg-zinc-950/50 rounded-xl p-4 border border-zinc-800">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -366,13 +366,13 @@ export default function DynastyBrainApp() {
           
           {/* Quadrant Labels */}
           <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-indigo-500">Dynasty Juggernaut</span>
+            <span className="text-xl font-bold uppercase tracking-wider text-amber-500">Dynasty Juggernaut</span>
           </div>
           <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
             <span className="text-xl font-bold uppercase tracking-wider text-emerald-500">Rebuilding</span>
           </div>
           <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-slate-500">Purgatory</span>
+            <span className="text-xl font-bold uppercase tracking-wider text-zinc-500">Purgatory</span>
           </div>
           <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
             <span className="text-xl font-bold uppercase tracking-wider text-rose-500">All-In Contender</span>
@@ -386,30 +386,30 @@ export default function DynastyBrainApp() {
   const AutopsyTab = () => {
     if (!autopsyData) {
       return (
-        <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-12 text-center shadow-xl">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-12 text-center shadow-xl">
           <ArrowRightLeft className="text-purple-500 mx-auto mb-4" size={48} />
           <h3 className="text-2xl font-black text-white italic mb-2">NO TRADES DETECTED</h3>
-          <p className="text-slate-400">There are no completed trades in this league yet.</p>
+          <p className="text-zinc-400">There are no completed trades in this league yet.</p>
         </div>
       );
     }
 
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl p-6 shadow-xl">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <ArrowRightLeft className="text-purple-500" size={32} />
                 <h3 className="text-3xl font-black text-white italic tracking-tight">TRADE AUTOPSY</h3>
               </div>
-              <p className="text-slate-400 text-sm">Analyzing the most recent transaction based on actual points scored since execution.</p>
+              <p className="text-zinc-400 text-sm">Analyzing the most recent transaction based on actual points scored since execution.</p>
             </div>
             <div className="flex items-center gap-4">
               <select 
                 value={selectedTrade}
                 onChange={(e) => handleTradeSelect(e.target.value)}
-                className="bg-slate-950 border border-slate-700 text-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500"
+                className="bg-zinc-950 border border-zinc-700 text-zinc-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500"
               >
                 <option value="">-- Most Recent Trade --</option>
                 {tradesList.map(t => (
@@ -418,35 +418,35 @@ export default function DynastyBrainApp() {
                   </option>
                 ))}
               </select>
-              <div className="px-4 py-2 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-slate-400 flex items-center gap-2">
-                <Activity size={14} className="text-cyan-500" /> LIVE DATA SYNC
+              <div className="px-4 py-2 bg-zinc-950 rounded-lg border border-zinc-800 text-xs font-mono text-zinc-400 flex items-center gap-2">
+                <Activity size={14} className="text-orange-500" /> LIVE DATA SYNC
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-xl p-6 relative overflow-hidden shadow-2xl">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent shadow-[0_0_20px_rgba(168,85,247,0.8)]"></div>
             
             <div className="text-center mb-10 mt-4">
-              <p className="text-slate-500 font-mono text-xs tracking-widest uppercase mb-3">Executed: {autopsyData.date}</p>
+              <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase mb-3">Executed: {autopsyData.date}</p>
               <div className="inline-flex items-center gap-2 bg-purple-950/40 text-purple-400 px-6 py-2 rounded-full text-sm font-black tracking-widest border border-purple-900/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
                 <ShieldAlert size={16} /> FLEECE ALERT
               </div>
             </div>
 
             <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative">
-              <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-[1px] bg-slate-800 -translate-y-1/2 z-0"></div>
+              <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-[1px] bg-zinc-800 -translate-y-1/2 z-0"></div>
 
               {/* Team A */}
-              <div className="w-full md:w-[45%] bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-xl border border-green-900/30 shadow-[0_0_20px_rgba(34,197,94,0.05)] relative z-10">
+              <div className="w-full md:w-[45%] bg-gradient-to-b from-zinc-900 to-zinc-950 p-6 rounded-xl border border-green-900/30 shadow-[0_0_20px_rgba(34,197,94,0.05)] relative z-10">
                 <div className="text-center mb-6">
                   <h4 className="text-white font-bold text-lg">{autopsyData.teamA}</h4>
                   <p className="text-green-500/80 text-xs font-mono uppercase mt-1">Received</p>
                 </div>
                 <div className="space-y-3">
                   {(autopsyData.assetsA || []).map((asset: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800/50 hover:border-green-900/50 transition-colors">
-                      <span className="text-slate-200 font-medium">{asset.name}</span>
+                    <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-lg border border-zinc-800/50 hover:border-green-900/50 transition-colors">
+                      <span className="text-zinc-200 font-medium">{asset.name}</span>
                       <span className="text-green-400 font-mono font-bold">+{asset.pointsSince} pts</span>
                     </div>
                   ))}
@@ -455,21 +455,21 @@ export default function DynastyBrainApp() {
 
               {/* VS */}
               <div className="flex-shrink-0 flex items-center justify-center relative z-10 py-4 md:py-0">
-                <div className="w-12 h-12 bg-slate-950 rounded-full border border-slate-800 flex items-center justify-center shadow-lg">
-                  <span className="text-slate-600 font-black italic">VS</span>
+                <div className="w-12 h-12 bg-zinc-950 rounded-full border border-zinc-800 flex items-center justify-center shadow-lg">
+                  <span className="text-zinc-600 font-black italic">VS</span>
                 </div>
               </div>
 
               {/* Team B */}
-              <div className="w-full md:w-[45%] bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-xl border border-red-900/30 shadow-[0_0_20px_rgba(248,113,113,0.05)] relative z-10">
+              <div className="w-full md:w-[45%] bg-gradient-to-b from-zinc-900 to-zinc-950 p-6 rounded-xl border border-red-900/30 shadow-[0_0_20px_rgba(248,113,113,0.05)] relative z-10">
                 <div className="text-center mb-6">
                   <h4 className="text-white font-bold text-lg">{autopsyData.teamB}</h4>
                   <p className="text-red-500/80 text-xs font-mono uppercase mt-1">Received</p>
                 </div>
                 <div className="space-y-3">
                   {(autopsyData.assetsB || []).map((asset: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800/50 hover:border-red-900/50 transition-colors">
-                      <span className="text-slate-200 font-medium">{asset.name}</span>
+                    <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-lg border border-zinc-800/50 hover:border-red-900/50 transition-colors">
+                      <span className="text-zinc-200 font-medium">{asset.name}</span>
                       <span className="text-red-400 font-mono font-bold">+{asset.pointsSince} pts</span>
                     </div>
                   ))}
@@ -477,12 +477,12 @@ export default function DynastyBrainApp() {
               </div>
             </div>
 
-            <div className="mt-10 text-center bg-slate-900/50 py-6 rounded-xl border border-slate-800">
-              <p className="text-slate-500 text-xs font-mono uppercase tracking-widest mb-2">Net Point Differential</p>
+            <div className="mt-10 text-center bg-zinc-900/50 py-6 rounded-xl border border-zinc-800">
+              <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest mb-2">Net Point Differential</p>
               <p className="text-5xl font-black text-green-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)] tracking-tighter">
                 {autopsyData.netDifference}
               </p>
-              <p className="text-slate-400 text-sm mt-4 italic max-w-lg mx-auto">
+              <p className="text-zinc-400 text-sm mt-4 italic max-w-lg mx-auto">
                 "{autopsyData.winner_name} didn't just win a trade, they funded a dynasty. This asset mismanagement should be reviewed by the commissioner."
               </p>
             </div>
@@ -503,7 +503,7 @@ export default function DynastyBrainApp() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Tab Navigation Area */}
-      <div className="border-b border-slate-800 bg-slate-900/50 sticky top-0 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
+      <div className="border-b border-zinc-800 bg-zinc-900/50 sticky top-0 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
         <div className="flex gap-2 p-2 max-w-6xl mx-auto overflow-x-auto hide-scrollbar">
           {[
             { id: 'action', label: 'Action Center', icon: <Target size={18} /> },
@@ -517,8 +517,8 @@ export default function DynastyBrainApp() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
                 activeTab === tab.id 
-                  ? 'bg-cyan-500/10 text-cyan-400 shadow-[inset_0_0_10px_rgba(6,182,212,0.2)] border border-cyan-500/30' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent'
+                  ? 'bg-orange-500/10 text-orange-400 shadow-[inset_0_0_10px_rgba(6,182,212,0.2)] border border-orange-500/30' 
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 border border-transparent'
               }`}
             >
               {tab.icon} {tab.label}
@@ -537,19 +537,19 @@ export default function DynastyBrainApp() {
       </div>
 
       {/* Persistent Ticker */}
-      <div className="fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-xl border-t border-cyan-900/50 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+      <div className="fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-xl border-t border-orange-900/50 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
         <div className="flex items-stretch h-10">
-          <div className="bg-cyan-600 text-white font-black italic px-4 flex items-center justify-center gap-2 z-20 shadow-[5px_0_15px_rgba(0,0,0,0.8)] min-w-[120px]">
+          <div className="bg-orange-600 text-white font-black italic px-4 flex items-center justify-center gap-2 z-20 shadow-[5px_0_15px_rgba(0,0,0,0.8)] min-w-[120px]">
             <AlertTriangle size={16} /> BREAKING
           </div>
-          <div className="flex-1 overflow-hidden relative flex items-center bg-slate-900/50">
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-950/90 to-transparent z-10"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950/90 to-transparent z-10"></div>
+          <div className="flex-1 overflow-hidden relative flex items-center bg-zinc-900/50">
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-zinc-950/90 to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-950/90 to-transparent z-10"></div>
             
             <div className="animate-[marquee_30s_linear_infinite] whitespace-nowrap inline-flex items-center">
               {[...TICKER_MESSAGES, ...TICKER_MESSAGES].map((msg, i) => (
-                <span key={i} className="text-cyan-100 font-mono text-[13px] inline-flex items-center">
-                  <span className="mx-6 text-cyan-700">|</span>
+                <span key={i} className="text-orange-100 font-mono text-[13px] inline-flex items-center">
+                  <span className="mx-6 text-orange-700">|</span>
                   {msg}
                 </span>
               ))}

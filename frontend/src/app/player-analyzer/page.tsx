@@ -60,14 +60,14 @@ export default function PlayerAnalyzer() {
     const sorted = [...playersData].sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0)).slice(0, 10);
     
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
-        <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-800">
-          <h3 className="font-semibold text-slate-200">{title}</h3>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col">
+        <div className="bg-zinc-800/50 px-4 py-3 border-b border-zinc-800">
+          <h3 className="font-semibold text-zinc-200">{title}</h3>
         </div>
         <div className="overflow-x-auto flex-1 p-4">
           <table className="w-full min-w-[600px] text-sm text-left">
             <thead>
-              <tr className="text-slate-400 border-b border-slate-800">
+              <tr className="text-zinc-400 border-b border-zinc-800">
                 <th className="pb-2 font-medium">Rank</th>
                 <th className="pb-2 font-medium">Player</th>
                 <th className="pb-2 font-medium">Team</th>
@@ -78,12 +78,12 @@ export default function PlayerAnalyzer() {
             </thead>
             <tbody>
               {sorted.map((p, idx) => (
-                <tr key={p.player_id} className="border-b border-slate-800/50 last:border-0 hover:bg-slate-800/20">
-                  <td className="py-2 text-slate-500">{idx + 1}</td>
-                  <td className="py-2 font-medium text-indigo-400">{p.player_name}</td>
-                  <td className="py-2 text-slate-300">{p.recent_team}</td>
+                <tr key={p.player_id} className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-800/20">
+                  <td className="py-2 text-zinc-500">{idx + 1}</td>
+                  <td className="py-2 font-medium text-amber-400">{p.player_name}</td>
+                  <td className="py-2 text-zinc-300">{p.recent_team}</td>
                   {cols.map(c => (
-                    <td key={c.key} className="py-2 text-right text-slate-300">
+                    <td key={c.key} className="py-2 text-right text-zinc-300">
                       {c.isFloat ? (p[c.key] || 0).toFixed(1) : (p[c.key] || 0)}
                     </td>
                   ))}
@@ -91,7 +91,7 @@ export default function PlayerAnalyzer() {
               ))}
               {sorted.length === 0 && !loading && (
                 <tr>
-                  <td colSpan={3 + cols.length} className="py-4 text-center text-slate-500">No data available</td>
+                  <td colSpan={3 + cols.length} className="py-4 text-center text-zinc-500">No data available</td>
                 </tr>
               )}
             </tbody>
@@ -120,22 +120,22 @@ export default function PlayerAnalyzer() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-              <Activity className="text-indigo-500" /> Player Analyzer
+              <Activity className="text-amber-500" /> Player Analyzer
             </h1>
             {!loading && !errorMsg && (
-              <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded-full">
+              <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-1 rounded-full">
                 {playersData.length} players loaded
               </span>
             )}
           </div>
-          <p className="text-slate-400 mt-2 mb-4">Explore league-wide leaderboards for targets, redzone usage, and advanced metrics inspired by NFL Savant.</p>
+          <p className="text-zinc-400 mt-2 mb-4">Explore league-wide leaderboards for targets, redzone usage, and advanced metrics inspired by NFL Savant.</p>
           <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
         </div>
 
         {/* Player Search Bar */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 w-full md:w-64 relative z-50">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 w-full md:w-64 relative z-50">
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium text-slate-300">Player Search</label>
+            <label className="text-sm font-medium text-zinc-300">Player Search</label>
           </div>
           <div className="relative">
             <button 
@@ -144,7 +144,7 @@ export default function PlayerAnalyzer() {
                 if (found) setSelectedPlayer(found);
                 setShowSuggestions(false);
               }}
-              className="absolute left-2.5 top-2 text-slate-500 hover:text-indigo-400 cursor-pointer z-10"
+              className="absolute left-2.5 top-2 text-zinc-500 hover:text-amber-400 cursor-pointer z-10"
             >
               <Search size={16} />
             </button>
@@ -164,28 +164,28 @@ export default function PlayerAnalyzer() {
               }}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               placeholder="Search player..."
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-zinc-950 border border-zinc-700 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
             />
             {showSuggestions && searchInput.length > 1 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl max-h-48 overflow-y-auto z-[100]">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl max-h-48 overflow-y-auto z-[100]">
                 {playersData
                   .filter(p => p.player_name.toLowerCase().includes(searchInput.toLowerCase()))
                   .slice(0, 10)
                   .map(p => (
                     <div 
                       key={p.player_id}
-                      className="px-3 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer"
+                      className="px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-white cursor-pointer"
                       onClick={() => {
                         setSearchInput(p.player_name);
                         setSelectedPlayer(p);
                         setShowSuggestions(false);
                       }}
                     >
-                      {p.player_name} <span className="text-xs text-slate-500">{p.recent_team}</span>
+                      {p.player_name} <span className="text-xs text-zinc-500">{p.recent_team}</span>
                     </div>
                   ))}
                 {playersData.filter(p => p.player_name.toLowerCase().includes(searchInput.toLowerCase())).length === 0 && (
-                  <div className="px-3 py-2 text-sm text-slate-500 italic">No players found</div>
+                  <div className="px-3 py-2 text-sm text-zinc-500 italic">No players found</div>
                 )}
               </div>
             )}
@@ -195,7 +195,7 @@ export default function PlayerAnalyzer() {
 
       {loading ? (
         <div className="flex flex-1 items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
         </div>
       ) : errorMsg ? (
         <div className="flex flex-1 flex-col items-center justify-center text-rose-500 gap-2">
@@ -324,26 +324,26 @@ export default function PlayerAnalyzer() {
 
       {selectedPlayer && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 sm:p-8">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl relative max-h-[95vh] overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-5xl relative max-h-[95vh] overflow-hidden shadow-2xl flex flex-col">
             
             {/* Header */}
-            <div className="bg-slate-800 border-b border-slate-700 p-6 flex justify-between items-center shrink-0">
+            <div className="bg-zinc-800 border-b border-zinc-700 p-6 flex justify-between items-center shrink-0">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-1 flex items-center gap-3">
                   {selectedPlayer.player_name}
                 </h2>
-                <div className="text-slate-400 font-medium tracking-wide text-sm flex gap-3 mt-1">
-                  <span className="bg-slate-700 text-slate-200 px-2.5 py-0.5 rounded">
+                <div className="text-zinc-400 font-medium tracking-wide text-sm flex gap-3 mt-1">
+                  <span className="bg-zinc-700 text-zinc-200 px-2.5 py-0.5 rounded">
                     {selectedPlayer.position}
                   </span>
-                  <span className="bg-slate-700 text-slate-200 px-2.5 py-0.5 rounded">
+                  <span className="bg-zinc-700 text-zinc-200 px-2.5 py-0.5 rounded">
                     {selectedPlayer.recent_team || 'FA'}
                   </span>
                   <span>{selectedPlayer.season} Season</span>
                 </div>
               </div>
               <button 
-                className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-300 hover:bg-rose-500 hover:text-white transition-colors"
+                className="h-10 w-10 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 hover:bg-rose-500 hover:text-white transition-colors"
                 onClick={() => setSelectedPlayer(null)}
               >
                 ✕
@@ -355,28 +355,28 @@ export default function PlayerAnalyzer() {
               
               {/* Top Level Summary Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Targets</div>
-                  <div className="text-2xl font-black text-indigo-400">{selectedPlayer.targets || 0}</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">Targets</div>
+                  <div className="text-2xl font-black text-amber-400">{selectedPlayer.targets || 0}</div>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Receptions</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">Receptions</div>
                   <div className="text-2xl font-black text-emerald-400">{selectedPlayer.receptions || 0}</div>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Total Yds</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">Total Yds</div>
                   <div className="text-2xl font-black text-white">{selectedPlayer.total_yards || 0}</div>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Catch %</div>
-                  <div className="text-2xl font-black text-slate-300">{selectedPlayer.catch_rate !== null ? `${((selectedPlayer.catch_rate || 0) * 100).toFixed(1)}%` : '0%'}</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">Catch %</div>
+                  <div className="text-2xl font-black text-zinc-300">{selectedPlayer.catch_rate !== null ? `${((selectedPlayer.catch_rate || 0) * 100).toFixed(1)}%` : '0%'}</div>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">RZ Tgts</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">RZ Tgts</div>
                   <div className="text-2xl font-black text-rose-400">{selectedPlayer.redzone_targets || 0}</div>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center shadow-inner">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Air Yds/Tgt</div>
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center shadow-inner">
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-1">Air Yds/Tgt</div>
                   <div className="text-2xl font-black text-amber-400">{(selectedPlayer.air_yards_per_target || 0).toFixed(1)}</div>
                 </div>
               </div>
@@ -385,88 +385,88 @@ export default function PlayerAnalyzer() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
                 {/* Mock Targets by Down */}
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-5">
-                  <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Targets by Down</h3>
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                  <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Targets by Down</h3>
                   <div className="h-48 flex items-end justify-between gap-2 pt-4">
-                     <div className="w-full bg-slate-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-slate-700" style={{ height: '35%' }}>
-                       <div className="absolute -top-6 w-full text-center text-xs text-indigo-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.35)}</div>
-                       <div className="bg-indigo-500 h-full w-full rounded-t opacity-80"></div>
-                       <div className="text-center text-xs text-slate-400 mt-2 font-semibold">1st</div>
+                     <div className="w-full bg-zinc-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-zinc-700" style={{ height: '35%' }}>
+                       <div className="absolute -top-6 w-full text-center text-xs text-amber-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.35)}</div>
+                       <div className="bg-amber-500 h-full w-full rounded-t opacity-80"></div>
+                       <div className="text-center text-xs text-zinc-400 mt-2 font-semibold">1st</div>
                      </div>
-                     <div className="w-full bg-slate-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-slate-700" style={{ height: '40%' }}>
-                       <div className="absolute -top-6 w-full text-center text-xs text-indigo-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.40)}</div>
-                       <div className="bg-indigo-500 h-full w-full rounded-t opacity-80"></div>
-                       <div className="text-center text-xs text-slate-400 mt-2 font-semibold">2nd</div>
+                     <div className="w-full bg-zinc-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-zinc-700" style={{ height: '40%' }}>
+                       <div className="absolute -top-6 w-full text-center text-xs text-amber-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.40)}</div>
+                       <div className="bg-amber-500 h-full w-full rounded-t opacity-80"></div>
+                       <div className="text-center text-xs text-zinc-400 mt-2 font-semibold">2nd</div>
                      </div>
-                     <div className="w-full bg-slate-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-slate-700" style={{ height: '20%' }}>
-                       <div className="absolute -top-6 w-full text-center text-xs text-indigo-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.20)}</div>
-                       <div className="bg-indigo-500 h-full w-full rounded-t opacity-80"></div>
-                       <div className="text-center text-xs text-slate-400 mt-2 font-semibold">3rd</div>
+                     <div className="w-full bg-zinc-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-zinc-700" style={{ height: '20%' }}>
+                       <div className="absolute -top-6 w-full text-center text-xs text-amber-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.20)}</div>
+                       <div className="bg-amber-500 h-full w-full rounded-t opacity-80"></div>
+                       <div className="text-center text-xs text-zinc-400 mt-2 font-semibold">3rd</div>
                      </div>
-                     <div className="w-full bg-slate-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-slate-700" style={{ height: '5%' }}>
-                       <div className="absolute -top-6 w-full text-center text-xs text-indigo-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.05)}</div>
-                       <div className="bg-indigo-500 h-full w-full rounded-t opacity-80"></div>
-                       <div className="text-center text-xs text-slate-400 mt-2 font-semibold">4th</div>
+                     <div className="w-full bg-zinc-800 rounded-t flex flex-col justify-end relative transition-all hover:bg-zinc-700" style={{ height: '5%' }}>
+                       <div className="absolute -top-6 w-full text-center text-xs text-amber-300 font-bold">{Math.round((selectedPlayer.targets || 0) * 0.05)}</div>
+                       <div className="bg-amber-500 h-full w-full rounded-t opacity-80"></div>
+                       <div className="text-center text-xs text-zinc-400 mt-2 font-semibold">4th</div>
                      </div>
                   </div>
                 </div>
 
                 {/* Mock Targets by Pass Direction */}
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-5">
-                  <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Targets by Pass Direction</h3>
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                  <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Targets by Pass Direction</h3>
                   <div className="grid grid-cols-3 gap-2 h-48 pt-2">
                     {/* Deep Left */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Deep Left</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Deep Left</span>
                       <span className="text-xl font-bold text-emerald-400">{Math.round((selectedPlayer.targets || 0) * 0.15)}</span>
                     </div>
                     {/* Deep Middle */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Deep Mid</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Deep Mid</span>
                       <span className="text-xl font-bold text-emerald-400">{Math.round((selectedPlayer.targets || 0) * 0.05)}</span>
                     </div>
                     {/* Deep Right */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Deep Right</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Deep Right</span>
                       <span className="text-xl font-bold text-emerald-400">{Math.round((selectedPlayer.targets || 0) * 0.12)}</span>
                     </div>
                     {/* Short Left */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Short Left</span>
-                      <span className="text-xl font-bold text-indigo-400">{Math.round((selectedPlayer.targets || 0) * 0.25)}</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Short Left</span>
+                      <span className="text-xl font-bold text-amber-400">{Math.round((selectedPlayer.targets || 0) * 0.25)}</span>
                     </div>
                     {/* Short Middle */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Short Mid</span>
-                      <span className="text-xl font-bold text-indigo-400">{Math.round((selectedPlayer.targets || 0) * 0.18)}</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Short Mid</span>
+                      <span className="text-xl font-bold text-amber-400">{Math.round((selectedPlayer.targets || 0) * 0.18)}</span>
                     </div>
                     {/* Short Right */}
-                    <div className="bg-slate-800/50 rounded flex flex-col items-center justify-center p-2 border border-slate-700/50 hover:bg-slate-800 transition-colors">
-                      <span className="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Short Right</span>
-                      <span className="text-xl font-bold text-indigo-400">{Math.round((selectedPlayer.targets || 0) * 0.25)}</span>
+                    <div className="bg-zinc-800/50 rounded flex flex-col items-center justify-center p-2 border border-zinc-700/50 hover:bg-zinc-800 transition-colors">
+                      <span className="text-xs text-zinc-500 mb-1 font-semibold uppercase tracking-wider">Short Right</span>
+                      <span className="text-xl font-bold text-amber-400">{Math.round((selectedPlayer.targets || 0) * 0.25)}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Advanced Efficiency Stats */}
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-5">
-                <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Advanced Efficiency</h3>
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Advanced Efficiency</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
-                    <div className="text-xs text-slate-500 uppercase font-semibold mb-1">YAC / Rec</div>
+                    <div className="text-xs text-zinc-500 uppercase font-semibold mb-1">YAC / Rec</div>
                     <div className="text-2xl font-black text-white">{(selectedPlayer.yac_per_reception || 0).toFixed(1)}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 uppercase font-semibold mb-1">Rec EPA / Target</div>
+                    <div className="text-xs text-zinc-500 uppercase font-semibold mb-1">Rec EPA / Target</div>
                     <div className="text-2xl font-black text-white">{(selectedPlayer.rec_epa_per_target || 0).toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 uppercase font-semibold mb-1">Rush EPA / Att</div>
+                    <div className="text-xs text-zinc-500 uppercase font-semibold mb-1">Rush EPA / Att</div>
                     <div className="text-2xl font-black text-white">{(selectedPlayer.rush_epa_per_attempt || 0).toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 uppercase font-semibold mb-1">Target Rate</div>
+                    <div className="text-xs text-zinc-500 uppercase font-semibold mb-1">Target Rate</div>
                     <div className="text-2xl font-black text-white">{selectedPlayer.target_rate !== null ? `${((selectedPlayer.target_rate || 0) * 100).toFixed(1)}%` : 'N/A'}</div>
                   </div>
                 </div>

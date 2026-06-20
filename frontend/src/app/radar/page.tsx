@@ -85,9 +85,9 @@ export default function PlayerRadar() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-xl text-sm">
-          <p className="font-bold text-slate-100 mb-2">{label}</p>
-          <p className="text-indigo-400">
+        <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-xl text-sm">
+          <p className="font-bold text-zinc-100 mb-2">{label}</p>
+          <p className="text-amber-400">
             {player1?.player_name}: {payload[0].payload.rawA.toFixed(2)}
           </p>
           <p className="text-rose-400">
@@ -105,37 +105,37 @@ export default function PlayerRadar() {
     <div className="max-w-6xl mx-auto space-y-8 h-full flex flex-col">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-          <RadarIcon className="text-indigo-500" /> Player Radar
+          <RadarIcon className="text-amber-500" /> Player Radar
         </h1>
-        <p className="text-slate-400 mt-2 mb-4">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
+        <p className="text-zinc-400 mt-2 mb-4">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
         <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-          <label className="text-sm font-medium text-slate-400">Player 1 (Blue)</label>
+        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl space-y-2">
+          <label className="text-sm font-medium text-zinc-400">Player 1 (Blue)</label>
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
+            <Search className="absolute left-3 top-2.5 text-zinc-500" size={18} />
             <input 
               type="text" 
               value={player1Search}
               onChange={e => setPlayer1Search(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="Search player..."
             />
           </div>
-          {player1 && <p className="text-xs text-indigo-400 mt-1">Found: {player1.player_name} ({player1.recent_team})</p>}
+          {player1 && <p className="text-xs text-amber-400 mt-1">Found: {player1.player_name} ({player1.recent_team})</p>}
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-          <label className="text-sm font-medium text-slate-400">Player 2 (Red)</label>
+        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl space-y-2">
+          <label className="text-sm font-medium text-zinc-400">Player 2 (Red)</label>
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
+            <Search className="absolute left-3 top-2.5 text-zinc-500" size={18} />
             <input 
               type="text" 
               value={player2Search}
               onChange={e => setPlayer2Search(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
               placeholder="Search player..."
             />
           </div>
@@ -143,13 +143,13 @@ export default function PlayerRadar() {
         </div>
       </div>
 
-      <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-8 min-h-[500px]">
+      <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-8 min-h-[500px]">
         {loading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
           </div>
         ) : (!player1 || !player2) ? (
-          <div className="flex h-full items-center justify-center text-slate-500">
+          <div className="flex h-full items-center justify-center text-zinc-500">
             Search for two valid players to display radar chart.
           </div>
         ) : (

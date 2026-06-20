@@ -10,7 +10,7 @@ export default function SeasonSelector({ value, onChange }: SeasonSelectorProps)
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 px-3 py-1.5"
+      className="bg-zinc-900 border border-zinc-700 text-zinc-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 px-3 py-1.5"
     >
       <option value="2026">2026 (Live Current)</option>
       <option value="2025">2025 Season</option>

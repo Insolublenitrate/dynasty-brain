@@ -51,10 +51,10 @@ export default function CrossReference() {
     if (active && payload && payload.length) {
       const p = payload[0].payload;
       return (
-        <div className="bg-slate-900 border border-slate-700 p-4 rounded-lg shadow-xl text-sm">
-          <p className="font-bold text-slate-100">{p.player_name} ({p.recent_team})</p>
-          <p className="text-slate-400 mt-2">{METRICS.find(m => m.id === xMetric)?.label}: <span className="text-slate-200">{typeof p.x === 'number' && p.x < 2 ? p.x.toFixed(2) : p.x.toFixed(1)}</span></p>
-          <p className="text-slate-400">{METRICS.find(m => m.id === yMetric)?.label}: <span className="text-slate-200">{typeof p.y === 'number' && p.y < 2 ? p.y.toFixed(2) : p.y.toFixed(1)}</span></p>
+        <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-xl text-sm">
+          <p className="font-bold text-zinc-100">{p.player_name} ({p.recent_team})</p>
+          <p className="text-zinc-400 mt-2">{METRICS.find(m => m.id === xMetric)?.label}: <span className="text-zinc-200">{typeof p.x === 'number' && p.x < 2 ? p.x.toFixed(2) : p.x.toFixed(1)}</span></p>
+          <p className="text-zinc-400">{METRICS.find(m => m.id === yMetric)?.label}: <span className="text-zinc-200">{typeof p.y === 'number' && p.y < 2 ? p.y.toFixed(2) : p.y.toFixed(1)}</span></p>
         </div>
       );
     }
@@ -67,15 +67,15 @@ export default function CrossReference() {
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
           <GitCompareArrows className="text-rose-500" /> Cross Reference
         </h1>
-        <p className="text-slate-400 mt-2 mb-4">Deep dive into underlying metric correlations.</p>
+        <p className="text-zinc-400 mt-2 mb-4">Deep dive into underlying metric correlations.</p>
         <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">
+      <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <label className="text-sm font-medium text-slate-400">Position:</label>
+          <label className="text-sm font-medium text-zinc-400">Position:</label>
           <select 
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
+            className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
             value={position} onChange={e => setPosition(e.target.value)}
           >
             <option value="QB">QB</option>
@@ -85,18 +85,18 @@ export default function CrossReference() {
           </select>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:ml-4">
-          <label className="text-sm font-medium text-slate-400 whitespace-nowrap">X-Axis:</label>
+          <label className="text-sm font-medium text-zinc-400 whitespace-nowrap">X-Axis:</label>
           <select 
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
+            className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
             value={xMetric} onChange={e => setXMetric(e.target.value)}
           >
             {METRICS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
           </select>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:ml-4">
-          <label className="text-sm font-medium text-slate-400 whitespace-nowrap">Y-Axis:</label>
+          <label className="text-sm font-medium text-zinc-400 whitespace-nowrap">Y-Axis:</label>
           <select 
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
+            className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm text-white w-full sm:w-auto"
             value={yMetric} onChange={e => setYMetric(e.target.value)}
           >
             {METRICS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
@@ -104,7 +104,7 @@ export default function CrossReference() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-[500px] bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-8 w-full">
+      <div className="flex-1 min-h-[500px] bg-zinc-900 border border-zinc-800 rounded-xl p-4 md:p-8 w-full">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>

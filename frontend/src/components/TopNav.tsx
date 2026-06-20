@@ -11,22 +11,22 @@ export default function TopNav() {
     const isActive = pathname === path || (path === '/dynasty-room' && pathname === '/');
     return `flex items-center gap-2 px-3 py-2 rounded-md text-sm font-bold transition-all whitespace-nowrap ${
       isActive 
-        ? 'bg-slate-800 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.15)] border border-slate-700' 
-        : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 border border-transparent'
+        ? 'bg-zinc-800 text-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.15)] border border-zinc-700' 
+        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 border border-transparent'
     }`;
   };
 
   return (
-    <header className="bg-slate-950/80 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
+    <header className="bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 sticky top-0 z-50">
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         
         {/* Logo */}
         <Link href="/dynasty-room" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.6)]">
-            <Activity size={20} className="text-slate-950" />
+          <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+            <Activity size={20} className="text-zinc-950" />
           </div>
           <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden lg:block">
-            WAIVER <span className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">WIRETAP</span>
+            WAIVER <span className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]">WIRETAP</span>
           </h1>
         </Link>
         
@@ -54,7 +54,7 @@ export default function TopNav() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3 ml-4">
-          <button className="text-slate-500 hover:text-cyan-400 transition-colors p-2 rounded-full hover:bg-slate-800 shrink-0">
+          <button className="text-zinc-500 hover:text-orange-500 transition-colors p-2 rounded-full hover:bg-zinc-800 shrink-0">
             <Settings size={20} />
           </button>
         </div>

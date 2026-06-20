@@ -105,18 +105,18 @@ export default function GlossaryPage() {
     <div className="max-w-4xl mx-auto space-y-8 h-full flex flex-col py-8 px-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Metrics Glossary</h1>
-        <p className="text-slate-400">Definitions and explanations for the advanced analytics metrics used throughout Waiver WireTap.</p>
+        <p className="text-zinc-400">Definitions and explanations for the advanced analytics metrics used throughout Waiver WireTap.</p>
       </div>
 
       <div className="space-y-8">
         {categories.map(category => (
           <div key={category} className="space-y-4">
-            <h2 className="text-2xl font-semibold text-indigo-400 border-b border-slate-800 pb-2">{category}</h2>
+            <h2 className="text-2xl font-semibold text-amber-400 border-b border-zinc-800 pb-2">{category}</h2>
             <div className="grid gap-4">
               {terms.filter(t => t.category === category).map(term => (
-                <div key={term.term} className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors">
+                <div key={term.term} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition-colors">
                   <h3 className="text-xl font-bold text-white mb-2">{term.term}</h3>
-                  <p className="text-slate-400 leading-relaxed">{term.definition}</p>
+                  <p className="text-zinc-400 leading-relaxed">{term.definition}</p>
                 </div>
               ))}
             </div>

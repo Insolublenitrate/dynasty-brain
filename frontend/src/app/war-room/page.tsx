@@ -186,7 +186,7 @@ export default function WarRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col">
+    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans flex flex-col">
       {/* Ticker Header */}
       <div className="bg-red-600 text-white font-bold py-2 overflow-hidden flex items-center shadow-lg border-b border-red-800">
         <div className="bg-black px-4 py-1 ml-2 rounded text-xs tracking-widest uppercase flex items-center gap-2 z-10 shrink-0">
@@ -215,7 +215,7 @@ export default function WarRoomPage() {
               <Flame size={40} className="text-orange-500" />
               The Dynasty War Room
             </h1>
-            <p className="text-slate-400 mt-2 text-lg">
+            <p className="text-zinc-400 mt-2 text-lg">
               Live broadcast dashboard. Ruthless, data-driven roasts powered by AI.
             </p>
           </div>
@@ -227,26 +227,26 @@ export default function WarRoomPage() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* Visual Dashboard */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden min-h-[500px] flex flex-col justify-center">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl relative overflow-hidden min-h-[500px] flex flex-col justify-center">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
               
               {scenario === "MATCHUP PREVIEW" && teamAData && teamBData ? (
                 <div className="space-y-8 animate-in fade-in duration-500">
                   <h3 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 mb-6">
-                    <Users size={24} className="text-indigo-400"/> Matchup Visualizer
+                    <Users size={24} className="text-amber-400"/> Matchup Visualizer
                   </h3>
                   
-                  <div className="grid grid-cols-3 items-center text-center mb-8 bg-slate-950 p-4 sm:p-6 rounded-xl border border-slate-800">
+                  <div className="grid grid-cols-3 items-center text-center mb-8 bg-zinc-950 p-4 sm:p-6 rounded-xl border border-zinc-800">
                     <div className="space-y-1 sm:space-y-2 overflow-hidden">
                       <h4 className="text-sm sm:text-2xl font-black text-blue-400 truncate px-1">{getTeamName(teamAData.roster_id)}</h4>
                       <div className="text-3xl sm:text-5xl font-black text-white">{Math.round(teamAData.power_index)}</div>
-                      <div className="text-[10px] sm:text-sm text-slate-400 uppercase tracking-widest hidden sm:block">Power Index</div>
+                      <div className="text-[10px] sm:text-sm text-zinc-400 uppercase tracking-widest hidden sm:block">Power Index</div>
                     </div>
-                    <div className="text-2xl sm:text-4xl font-black text-slate-700 italic">VS</div>
+                    <div className="text-2xl sm:text-4xl font-black text-zinc-700 italic">VS</div>
                     <div className="space-y-1 sm:space-y-2 overflow-hidden">
                       <h4 className="text-sm sm:text-2xl font-black text-red-400 truncate px-1">{getTeamName(teamBData.roster_id)}</h4>
                       <div className="text-3xl sm:text-5xl font-black text-white">{Math.round(teamBData.power_index)}</div>
-                      <div className="text-[10px] sm:text-sm text-slate-400 uppercase tracking-widest hidden sm:block">Power Index</div>
+                      <div className="text-[10px] sm:text-sm text-zinc-400 uppercase tracking-widest hidden sm:block">Power Index</div>
                     </div>
                   </div>
 
@@ -273,19 +273,19 @@ export default function WarRoomPage() {
                    <h3 className="text-2xl font-black text-white uppercase tracking-wider flex justify-center items-center gap-2 mb-6">
                     <GitCompareArrows size={24} className="text-green-400"/> Trade Analyzer
                   </h3>
-                  <div className="bg-slate-950 p-8 rounded-xl border border-slate-800">
-                    <h4 className="text-xl font-bold text-slate-300 mb-4">Assets Exchanged in Week {recentTrades[selectedTradeIndex]?.week}</h4>
-                    <p className="text-lg text-slate-400">
+                  <div className="bg-zinc-950 p-8 rounded-xl border border-zinc-800">
+                    <h4 className="text-xl font-bold text-zinc-300 mb-4">Assets Exchanged in Week {recentTrades[selectedTradeIndex]?.week}</h4>
+                    <p className="text-lg text-zinc-400">
                       Teams involved: <span className="font-bold text-white">{Object.keys(recentTrades[selectedTradeIndex]?.consenter_roster_ids || {}).map(id => getTeamName(id)).join(' & ')}</span>
                     </p>
                     {/* Placeholder for complex trade visuals */}
-                    <div className="mt-8 p-6 bg-slate-900 border border-slate-800 rounded-lg text-slate-500">
+                    <div className="mt-8 p-6 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500">
                        Select a trade to view exact player and pick movements (live integration pending).
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center text-slate-600 space-y-4 h-full">
+                <div className="flex flex-col items-center justify-center text-zinc-600 space-y-4 h-full">
                   <Flame size={64} className="opacity-20" />
                   <p className="text-lg font-medium text-center max-w-sm">
                     Awaiting segment selection...
@@ -299,7 +299,7 @@ export default function WarRoomPage() {
 
           {/* Segment Producer Controls (Right) */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
                 <Activity size={20} className="text-red-400" />
                 Show Producer
@@ -307,7 +307,7 @@ export default function WarRoomPage() {
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Select Segment</label>
+                  <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Select Segment</label>
                   <div className="grid grid-cols-1 gap-2">
                     {SCENARIOS.map(s => (
                       <button
@@ -316,7 +316,7 @@ export default function WarRoomPage() {
                         className={`text-left px-4 py-3 rounded-lg text-sm font-bold transition-all ${
                           scenario === s 
                             ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' 
-                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                            : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'
                         }`}
                       >
                         {s}
@@ -327,9 +327,9 @@ export default function WarRoomPage() {
 
                 {scenario === "MATCHUP PREVIEW" && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Target Matchup</label>
+                    <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Target Matchup</label>
                     <select 
-                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-lg p-3 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg p-3 focus:ring-orange-500 focus:border-orange-500"
                       value={selectedMatchupIndex}
                       onChange={(e) => setSelectedMatchupIndex(Number(e.target.value))}
                     >
@@ -345,9 +345,9 @@ export default function WarRoomPage() {
 
                 {scenario === "TRADE AUTOPSY" && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Target Trade</label>
+                    <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Target Trade</label>
                     <select 
-                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-lg p-3 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg p-3 focus:ring-orange-500 focus:border-orange-500"
                       value={selectedTradeIndex}
                       onChange={(e) => setSelectedTradeIndex(Number(e.target.value))}
                     >
@@ -378,21 +378,21 @@ export default function WarRoomPage() {
             </div>
 
             {/* Quick Stats Panel */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-              <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl">
+              <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <TrendingUp size={16} /> Broadcast Stats
               </h2>
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-800">
-                  <span className="text-slate-300">Total Rosters</span>
+                <div className="flex justify-between items-center pb-2 border-b border-zinc-800">
+                  <span className="text-zinc-300">Total Rosters</span>
                   <span className="text-white font-bold">{rosters.length}</span>
                 </div>
-                <div className="flex justify-between items-center pb-2 border-b border-slate-800">
-                  <span className="text-slate-300">Monitored Trades</span>
+                <div className="flex justify-between items-center pb-2 border-b border-zinc-800">
+                  <span className="text-zinc-300">Monitored Trades</span>
                   <span className="text-white font-bold">{recentTrades.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-300">AI Confidence</span>
+                  <span className="text-zinc-300">AI Confidence</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1"><AlertTriangle size={14}/> 99.9%</span>
                 </div>
               </div>
