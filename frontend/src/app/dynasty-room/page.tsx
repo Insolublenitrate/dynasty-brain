@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
-  AlertTriangle, Swords, Trophy, Crown, Dices 
+  AlertTriangle, Swords, Trophy, Crown, Dices, ChevronDown, Layers
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -54,24 +54,57 @@ export default function DynastyRoomPage() {
   ];
 
   const TABS = [
-    { id: 'action', label: 'Action Center', icon: Target },
-    { id: 'studio', label: 'The Studio', icon: Activity },
-    { id: 'matrix', label: 'Power Matrix', icon: Crosshair },
-    { id: 'power', label: 'Power Tiers', icon: Crown },
-    { id: 'rivalries', label: 'Rivalries & All-Play', icon: Swords },
-    { id: 'records', label: 'Record Book', icon: Trophy },
-    { id: 'simulator', label: 'Matchup Simulator', icon: Dices },
-    { id: 'team', label: 'Team Analyzer', icon: Search },
-    { id: 'trade', label: 'Trade Architect', icon: Briefcase },
-    { id: 'autopsy', label: 'Trade Autopsy', icon: ArrowRightLeft }
+    { id: 'action', label: 'Action Center', shortLabel: 'Action', icon: Target, category: 'Core' },
+    { id: 'studio', label: 'The Studio', shortLabel: 'Studio', icon: Activity, category: 'Core' },
+    { id: 'matrix', label: 'Power Matrix', shortLabel: 'Matrix', icon: Crosshair, category: 'Analytics' },
+    { id: 'power', label: 'Power Tiers', shortLabel: 'Tiers', icon: Crown, category: 'Analytics' },
+    { id: 'rivalries', label: 'Rivalries & All-Play', shortLabel: 'Rivalries', icon: Swords, category: 'Social' },
+    { id: 'records', label: 'Record Book', shortLabel: 'Records', icon: Trophy, category: 'Social' },
+    { id: 'simulator', label: 'Matchup Simulator', shortLabel: 'Simulator', icon: Dices, category: 'Social' },
+    { id: 'team', label: 'Team Analyzer', shortLabel: 'Rosters', icon: Search, category: 'Trades' },
+    { id: 'trade', label: 'Trade Architect', shortLabel: 'Trade', icon: Briefcase, category: 'Trades' },
+    { id: 'autopsy', label: 'Trade Autopsy', shortLabel: 'Autopsy', icon: ArrowRightLeft, category: 'Trades' }
   ];
+
+  const currentTabObj = TABS.find(t => t.id === activeTab) || TABS[0];
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)]">
       
-      {/* Sub-Tab Navigation Header */}
-      <div className="border-b border-zinc-800/80 bg-zinc-900/60 backdrop-blur-md sticky top-16 z-30 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 mb-6 shadow-md">
-        <div className="flex gap-2 max-w-[1440px] mx-auto overflow-x-auto hide-scrollbar">
+      {/* Sub-Tab Navigation Header with Mobile Dropdown & Touch Ribbon */}
+      <div className="border-b border-zinc-800/80 bg-zinc-900/80 backdrop-blur-md sticky top-16 z-30 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 mb-6 shadow-md">
+        
+        {/* Mobile Quick Selector (<sm) */}
+        <div className="sm:hidden mb-2">
+          <div className="relative">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full bg-zinc-950 border border-zinc-700 text-white text-xs font-bold rounded-xl px-3 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-lg"
+            >
+              <optgroup label="⚡ Strategic & Live" className="bg-zinc-900 text-zinc-300">
+                <option value="action">🎯 Action Center</option>
+                <option value="studio">📡 The Studio</option>
+                <option value="matrix">🎯 Power Matrix</option>
+                <option value="power">👑 Dynasty Power Tiers</option>
+              </optgroup>
+              <optgroup label="⚔️ Matchups & Social" className="bg-zinc-900 text-zinc-300">
+                <option value="rivalries">⚔️ Rivalries & All-Play Matrix</option>
+                <option value="records">🏆 Record Book & Hall of Fame</option>
+                <option value="simulator">🎲 Monte Carlo Matchup Simulator</option>
+              </optgroup>
+              <optgroup label="💼 Rosters & Trading" className="bg-zinc-900 text-zinc-300">
+                <option value="team">🔍 Team Analyzer</option>
+                <option value="trade">💼 Trade Architect</option>
+                <option value="autopsy">🔄 Trade Autopsy</option>
+              </optgroup>
+            </select>
+            <ChevronDown size={16} className="absolute right-3 top-3 text-zinc-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Horizontal Touch Scroll Ribbon */}
+        <div className="flex gap-1.5 sm:gap-2 max-w-[1440px] mx-auto overflow-x-auto hide-scrollbar pb-0.5">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -79,7 +112,7 @@ export default function DynastyRoomPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                   isActive 
                     ? 'bg-zinc-800 text-white border shadow-lg' 
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 border border-transparent'
@@ -87,11 +120,12 @@ export default function DynastyRoomPage() {
                 style={isActive ? { 
                   borderColor: currentTheme.border, 
                   boxShadow: `0 0 12px ${currentTheme.glow}`,
-                  backgroundColor: 'rgba(24, 24, 27, 0.9)'
+                  backgroundColor: 'rgba(24, 24, 27, 0.95)'
                 } : {}}
               >
-                <Icon size={16} style={isActive ? { color: currentTheme.primary } : {}} />
-                <span>{tab.label}</span>
+                <Icon size={15} style={isActive ? { color: currentTheme.primary } : {}} className="flex-shrink-0" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="inline sm:hidden">{tab.shortLabel}</span>
               </button>
             );
           })}

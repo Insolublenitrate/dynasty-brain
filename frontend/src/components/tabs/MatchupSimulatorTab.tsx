@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Dices, Sparkles, Swords, Trophy, Shield, TrendingUp, ArrowRight, Play, RefreshCw, BarChart3 } from 'lucide-react';
+import { Dices, Sparkles, Swords, Trophy, Shield, TrendingUp, ArrowRight, Play, RefreshCw, BarChart3, Zap } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -93,7 +93,7 @@ export default function MatchupSimulatorTab() {
           {/* Team A Selector */}
           <div className="sm:col-span-2 bg-zinc-950/80 p-3 rounded-xl border border-zinc-800">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5">
-              Select Home Team
+              Home Team
             </label>
             <select
               value={teamA}
@@ -128,7 +128,7 @@ export default function MatchupSimulatorTab() {
           {/* Team B Selector */}
           <div className="sm:col-span-2 bg-zinc-950/80 p-3 rounded-xl border border-zinc-800">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5">
-              Select Away Team
+              Away Team
             </label>
             <select
               value={teamB}
@@ -152,89 +152,89 @@ export default function MatchupSimulatorTab() {
 
       {/* Tale of the Tape Scoreboard */}
       {simResult && team_a && team_b && (
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-6">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-5">
           
           {/* Clash Banner */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             {/* Team A Card */}
-            <div className={`p-5 rounded-2xl border transition-all ${
+            <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
               team_a.win_prob >= 50 
                 ? 'bg-gradient-to-br from-emerald-950/30 to-zinc-950 border-emerald-500/40 shadow-lg' 
                 : 'bg-zinc-950/80 border-zinc-800'
             }`}>
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2.5 sm:gap-3 overflow-hidden">
                   {team_a.avatar ? (
-                    <img src={`https://sleepercdn.com/avatars/${team_a.avatar}`} className="w-12 h-12 rounded-full border-2 border-zinc-700 object-cover" alt="avatar" />
+                    <img src={`https://sleepercdn.com/avatars/${team_a.avatar}`} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-zinc-700 object-cover flex-shrink-0" alt="avatar" />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-white text-base">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-white text-sm sm:text-base flex-shrink-0">
                       {team_a.name?.slice(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <div>
-                    <h3 className="text-xl font-black text-white truncate">{team_a.name}</h3>
-                    <span className="text-xs font-mono text-zinc-400">Median Proj: {team_a.projected_median} pts</span>
+                  <div className="overflow-hidden">
+                    <h3 className="text-base sm:text-xl font-black text-white truncate">{team_a.name}</h3>
+                    <span className="text-[11px] font-mono text-zinc-400 block">Median: {team_a.projected_median} pts</span>
                   </div>
                 </div>
 
-                <div className="text-right font-mono">
-                  <span className="text-3xl font-black" style={{ color: team_a.win_prob >= 50 ? '#10b981' : '#a1a1aa' }}>
+                <div className="text-right font-mono flex-shrink-0">
+                  <span className="text-2xl sm:text-3xl font-black" style={{ color: team_a.win_prob >= 50 ? '#10b981' : '#a1a1aa' }}>
                     {team_a.win_prob}%
                   </span>
-                  <span className="text-[9px] text-zinc-500 uppercase block font-sans">Win Probability</span>
+                  <span className="text-[9px] text-zinc-500 uppercase block font-sans">Win Prob</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-3 border-t border-zinc-900">
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl text-center">
+                <div className="bg-zinc-900/60 p-2 rounded-xl text-center">
                   <span className="text-zinc-500 text-[9px] uppercase font-sans block">90th% Ceiling</span>
-                  <span className="text-emerald-400 font-bold text-sm">{team_a.ceiling_90} pts</span>
+                  <span className="text-emerald-400 font-bold text-xs sm:text-sm">{team_a.ceiling_90} pts</span>
                 </div>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl text-center">
+                <div className="bg-zinc-900/60 p-2 rounded-xl text-center">
                   <span className="text-zinc-500 text-[9px] uppercase font-sans block">10th% Floor</span>
-                  <span className="text-red-400 font-bold text-sm">{team_a.floor_10} pts</span>
+                  <span className="text-red-400 font-bold text-xs sm:text-sm">{team_a.floor_10} pts</span>
                 </div>
               </div>
             </div>
 
             {/* Team B Card */}
-            <div className={`p-5 rounded-2xl border transition-all ${
+            <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
               team_b.win_prob >= 50 
                 ? 'bg-gradient-to-br from-emerald-950/30 to-zinc-950 border-emerald-500/40 shadow-lg' 
                 : 'bg-zinc-950/80 border-zinc-800'
             }`}>
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2.5 sm:gap-3 overflow-hidden">
                   {team_b.avatar ? (
-                    <img src={`https://sleepercdn.com/avatars/${team_b.avatar}`} className="w-12 h-12 rounded-full border-2 border-zinc-700 object-cover" alt="avatar" />
+                    <img src={`https://sleepercdn.com/avatars/${team_b.avatar}`} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-zinc-700 object-cover flex-shrink-0" alt="avatar" />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-white text-base">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-white text-sm sm:text-base flex-shrink-0">
                       {team_b.name?.slice(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <div>
-                    <h3 className="text-xl font-black text-white truncate">{team_b.name}</h3>
-                    <span className="text-xs font-mono text-zinc-400">Median Proj: {team_b.projected_median} pts</span>
+                  <div className="overflow-hidden">
+                    <h3 className="text-base sm:text-xl font-black text-white truncate">{team_b.name}</h3>
+                    <span className="text-[11px] font-mono text-zinc-400 block">Median: {team_b.projected_median} pts</span>
                   </div>
                 </div>
 
-                <div className="text-right font-mono">
-                  <span className="text-3xl font-black" style={{ color: team_b.win_prob >= 50 ? '#10b981' : '#a1a1aa' }}>
+                <div className="text-right font-mono flex-shrink-0">
+                  <span className="text-2xl sm:text-3xl font-black" style={{ color: team_b.win_prob >= 50 ? '#10b981' : '#a1a1aa' }}>
                     {team_b.win_prob}%
                   </span>
-                  <span className="text-[9px] text-zinc-500 uppercase block font-sans">Win Probability</span>
+                  <span className="text-[9px] text-zinc-500 uppercase block font-sans">Win Prob</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-3 border-t border-zinc-900">
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl text-center">
+                <div className="bg-zinc-900/60 p-2 rounded-xl text-center">
                   <span className="text-zinc-500 text-[9px] uppercase font-sans block">90th% Ceiling</span>
-                  <span className="text-emerald-400 font-bold text-sm">{team_b.ceiling_90} pts</span>
+                  <span className="text-emerald-400 font-bold text-xs sm:text-sm">{team_b.ceiling_90} pts</span>
                 </div>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl text-center">
+                <div className="bg-zinc-900/60 p-2 rounded-xl text-center">
                   <span className="text-zinc-500 text-[9px] uppercase font-sans block">10th% Floor</span>
-                  <span className="text-red-400 font-bold text-sm">{team_b.floor_10} pts</span>
+                  <span className="text-red-400 font-bold text-xs sm:text-sm">{team_b.floor_10} pts</span>
                 </div>
               </div>
             </div>
@@ -242,23 +242,23 @@ export default function MatchupSimulatorTab() {
           </div>
 
           {/* Spread Summary */}
-          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span className="text-xs font-mono text-zinc-400">
+          <div className="bg-zinc-950 p-3 sm:p-4 rounded-xl border border-zinc-800 text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
+            <span className="text-zinc-400">
               Projected Spread: <strong className="text-white">{favored_team} -{spread} pts</strong>
             </span>
-            <span className="text-xs font-mono text-emerald-400 font-bold">
+            <span className="text-emerald-400 font-bold">
               10,000 Monte Carlo Iterations Complete
             </span>
           </div>
 
           {/* Positional Advantage Matrix */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Shield size={16} style={{ color: currentTheme.primary }} /> Positional Tale of the Tape
             </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {positional_edges.map((edge: any) => (
-                <div key={edge.position} className="bg-zinc-950/80 border border-zinc-800/80 p-3 rounded-xl text-center">
+                <div key={edge.position} className="bg-zinc-950/80 border border-zinc-800/80 p-2.5 rounded-xl text-center">
                   <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold block">{edge.position}</span>
                   <p className="text-xs font-bold text-white mt-1 truncate">{edge.advantage}</p>
                   <span className="text-[11px] font-mono font-bold text-emerald-400 block mt-0.5">{edge.delta}</span>
@@ -269,19 +269,19 @@ export default function MatchupSimulatorTab() {
 
           {/* Score Distribution Chart */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <BarChart3 size={16} style={{ color: currentTheme.primary }} /> Simulation Score Distribution Histogram
+            <h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <BarChart3 size={16} style={{ color: currentTheme.primary }} /> Simulation Volatility Distribution
             </h4>
-            <div className="h-[280px] w-full bg-zinc-950/90 p-3 rounded-xl border border-zinc-800">
+            <div className="h-[220px] sm:h-[280px] w-full bg-zinc-950/90 p-2 sm:p-3 rounded-xl border border-zinc-800">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={histogram} margin={{ top: 10, right: 10, bottom: 20, left: -15 }}>
+                <BarChart data={histogram} margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                  <XAxis dataKey="range" stroke="#71717a" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#71717a" fontSize={10} tickLine={false} />
+                  <XAxis dataKey="range" stroke="#71717a" fontSize={9} tickLine={false} />
+                  <YAxis stroke="#71717a" fontSize={9} tickLine={false} />
                   <RechartsTooltip contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', fontSize: '11px', borderRadius: '8px' }} />
-                  <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                  <Bar dataKey="team_a_count" name={team_a.name} fill={currentTheme.primary} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="team_b_count" name={team_b.name} fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '4px' }} />
+                  <Bar dataKey="team_a_count" name={team_a.name} fill={currentTheme.primary} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="team_b_count" name={team_b.name} fill="#3b82f6" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
