@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, AlertTriangle 
+  Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
+  AlertTriangle, Swords, Trophy, Crown, Dices 
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -12,6 +13,10 @@ import StudioTab from '@/components/tabs/StudioTab';
 import MatrixTab from '@/components/tabs/MatrixTab';
 import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
 import AutopsyTab from '@/components/tabs/AutopsyTab';
+import RivalriesTab from '@/components/tabs/RivalriesTab';
+import RecordBookTab from '@/components/tabs/RecordBookTab';
+import PowerRankingsTab from '@/components/tabs/PowerRankingsTab';
+import MatchupSimulatorTab from '@/components/tabs/MatchupSimulatorTab';
 
 export default function DynastyRoomPage() {
   const { leagueId, isLoading: isLeagueLoading } = useLeague();
@@ -44,14 +49,19 @@ export default function DynastyRoomPage() {
     "📉 PURGATORY WARNING: Teams in the lower-left quadrant should initiate a strategic retooling.",
     "🔥 QUANT TAKE: Draft pick depreciation accelerates by 18% post-draft. Trade picks during the rookie hype apex.",
     "⚡ TRADE ARBITRAGE: Multiple buy-low candidates identified in the Action Center.",
-    "👀 SLEEPER SYNC: Real-time transaction and roster sync active across all 12 teams."
+    "⚔️ RIVALRY ALERT: Check the 10x10 Head-to-Head series records in the Rivalries tab.",
+    "🎲 TALE OF THE TAPE: Run 10,000 Monte Carlo simulations on any two rosters in the Matchup Simulator."
   ];
 
   const TABS = [
     { id: 'action', label: 'Action Center', icon: Target },
-    { id: 'team', label: 'Team Analyzer', icon: Search },
     { id: 'studio', label: 'The Studio', icon: Activity },
     { id: 'matrix', label: 'Power Matrix', icon: Crosshair },
+    { id: 'power', label: 'Power Tiers', icon: Crown },
+    { id: 'rivalries', label: 'Rivalries & All-Play', icon: Swords },
+    { id: 'records', label: 'Record Book', icon: Trophy },
+    { id: 'simulator', label: 'Matchup Simulator', icon: Dices },
+    { id: 'team', label: 'Team Analyzer', icon: Search },
     { id: 'trade', label: 'Trade Architect', icon: Briefcase },
     { id: 'autopsy', label: 'Trade Autopsy', icon: ArrowRightLeft }
   ];
@@ -91,9 +101,13 @@ export default function DynastyRoomPage() {
       {/* Main Tab Content Area */}
       <div className="flex-1 w-full max-w-[1440px] mx-auto pb-12">
         {activeTab === 'action' && <ActionCenterTab />}
-        {activeTab === 'team' && <TeamAnalyzerTab />}
         {activeTab === 'studio' && <StudioTab />}
         {activeTab === 'matrix' && <MatrixTab />}
+        {activeTab === 'power' && <PowerRankingsTab />}
+        {activeTab === 'rivalries' && <RivalriesTab />}
+        {activeTab === 'records' && <RecordBookTab />}
+        {activeTab === 'simulator' && <MatchupSimulatorTab />}
+        {activeTab === 'team' && <TeamAnalyzerTab />}
         {activeTab === 'trade' && <TradeArchitectTab />}
         {activeTab === 'autopsy' && <AutopsyTab />}
       </div>
