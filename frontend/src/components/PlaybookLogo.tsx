@@ -87,11 +87,9 @@ export default function PlaybookLogo({
             strokeWidth="3.5" 
             strokeLinecap="round"
             markerEnd="url(#logo-arrowhead)"
-            className={animated ? "animate-pulse" : ""}
+            className={animated ? "animate-playbook-route" : ""}
             style={{
-              filter: "drop-shadow(0 0 4px rgba(249, 115, 22, 0.6))",
-              strokeDasharray: animated ? "80" : "none",
-              strokeDashoffset: animated ? "0" : "0"
+              filter: "drop-shadow(0 0 5px rgba(249, 115, 22, 0.7))",
             }}
           />
 
@@ -104,11 +102,11 @@ export default function PlaybookLogo({
             stroke="#06b6d4" 
             strokeWidth="2" 
             strokeDasharray="4 3" 
-            strokeOpacity="0.8" 
+            strokeOpacity="0.85" 
           />
 
           {/* Tactical 'O' (Offensive Quarterback / Playmaker) */}
-          <g className={animated ? "animate-bounce" : ""} style={{ animationDuration: "3s" }}>
+          <g className={animated ? "animate-playbook-node" : ""}>
             {/* Outer Glow Halo */}
             <circle 
               cx="28" 
@@ -143,7 +141,8 @@ export default function PlaybookLogo({
             stroke="#f43f5e" 
             strokeWidth="3.5" 
             strokeLinecap="round"
-            style={{ filter: "drop-shadow(0 0 3px rgba(244, 63, 94, 0.7))" }}
+            className={animated ? "animate-playbook-x" : ""}
+            style={{ filter: "drop-shadow(0 0 4px rgba(244, 63, 94, 0.8))" }}
           >
             <line x1="64" y1="26" x2="80" y2="42" />
             <line x1="80" y1="26" x2="64" y2="42" />

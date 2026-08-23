@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Turf Grid Pattern -->
+    <pattern id="svgTurfGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="16" y2="0" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08" />
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08" />
+    </pattern>
+
+    <!-- Arrowhead Marker -->
+    <marker id="svg-arrowhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#f97316" />
+    </marker>
+  </defs>
+
+  <!-- Turf Base Background -->
+  <rect width="100" height="100" rx="18" fill="#060907" />
+  <rect width="100" height="100" rx="18" fill="url(#svgTurfGrid)" />
+
+  <!-- Dotted Yard Line of Scrimmage -->
+  <line x1="50" y1="8" x2="50" y2="92" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.3" />
+
+  <!-- Animated Sweeping Playbook Route Curve -->
+  <path d="M 28 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="3.5" stroke-linecap="round" marker-end="url(#svg-arrowhead)" stroke-dasharray="70" stroke-dashoffset="0">
+    <animate attributeName="stroke-dashoffset" values="70;0;70" dur="4s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Dotted Pass Trajectory Line -->
+  <line x1="28" y1="68" x2="72" y2="34" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4 3" stroke-opacity="0.85">
+    <animate attributeName="stroke-dashoffset" values="0;14" dur="1s" repeatCount="indefinite" />
+  </line>
+
+  <!-- Pulsating Tactical 'O' (Quarterback) -->
+  <g>
+    <!-- Outer Glow Halo -->
+    <circle cx="28" cy="68" r="13" fill="none" stroke="#f97316" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="2 2">
+      <animate attributeName="r" values="11;14;11" dur="2s" repeatCount="indefinite" />
+      <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <!-- Core O Ring -->
+    <circle cx="28" cy="68" r="9.5" fill="#060907" stroke="#f97316" stroke-width="3.5" />
+    <!-- Core Dot -->
+    <circle cx="28" cy="68" r="2.5" fill="#ffffff" />
+  </g>
+
+  <!-- Pulsating Tactical 'X' (Defensive Challenger) -->
+  <g stroke="#f43f5e" stroke-width="3.5" stroke-linecap="round">
+    <line x1="64" y1="26" x2="80" y2="42" />
+    <line x1="80" y1="26" x2="64" y2="42" />
+    <animateTransform attributeName="transform" type="scale" values="1;1.08;1" origin="72 34" dur="2s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Secondary Backfield X (White) -->
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-opacity="0.5">
+    <line x1="68" y1="68" x2="78" y2="78" />
+    <line x1="78" y1="68" x2="68" y2="78" />
+  </g>
+
+  <!-- Secondary Offensive O (White) -->
+  <circle cx="24" cy="28" r="6" fill="none" stroke="#ffffff" stroke-width="2" stroke-opacity="0.6" />
+</svg>

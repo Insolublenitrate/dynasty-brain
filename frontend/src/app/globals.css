@@ -193,3 +193,35 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Playbook Animated Logo Keyframes */
+@keyframes playbookLogoDash {
+  0% { stroke-dashoffset: 75; }
+  50% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -75; }
+}
+
+@keyframes playbookLogoPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.8)); }
+}
+
+@keyframes playbookLogoCrosshair {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(8deg); filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.9)); }
+}
+
+.animate-playbook-route {
+  stroke-dasharray: 75;
+  animation: playbookLogoDash 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-playbook-node {
+  transform-origin: 28px 68px;
+  animation: playbookLogoPulse 2.4s ease-in-out infinite;
+}
+
+.animate-playbook-x {
+  transform-origin: 72px 34px;
+  animation: playbookLogoCrosshair 2.8s ease-in-out infinite;
+}
