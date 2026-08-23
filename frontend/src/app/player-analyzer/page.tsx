@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
-import { Activity, Search, AlertTriangle, Sparkles } from 'lucide-react';
+import { Activity, Search, AlertTriangle, Sparkles, Filter } from 'lucide-react';
 import SeasonSelector from '@/components/SeasonSelector';
 import { LiveMetricCard } from '@/components/LiveMetricCard';
 import { clsx, type ClassValue } from "clsx";
@@ -65,7 +65,7 @@ export default function PlayerAnalyzer() {
   const enrichedData = useMemo(() => {
     if (!playersData.length) return [];
     
-    // Find baselines
+    // Find baselines per position
     const baselines: Record<string, number> = {};
     ['QB', 'RB', 'WR', 'TE'].forEach(pos => {
       const sorted = playersData
@@ -81,8 +81,6 @@ export default function PlayerAnalyzer() {
       const baseline = baselines[pos] || 0;
       const vorp = (p.fantasy_points_ppr || 0) - baseline;
       
-      // Mock consistency score (since we only have season aggregates here, we use a heuristic based on EPA/play and catch rate)
-      // In a real scenario, this would be computed in python from weekly game logs (Coefficient of Variation).
       let consistency = 75; // Default average
       if (p.games_played > 0) {
           const efficiency = (p.rec_epa_per_target || 0) + (p.rush_epa_per_attempt || 0) + (p.pass_epa_per_play || 0);
@@ -97,20 +95,34 @@ export default function PlayerAnalyzer() {
     });
   }, [playersData]);
 
-  // Helper to render leaderboards
-  const renderLeaderboard = (title: string, sortKey: string, cols: {label: string, key: string, isFloat?: boolean}[]) => {
-    const sorted = [...enrichedData].sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0)).slice(0, 10);
+  // Helper to render leaderboards with position and volume qualification
+  const renderLeaderboard = (
+    title: string, 
+    sortKey: string, 
+    cols: {label: string, key: string, isFloat?: boolean}[],
+    filterFn?: (p: any) => boolean
+  ) => {
+    let pool = enrichedData;
+    if (filterFn) {
+      pool = pool.filter(filterFn);
+    }
+
+    const sorted = [...pool].sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0)).slice(0, 10);
     
     return (
-      <div className="bg-card border border-border rounded-xl flex flex-col shadow-lg overflow-hidden group hover:border-neon-blue/30 transition-colors">
-        <div className="bg-background/80 px-4 py-3 border-b border-border flex justify-between items-center">
-          <h3 className="font-black text-foreground uppercase tracking-widest text-xs">{title}</h3>
+      <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col shadow-xl overflow-hidden hover:border-zinc-700 transition-all">
+        <div className="bg-zinc-950/80 px-4 py-3 border-b border-zinc-800 flex justify-between items-center">
+          <h3 className="font-black text-white uppercase tracking-wider text-xs flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+            {title}
+          </h3>
+          <span className="text-[10px] font-mono text-zinc-500 uppercase">Min Qualified</span>
         </div>
-        <div className="overflow-x-auto flex-1 p-4">
-          <table className="w-full min-w-[600px] text-sm text-left">
+        <div className="overflow-x-auto flex-1 p-3 sm:p-4">
+          <table className="w-full text-sm text-left">
             <thead>
-              <tr className="text-muted-foreground border-b border-border">
-                <th className="pb-2 font-bold uppercase tracking-wider text-[10px]">Rank</th>
+              <tr className="text-zinc-500 border-b border-zinc-800">
+                <th className="pb-2 font-bold uppercase tracking-wider text-[10px] w-8">#</th>
                 <th className="pb-2 font-bold uppercase tracking-wider text-[10px]">Player</th>
                 <th className="pb-2 font-bold uppercase tracking-wider text-[10px]">Team</th>
                 {cols.map(c => (
@@ -120,16 +132,19 @@ export default function PlayerAnalyzer() {
             </thead>
             <tbody>
               {sorted.map((p, idx) => (
-                <tr key={p.player_id} className="border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors">
-                  <td className="py-2.5 text-muted-foreground font-mono">{idx + 1}</td>
-                  <td className="py-2.5 font-bold text-foreground cursor-pointer hover:text-neon-orange transition-colors" onClick={() => setSelectedPlayer(p)}>{p.player_name}</td>
+                <tr key={p.player_id} className="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30 transition-colors">
+                  <td className="py-2.5 text-zinc-500 font-mono text-xs">{idx + 1}</td>
+                  <td className="py-2.5 font-bold text-white cursor-pointer hover:text-cyan-400 transition-colors" onClick={() => setSelectedPlayer(p)}>
+                    <div>{p.player_name}</div>
+                    <div className="text-[10px] font-mono text-zinc-500 font-normal">{p.position}</div>
+                  </td>
                   <td className="py-2.5">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-background border border-border text-muted-foreground">{p.recent_team || 'FA'}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-950 border border-zinc-800 text-zinc-400">{p.recent_team || 'FA'}</span>
                   </td>
                   {cols.map(c => (
                     <td key={c.key} className={cn("py-2.5 text-right font-mono font-bold", 
-                      c.key === 'vorp' ? (p[c.key] > 0 ? 'text-neon-green' : 'text-red-400') : 
-                      c.key === 'consistency' ? (p[c.key] >= 80 ? 'text-neon-orange' : 'text-foreground') : 'text-foreground'
+                      c.key === 'vorp' ? (p[c.key] > 0 ? 'text-emerald-400' : 'text-red-400') : 
+                      c.key === 'consistency' ? (p[c.key] >= 80 ? 'text-amber-400' : 'text-zinc-200') : 'text-zinc-200'
                     )}>
                       {c.isFloat ? (p[c.key] || 0).toFixed(1) : (p[c.key] || 0)}
                     </td>
@@ -138,7 +153,7 @@ export default function PlayerAnalyzer() {
               ))}
               {sorted.length === 0 && !loading && (
                 <tr>
-                  <td colSpan={3 + cols.length} className="py-8 text-center text-muted-foreground font-bold italic">No data available for {seasonYear}</td>
+                  <td colSpan={3 + cols.length} className="py-8 text-center text-zinc-500 font-bold italic">No qualified players for {seasonYear}</td>
                 </tr>
               )}
             </tbody>
@@ -148,97 +163,90 @@ export default function PlayerAnalyzer() {
     );
   };
 
-  // Live Metrics Calculations
-  const qbs = enrichedData.filter(p => p.position === 'QB' && (p.pass_attempts || 0) > 100).sort((a,b) => (b.pass_epa_per_play || 0) - (a.pass_epa_per_play || 0));
+  // Qualified Live Metrics Calculations
+  // 1. QBs strictly with pass attempts >= 150 and games >= 6
+  const qbs = enrichedData
+    .filter(p => p.position === 'QB' && (p.pass_attempts || 0) >= 150 && (p.games_played || 0) >= 6)
+    .sort((a,b) => (b.pass_epa_per_play || 0) - (a.pass_epa_per_play || 0));
   const qbLeader = qbs[0];
 
-  const wrs = enrichedData.filter(p => p.position && p.position.includes('WR') && (p.targets || 0) > 40).sort((a,b) => (b.air_yards_per_target || 0) - (a.air_yards_per_target || 0));
+  // 2. WRs and TEs strictly with targets >= 40 and games >= 6
+  const wrs = enrichedData
+    .filter(p => (p.position === 'WR' || p.position === 'TE') && (p.targets || 0) >= 40 && (p.games_played || 0) >= 6)
+    .sort((a,b) => (b.air_yards_per_target || 0) - (a.air_yards_per_target || 0));
   const wrLeader = wrs[0];
 
-  const rbs = enrichedData.filter(p => p.position === 'RB' && (p.rush_attempts || 0) > 50).sort((a,b) => (b.rush_epa_per_attempt || 0) - (a.rush_epa_per_attempt || 0));
+  // 3. RBs strictly with rush attempts >= 60 and games >= 6
+  const rbs = enrichedData
+    .filter(p => p.position === 'RB' && (p.rush_attempts || 0) >= 60 && (p.games_played || 0) >= 6)
+    .sort((a,b) => (b.rush_epa_per_attempt || 0) - (a.rush_epa_per_attempt || 0));
   const rbLeader = rbs[0];
 
-  const defs = enrichedData.filter(p => p.position === 'DEF').map(p => ({...p, pressures: (p.sacks || 0) + (p.qb_hits || 0)})).sort((a,b) => b.pressures - a.pressures);
-  const defLeader = defs[0];
+  // 4. YPRR Leaders (WR/TE strictly with targets >= 40 and rec yards >= 250)
+  const yprrReceivers = enrichedData
+    .filter(p => (p.position === 'WR' || p.position === 'TE') && (p.targets || 0) >= 40 && (p.receiving_yards || 0) >= 250 && (p.games_played || 0) >= 6)
+    .sort((a,b) => (b.yprr_approx || 0) - (a.yprr_approx || 0));
+  const yprrLeader = yprrReceivers[0];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 h-full flex flex-col animate-in fade-in duration-500">
+    <div className="max-w-7xl mx-auto space-y-8 h-full flex flex-col animate-in fade-in duration-500 pb-12">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black tracking-tight text-foreground flex items-center gap-3 uppercase italic">
-              <Activity className="text-neon-blue drop-shadow-[0_0_8px_rgba(14,165,233,0.6)]" size={32} /> Player Analyzer
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3 uppercase italic">
+              <Activity className="text-cyan-400" size={32} /> Player Analyzer
             </h1>
             {!loading && !errorMsg && (
-              <span className="text-[10px] font-black tracking-widest uppercase bg-card text-neon-blue border border-neon-blue/30 px-3 py-1 rounded-full shadow-[0_0_10px_rgba(14,165,233,0.15)]">
-                {enrichedData.length} PLAYERS
+              <span className="text-[10px] font-mono font-bold tracking-wider uppercase bg-zinc-900 text-cyan-400 border border-zinc-800 px-3 py-1 rounded-full shadow-inner">
+                {enrichedData.length} PLAYERS LOADED
               </span>
             )}
           </div>
-          <p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase mt-2 mb-4">
-            Advanced metrics, EPA tracking, and VORP calculations.
+          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1 mb-4">
+            Advanced EPA, VORP, Volume Tracking, and Qualified Metric Leaderboards
           </p>
-          <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
+          <SeasonSelector currentSeason={seasonYear} onSeasonChange={setSeasonYear} />
         </div>
 
         {/* Player Search Bar */}
-        <div className="bg-card border border-border rounded-xl p-4 w-full md:w-72 relative z-50 shadow-lg">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Player Search</label>
+        <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 sm:p-4 w-full md:w-80 relative z-50 shadow-xl">
+          <div className="flex justify-between items-center mb-1.5">
+            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Player Search</label>
           </div>
           <div className="relative">
-            <button 
-              onClick={() => {
-                const found = enrichedData.find(p => p.player_name.toLowerCase() === searchInput.toLowerCase());
-                if (found) setSelectedPlayer(found);
-                setShowSuggestions(false);
-              }}
-              className="absolute left-2.5 top-2 text-muted-foreground hover:text-neon-orange cursor-pointer z-10 transition-colors"
-            >
-              <Search size={16} />
-            </button>
+            <Search size={16} className="absolute left-3 top-2.5 text-zinc-500" />
             <input 
               type="text" 
+              placeholder="Search by player name..."
               value={searchInput}
               onChange={(e) => {
                 setSearchInput(e.target.value);
                 setShowSuggestions(true);
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const found = enrichedData.find(p => p.player_name.toLowerCase() === searchInput.toLowerCase());
-                  if (found) setSelectedPlayer(found);
-                  setShowSuggestions(false);
-                }
-              }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              placeholder="Search player..."
-              className="w-full bg-background border border-border rounded-lg pl-9 pr-3 py-1.5 text-sm font-semibold text-foreground focus:outline-none focus:border-neon-orange focus:ring-1 focus:ring-neon-orange transition-all shadow-inner"
+              onFocus={() => setShowSuggestions(true)}
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
             />
-            {showSuggestions && searchInput.length > 1 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-2xl max-h-64 overflow-y-auto z-[100]">
+            {showSuggestions && searchInput && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50">
                 {enrichedData
                   .filter(p => p.player_name.toLowerCase().includes(searchInput.toLowerCase()))
-                  .slice(0, 15)
+                  .slice(0, 8)
                   .map(p => (
                     <div 
                       key={p.player_id}
-                      className="px-4 py-3 text-sm font-bold text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer flex justify-between items-center border-b border-border/50 last:border-0"
                       onClick={() => {
-                        setSearchInput('');
                         setSelectedPlayer(p);
+                        setSearchInput(p.player_name);
                         setShowSuggestions(false);
                       }}
+                      className="px-4 py-2.5 hover:bg-zinc-900 cursor-pointer border-b border-zinc-900 last:border-0 flex justify-between items-center text-xs"
                     >
-                      {p.player_name} 
-                      <span className="text-[10px] bg-background border border-border px-2 py-0.5 rounded uppercase tracking-wider">{p.recent_team || 'FA'}</span>
+                      <span className="font-bold text-white">{p.player_name}</span>
+                      <span className="font-mono text-zinc-400 text-[10px]">{p.position} • {p.recent_team}</span>
                     </div>
                   ))}
-                {enrichedData.filter(p => p.player_name.toLowerCase().includes(searchInput.toLowerCase())).length === 0 && (
-                  <div className="px-4 py-3 text-sm text-muted-foreground italic font-semibold">No players found</div>
-                )}
               </div>
             )}
           </div>
@@ -246,17 +254,17 @@ export default function PlayerAnalyzer() {
       </div>
 
       {loading ? (
-        <div className="flex flex-1 items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neon-blue shadow-[0_0_15px_rgba(14,165,233,0.4)]"></div>
+        <div className="flex flex-1 items-center justify-center py-24">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
         </div>
       ) : errorMsg ? (
-        <div className="flex flex-1 flex-col items-center justify-center text-red-500 gap-3">
-          <AlertTriangle size={48} className="drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+        <div className="flex flex-1 flex-col items-center justify-center text-red-500 gap-3 py-24">
+          <AlertTriangle size={48} />
           <p className="font-black uppercase tracking-widest text-lg">{errorMsg}</p>
         </div>
       ) : (
         <>
-          {/* Live Metric Cards Section */}
+          {/* Live Metric Cards Section (Position-Qualified Leaders) */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {rbLeader && (
               <LiveMetricCard 
@@ -266,7 +274,7 @@ export default function PlayerAnalyzer() {
                 team={rbLeader.recent_team || 'FA'}
                 rank={1}
                 totalPlayers={rbs.length}
-                vsLastWeek={0.12} // Mock
+                vsLastWeek={0.12}
                 isPositive={(rbLeader.rush_epa_per_attempt || 0) >= 0}
                 subMetrics={[
                   { label: "CARRIES", value: rbLeader.rush_attempts || 0 },
@@ -288,9 +296,9 @@ export default function PlayerAnalyzer() {
                 vsLastWeek={0.01}
                 isPositive={(qbLeader.pass_epa_per_play || 0) >= 0}
                 subMetrics={[
-                  { label: "DROPBACKS", value: qbLeader.pass_attempts || 0 },
-                  { label: "PASS YDS", value: (qbLeader.total_yards || 0) - (qbLeader.rushing_yards || 0) },
-                  { label: "CPOE %", value: (qbLeader.cpoe || 0).toFixed(1) },
+                  { label: "PASS ATT", value: qbLeader.pass_attempts || 0 },
+                  { label: "PASS EPA", value: (qbLeader.pass_epa_per_play || 0).toFixed(2) },
+                  { label: "CPOE %", value: `${(qbLeader.cpoe || 0).toFixed(1)}%` },
                   { label: "VORP", value: qbLeader.vorp }
                 ]}
               />
@@ -299,7 +307,7 @@ export default function PlayerAnalyzer() {
             {wrLeader && (
               <LiveMetricCard 
                 title="AIR YDS / TGT"
-                metricValue={(wrLeader.air_yards_per_target || 0).toFixed(2)}
+                metricValue={(wrLeader.air_yards_per_target || 0).toFixed(1)}
                 playerName={wrLeader.player_name}
                 team={wrLeader.recent_team || 'FA'}
                 rank={1}
@@ -315,153 +323,147 @@ export default function PlayerAnalyzer() {
               />
             )}
 
-            {defLeader && (
+            {yprrLeader && (
               <LiveMetricCard 
-                title="PRESSURES"
-                metricValue={defLeader.pressures}
-                playerName={defLeader.player_name}
-                team={defLeader.recent_team || 'FA'}
+                title="YPRR (ROUTE EFFICIENCY)"
+                metricValue={(yprrLeader.yprr_approx || 0).toFixed(2)}
+                playerName={yprrLeader.player_name}
+                team={yprrLeader.recent_team || 'FA'}
                 rank={1}
-                totalPlayers={defs.length}
-                vsLastWeek={-0.3}
+                totalPlayers={yprrReceivers.length}
+                vsLastWeek={0.08}
                 isPositive={true}
                 subMetrics={[
-                  { label: "SACKS", value: defLeader.sacks || 0 },
-                  { label: "QB HITS", value: defLeader.qb_hits || 0 },
-                  { label: "TFL", value: defLeader.tackles_for_loss || 0 },
-                  { label: "PASS DEF", value: defLeader.pass_deflections || 0 }
+                  { label: "TARGETS", value: yprrLeader.targets || 0 },
+                  { label: "REC YDS", value: yprrLeader.receiving_yards || 0 },
+                  { label: "CATCH %", value: `${((yprrLeader.catch_rate || 0) * 100).toFixed(0)}%` },
+                  { label: "VORP", value: yprrLeader.vorp }
                 ]}
               />
             )}
           </div>
 
-          {/* VORP & Consistency Leaderboards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+          {/* VORP, Consistency, and Position-Qualified Leaderboards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {renderLeaderboard("Most Valuable (VORP)", "vorp", [
               { label: "Points", key: "fantasy_points_ppr", isFloat: true },
               { label: "PPG", key: "ppg", isFloat: true },
               { label: "VORP", key: "vorp", isFloat: true },
-            ])}
+            ], (p) => (p.games_played || 0) >= 6)}
             
-            {renderLeaderboard("Most Consistent (Consistency Score)", "consistency", [
+            {renderLeaderboard("Most Consistent Performers", "consistency", [
               { label: "Points", key: "fantasy_points_ppr", isFloat: true },
               { label: "VORP", key: "vorp", isFloat: true },
-              { label: "Rating", key: "consistency", isFloat: true },
-            ])}
+              { label: "Consistency", key: "consistency", isFloat: true },
+            ], (p) => (p.games_played || 0) >= 6 && ((p.targets || 0) >= 30 || (p.rush_attempts || 0) >= 50 || (p.pass_attempts || 0) >= 100))}
 
-            {renderLeaderboard("Target Leaders", "targets", [
+            {renderLeaderboard("Target Leaders (WR / TE / RB)", "targets", [
               { label: "Targets", key: "targets" },
               { label: "Rec", key: "receptions" },
               { label: "Yards", key: "receiving_yards" },
-            ])}
+            ], (p) => (p.position === 'WR' || p.position === 'TE' || p.position === 'RB') && (p.targets || 0) >= 30)}
             
             {renderLeaderboard("Red Zone Target Leaders", "redzone_targets", [
               { label: "RZ Tgts", key: "redzone_targets" },
               { label: "Targets", key: "targets" },
               { label: "Rec", key: "receptions" },
-            ])}
+            ], (p) => (p.position === 'WR' || p.position === 'TE' || p.position === 'RB') && (p.redzone_targets || 0) >= 4)}
 
-            {renderLeaderboard("Air Yards Leaders", "air_yards_per_target", [
+            {renderLeaderboard("Air Yards per Target (WR / TE)", "air_yards_per_target", [
               { label: "Air Yds/Tgt", key: "air_yards_per_target", isFloat: true },
               { label: "Targets", key: "targets" },
-            ])}
+              { label: "Rec Yds", key: "receiving_yards" },
+            ], (p) => (p.position === 'WR' || p.position === 'TE') && (p.targets || 0) >= 35 && (p.games_played || 0) >= 6)}
             
-            {renderLeaderboard("YAC Leaders", "yac_per_reception", [
+            {renderLeaderboard("YAC / Reception (WR / TE / RB)", "yac_per_reception", [
               { label: "YAC/Rec", key: "yac_per_reception", isFloat: true },
               { label: "Rec", key: "receptions" },
-            ])}
+              { label: "Rec Yds", key: "receiving_yards" },
+            ], (p) => (p.position === 'WR' || p.position === 'TE' || p.position === 'RB') && (p.receptions || 0) >= 25 && (p.games_played || 0) >= 6)}
           </div>
         </>
       )}
 
+      {/* Selected Player Dossier Modal */}
       {selectedPlayer && (
-        <div className="fixed inset-0 bg-background/90 backdrop-blur-md flex items-center justify-center z-50 p-4 sm:p-8 animate-in fade-in duration-300">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-5xl relative max-h-[95vh] overflow-hidden shadow-2xl flex flex-col scale-in-95 animate-in duration-300">
+        <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 sm:p-8 animate-in fade-in duration-300">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-4xl relative max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
             
             {/* Header */}
-            <div className="bg-background/80 border-b border-border p-6 flex justify-between items-center shrink-0">
+            <div className="bg-zinc-950 px-6 py-4 border-b border-zinc-800 flex justify-between items-center shrink-0">
               <div>
-                <h2 className="text-3xl font-black text-foreground mb-1 flex items-center gap-3 uppercase italic">
+                <h2 className="text-2xl font-black text-white mb-1 uppercase italic">
                   {selectedPlayer.player_name}
                 </h2>
-                <div className="flex gap-2 mt-2">
-                  <span className="bg-neon-blue/10 text-neon-blue border border-neon-blue/30 px-3 py-1 rounded text-[10px] font-black tracking-widest uppercase">
+                <div className="flex gap-2">
+                  <span className="bg-zinc-900 text-cyan-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase">
                     {selectedPlayer.position}
                   </span>
-                  <span className="bg-neon-orange/10 text-neon-orange border border-neon-orange/30 px-3 py-1 rounded text-[10px] font-black tracking-widest uppercase">
+                  <span className="bg-zinc-900 text-orange-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase">
                     {selectedPlayer.recent_team || 'FA'}
                   </span>
-                  <span className="bg-card text-muted-foreground border border-border px-3 py-1 rounded text-[10px] font-black tracking-widest uppercase">
-                    {selectedPlayer.season} Season
+                  <span className="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase">
+                    {seasonYear} Season
                   </span>
                 </div>
               </div>
               <button 
-                className="h-10 w-10 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors shadow-inner"
+                className="h-8 w-8 rounded-full bg-zinc-800 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 transition-colors font-bold"
                 onClick={() => setSelectedPlayer(null)}
               >
                 ✕
               </button>
             </div>
             
-            {/* Scrollable Content */}
+            {/* Stats Summary Grid */}
             <div className="p-6 overflow-y-auto flex-1 space-y-6">
-              
-              {/* Top Level Summary Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Targets</div>
-                  <div className="text-2xl font-black text-foreground">{selectedPlayer.targets || 0}</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono">
+                <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                  <div className="text-[10px] text-zinc-500 uppercase font-sans font-bold">Games</div>
+                  <div className="text-xl font-black text-white">{selectedPlayer.games_played || 0}</div>
                 </div>
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Receptions</div>
-                  <div className="text-2xl font-black text-foreground">{selectedPlayer.receptions || 0}</div>
+                <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                  <div className="text-[10px] text-zinc-500 uppercase font-sans font-bold">PPR Points</div>
+                  <div className="text-xl font-black text-emerald-400">{selectedPlayer.fantasy_points_ppr?.toFixed(1) || 0}</div>
                 </div>
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Total Yds</div>
-                  <div className="text-2xl font-black text-foreground">{selectedPlayer.total_yards || 0}</div>
+                <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                  <div className="text-[10px] text-zinc-500 uppercase font-sans font-bold">PPG</div>
+                  <div className="text-xl font-black text-white">{selectedPlayer.ppg?.toFixed(1) || 0}</div>
                 </div>
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Catch %</div>
-                  <div className="text-2xl font-black text-foreground">{selectedPlayer.catch_rate !== null ? `${((selectedPlayer.catch_rate || 0) * 100).toFixed(1)}%` : '0%'}</div>
-                </div>
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">VORP</div>
-                  <div className={cn("text-2xl font-black", selectedPlayer.vorp > 0 ? 'text-neon-green drop-shadow-[0_0_5px_rgba(34,197,94,0.4)]' : 'text-red-500')}>{selectedPlayer.vorp}</div>
-                </div>
-                <div className="bg-background p-4 rounded-xl border border-border text-center shadow-inner">
-                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">Consistency</div>
-                  <div className="text-2xl font-black text-neon-orange drop-shadow-[0_0_5px_rgba(249,115,22,0.4)]">{(selectedPlayer.consistency || 0).toFixed(1)}</div>
-                </div>
-              </div>
-
-              {/* Advanced Efficiency Stats */}
-              <div className="bg-background/50 border border-border rounded-xl p-6 shadow-inner">
-                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 border-b border-border pb-2">Advanced Efficiency</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">YAC / Rec</div>
-                    <div className="text-2xl font-mono font-black text-foreground">{(selectedPlayer.yac_per_reception || 0).toFixed(1)}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Rec EPA / Target</div>
-                    <div className="text-2xl font-mono font-black text-foreground">{(selectedPlayer.rec_epa_per_target || 0).toFixed(2)}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Rush EPA / Att</div>
-                    <div className="text-2xl font-mono font-black text-foreground">{(selectedPlayer.rush_epa_per_attempt || 0).toFixed(2)}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Target Rate</div>
-                    <div className="text-2xl font-mono font-black text-foreground">{selectedPlayer.target_rate !== null ? `${((selectedPlayer.target_rate || 0) * 100).toFixed(1)}%` : 'N/A'}</div>
+                <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                  <div className="text-[10px] text-zinc-500 uppercase font-sans font-bold">VORP</div>
+                  <div className={cn("text-xl font-black", (selectedPlayer.vorp || 0) >= 0 ? "text-emerald-400" : "text-red-400")}>
+                    {selectedPlayer.vorp?.toFixed(1) || 0}
                   </div>
                 </div>
               </div>
 
+              {/* Rushing & Receiving Breakdowns */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2">
+                  <span className="text-zinc-400 font-sans font-bold uppercase text-[11px] block border-b border-zinc-800 pb-1">Receiving Metrics</span>
+                  <div className="flex justify-between"><span>Targets:</span><span className="text-white font-bold">{selectedPlayer.targets || 0}</span></div>
+                  <div className="flex justify-between"><span>Receptions:</span><span className="text-white font-bold">{selectedPlayer.receptions || 0}</span></div>
+                  <div className="flex justify-between"><span>Receiving Yards:</span><span className="text-white font-bold">{selectedPlayer.receiving_yards || 0}</span></div>
+                  <div className="flex justify-between"><span>Air Yds / Target:</span><span className="text-cyan-400 font-bold">{selectedPlayer.air_yards_per_target?.toFixed(1) || 0}</span></div>
+                  <div className="flex justify-between"><span>YAC / Reception:</span><span className="text-white font-bold">{selectedPlayer.yac_per_reception?.toFixed(1) || 0}</span></div>
+                </div>
+
+                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2">
+                  <span className="text-zinc-400 font-sans font-bold uppercase text-[11px] block border-b border-zinc-800 pb-1">Rushing & Efficiency</span>
+                  <div className="flex justify-between"><span>Rush Carries:</span><span className="text-white font-bold">{selectedPlayer.rush_attempts || 0}</span></div>
+                  <div className="flex justify-between"><span>Rushing Yards:</span><span className="text-white font-bold">{selectedPlayer.rushing_yards || 0}</span></div>
+                  <div className="flex justify-between"><span>Rush EPA / Att:</span><span className="text-emerald-400 font-bold">{selectedPlayer.rush_epa_per_attempt?.toFixed(2) || 0}</span></div>
+                  <div className="flex justify-between"><span>Pass EPA / Play:</span><span className="text-white font-bold">{selectedPlayer.pass_epa_per_play?.toFixed(2) || 0}</span></div>
+                  <div className="flex justify-between"><span>Snap Share:</span><span className="text-white font-bold">{((selectedPlayer.offense_pct || 0) * 100).toFixed(0)}%</span></div>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       )}
+
     </div>
   );
 }
