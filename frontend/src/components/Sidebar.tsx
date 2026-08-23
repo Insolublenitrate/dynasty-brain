@@ -1,121 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { LayoutDashboard, Radar, Target, Settings, GitCompareArrows, BarChart3, Database, Trophy, Shuffle, Swords, Briefcase, Calendar, Search, GraduationCap, Flame, Activity } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLeague } from "@/context/LeagueContext";
+import { Search, Flame, Database, BarChart3, Users, LayoutDashboard, Settings } from "lucide-react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+const MAIN_NAV = [
+  { href: "/dynasty-room", label: "Dynasty Room", icon: Users },
+  { href: "/player-analyzer", label: "Research", icon: BarChart3 },
+  { href: "/war-room", label: "War Room", icon: Flame },
+  { href: "/database", label: "Database", icon: Database },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const { leagueId } = useLeague();
-
-  const getLinkClasses = (path: string) => {
-    const isActive = pathname === path;
-    return `flex items-center space-x-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-      isActive 
-        ? "bg-amber-500/10 text-amber-400" 
-        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-    }`;
-  };
-
-  const closeSidebar = () => setIsOpen(false);
 
   return (
-    <>
-      {/* Mobile Header */}
-      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 p-4 flex items-center justify-between sticky top-0 z-40">
-        <h1 className="text-xl font-black bg-gradient-to-r from-amber-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
-          The Waiver Wiretap
+    <div className="hidden md:flex flex-col w-64 h-full bg-card border-r border-border">
+      <div className="p-6">
+        <h1 className="text-2xl font-black bg-gradient-to-r from-neon-orange via-neon-green to-neon-blue bg-clip-text text-transparent tracking-tighter">
+          Dynasty Brain
         </h1>
-        <button onClick={() => setIsOpen(!isOpen)} className="text-zinc-400 hover:text-white p-2">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        <p className="text-[10px] text-muted-foreground font-semibold tracking-widest uppercase mt-1">
+          V3 Premium Analytics
+        </p>
       </div>
 
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden"
-          onClick={closeSidebar}
-        />
-      )}
+      <nav className="flex-1 px-4 space-y-2 mt-4">
+        {MAIN_NAV.map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center space-x-3 px-3 py-3 rounded-xl font-semibold transition-all duration-200 group",
+                isActive 
+                  ? "bg-neon-orange/10 text-neon-orange" 
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <item.icon 
+                size={20} 
+                className={cn(
+                  "transition-all duration-200",
+                  isActive ? "drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]" : "group-hover:stroke-foreground"
+                )} 
+              />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
 
-      {/* Sidebar Panel */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col h-full transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 hidden md:block">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-amber-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
-            The Waiver Wiretap
-          </h1>
-          <p className="text-xs text-zinc-400 font-medium tracking-widest uppercase mt-1">A KBD Product</p>
-        </div>
-
-        <nav className="flex-1 px-4 space-y-2 mt-4 md:mt-0 overflow-y-auto pt-6 md:pt-0">
-          <Link href="/demo" className={getLinkClasses("/demo")} onClick={closeSidebar}>
-            <Activity size={20} />
-            <span>Studio Demo</span>
-          </Link>
-          <Link href="/" className={getLinkClasses("/")} onClick={closeSidebar}>
-            <LayoutDashboard size={20} />
-            <span>League Analyzer</span>
-          </Link>
-          <Link href="/dynasty-room" className={getLinkClasses("/dynasty-room")} onClick={closeSidebar}>
-            <Search size={20} />
-            <span>Dynasty Room</span>
-          </Link>
-          <Link href="/top-performers" className={getLinkClasses("/top-performers")} onClick={closeSidebar}>
-            <Trophy size={20} />
-            <span>Top Performers</span>
-          </Link>
-          <Link href="/player-analyzer" className={getLinkClasses("/player-analyzer")} onClick={closeSidebar}>
-            <BarChart3 size={20} />
-            <span>Player Analyzer</span>
-          </Link>
-          <Link href="/database" className={getLinkClasses("/database")} onClick={closeSidebar}>
-            <Database size={20} />
-            <span>Player Database</span>
-          </Link>
-          <Link href="/rookie-analyzer" className={getLinkClasses("/rookie-analyzer")} onClick={closeSidebar}>
-            <GraduationCap size={20} />
-            <span>Rookie Analyzer</span>
-          </Link>
-          <Link href="/radar" className={getLinkClasses("/radar")} onClick={closeSidebar}>
-            <Radar size={20} />
-            <span>Player Compare</span>
-          </Link>
-          <Link href="/war-room" className={getLinkClasses("/war-room")} onClick={closeSidebar}>
-            <Flame size={20} />
-            <span>War Room</span>
-          </Link>
-          <Link href="/cross-reference" className={getLinkClasses("/cross-reference")} onClick={closeSidebar}>
-            <Shuffle size={20} />
-            <span>Cross Reference</span>
-          </Link>
-          <Link href="/trade" className={getLinkClasses("/trade")} onClick={closeSidebar}>
-            <Briefcase size={20} />
-            <span>Trade Architect</span>
-          </Link>
-          <Link href="/glossary" className={getLinkClasses("/glossary")} onClick={closeSidebar}>
-            <Settings size={20} />
-            <span>Glossary</span>
-          </Link>
-        </nav>
-
-        <div className="p-4 border-t border-zinc-800 space-y-4">
-          
-          <div className="flex items-center space-x-3 px-3 py-2 text-zinc-400 hover:text-zinc-200 cursor-pointer transition-colors">
-            <Settings size={20} />
-            <span className="text-sm font-medium">Settings</span>
-          </div>
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center space-x-3 px-3 py-2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors rounded-xl hover:bg-muted">
+          <Settings size={20} />
+          <span className="text-sm font-semibold">Settings</span>
         </div>
       </div>
-    </>
+    </div>
   );
 }

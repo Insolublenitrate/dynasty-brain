@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Search, GraduationCap, TrendingUp, Activity, Dumbbell, Award, Target, Hash } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
+import { useTheme } from '@/context/ThemeContext';
 import SeasonSelector from '@/components/SeasonSelector';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip } from 'recharts';
-
+import { getApiUrl } from '@/config/api';
 
 interface RookieBasic {
   player_id: string;
@@ -57,6 +58,7 @@ interface RookieAnalytics {
 }
 
 export default function RookieAnalyzerPage() {
+  const { currentTheme } = useTheme();
   const [rookies, setRookies] = useState<RookieBasic[]>([]);
   const [selectedRookie, setSelectedRookie] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<RookieAnalytics | null>(null);
@@ -69,7 +71,7 @@ export default function RookieAnalyzerPage() {
   useEffect(() => {
     async function fetchRookies() {
       try {
-        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+        const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/api/quant/rookies?year=${seasonYear}`);
         const data = await res.json();
         setRookies(data);
@@ -95,7 +97,7 @@ export default function RookieAnalyzerPage() {
     async function fetchAnalytics() {
       setLoadingAnalytics(true);
       try {
-        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+        const apiUrl = getApiUrl();
         const [res, resStats] = await Promise.all([
           fetch(`${apiUrl}/api/quant/rookie-analyzer/${selectedRookie}`),
           fetch(`${apiUrl}/api/quant/rookie-ncaa-stats/${selectedRookie}`)

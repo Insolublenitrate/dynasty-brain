@@ -2,535 +2,94 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, ReferenceLine, Cell, BarChart, Bar, Legend
-} from 'recharts';
-import { 
-  AlertTriangle, TrendingUp, Swords, 
-  Banknote, Skull, Activity, MessageSquareWarning, ArrowRightLeft,
-  Flame, Crosshair, ShieldAlert, Zap, Target, Briefcase, Search
+  Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, AlertTriangle 
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
+import { useTheme } from '@/context/ThemeContext';
 import ActionCenterTab from '@/components/tabs/ActionCenterTab';
-import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
 import TeamAnalyzerTab from '@/components/tabs/TeamAnalyzerTab';
+import StudioTab from '@/components/tabs/StudioTab';
+import MatrixTab from '@/components/tabs/MatrixTab';
+import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
+import AutopsyTab from '@/components/tabs/AutopsyTab';
 
-export default function DynastyBrainApp() {
-  const { leagueId } = useLeague();
+export default function DynastyRoomPage() {
+  const { leagueId, isLoading: isLeagueLoading } = useLeague();
+  const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('action');
   
-  const [studioData, setStudioData] = useState<any>(null);
-  const [matrixData, setMatrixData] = useState<any[]>([]);
-  const [autopsyData, setAutopsyData] = useState<any>(null);
-  const [tradesList, setTradesList] = useState<any[]>([]);
-  const [selectedTrade, setSelectedTrade] = useState<string>('');
-  const [bountyView, setBountyView] = useState<'live' | 'all'>('live');
-  const [isLoading, setIsLoading] = useState(true);
+  const [recentTrades, setRecentTrades] = useState<any[]>([]);
 
   useEffect(() => {
     if (!leagueId) return;
 
-    async function fetchData() {
-      setIsLoading(true);
+    async function fetchRecentData() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com';
-        
-        // Fetch Studio Data
-        const studioRes = await fetch(`${apiUrl}/api/quant/weekly-studio/${leagueId}`);
-        if (studioRes.ok) {
-          const sData = await studioRes.json();
-          setStudioData(sData);
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+        const res = await fetch(`${apiUrl}/api/quant/trades/${leagueId}`).catch(() => null);
+        if (res?.ok) {
+          const tData = await res.json();
+          if (Array.isArray(tData)) setRecentTrades(tData);
         }
-
-        // Fetch Matrix Data
-        const matrixRes = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
-        if (matrixRes.ok) {
-          const mData = await matrixRes.json();
-          setMatrixData(mData);
-        }
-
-        // Fetch Trades List
-        const tradesRes = await fetch(`${apiUrl}/api/quant/trades/${leagueId}`);
-        if (tradesRes.ok) {
-          const tList = await tradesRes.json();
-          setTradesList(tList);
-        }
-
-        // Fetch Autopsy Data
-        const autopsyRes = await fetch(`${apiUrl}/api/quant/trade-autopsy/${leagueId}`);
-        if (autopsyRes.ok) {
-          const aData = await autopsyRes.json();
-          if (!aData.error) {
-            setAutopsyData(aData);
-          }
-        }
-
       } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
-      } finally {
-        setIsLoading(false);
+        console.error("Failed to fetch live trades for ticker:", err);
       }
     }
-
-    fetchData();
+    fetchRecentData();
   }, [leagueId]);
 
-  const handleTradeSelect = async (transactionId: string) => {
-    setSelectedTrade(transactionId);
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com';
-      const autopsyRes = await fetch(`${apiUrl}/api/quant/trade-autopsy/${leagueId}?transaction_id=${transactionId}`);
-      if (autopsyRes.ok) {
-        const aData = await autopsyRes.json();
-        if (!aData.error) {
-          setAutopsyData(aData);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch specific trade:", err);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-      </div>
-    );
-  }
-
-  // --- STUDIO TAB ---
-  const StudioTab = () => {
-    if (!studioData) return null;
-    const { marquee_matchup, bounty_board, monday_autopsy, weekly_history } = studioData;
-    
-    const currentSeason = (weekly_history || []).length > 0 ? Math.max(...(weekly_history || []).map((w: any) => parseInt(w.season))).toString() : new Date().getFullYear().toString();
-    
-    const filtered_history = bountyView === 'live' 
-      ? (weekly_history || []).filter((w: any) => w.season === currentSeason)
-      : (weekly_history || []);
-
-    const filtered_bounty = bountyView === 'live'
-      ? (bounty_board || []).map((b: any) => ({
-          ...b,
-          cashWon: b.breakdown.filter((str: string) => str.startsWith(currentSeason)).reduce((acc: number, str: string) => {
-            const match = str.match(/\$(\d+)/);
-            return acc + (match ? parseInt(match[1]) : 0);
-          }, 0)
-        })).filter((b: any) => b.cashWon > 0).sort((a: any, b: any) => b.cashWon - a.cashWon)
-      : (bounty_board || []);
-
-    return (
-      <div className="space-y-6 animate-in fade-in duration-500">
-        {/* Marquee Matchup */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border-l-4 border-orange-500 p-6 rounded-r-xl shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 p-4 opacity-5 text-orange-500 transform rotate-12 pointer-events-none">
-            <Swords size={250} />
-          </div>
-          <div className="flex items-center gap-2 mb-2 relative z-10">
-            <Activity className="text-orange-500 animate-pulse" size={20} />
-            <h2 className="text-orange-500 font-bold tracking-[0.2em] text-xs uppercase">Marquee Matchup of the Week</h2>
-          </div>
-          <h3 className="text-4xl md:text-5xl font-black text-white italic mb-6 tracking-tight relative z-10 drop-shadow-lg">THE FRAUD CHECK</h3>
-          
-          <div className="flex flex-col md:flex-row items-center justify-between bg-zinc-950/80 p-6 rounded-lg border border-zinc-800 relative z-10 shadow-inner">
-            <div className="text-center w-full md:w-1/3 mb-4 md:mb-0">
-              <p className="text-zinc-400 font-mono text-sm mb-1 tracking-wider">TEAM 1</p>
-              <p className="text-2xl font-black text-white">{marquee_matchup?.teamA?.name || 'Unknown'}</p>
-              <p className="text-orange-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamA?.proj || 0}</p>
-            </div>
-            
-            <div className="w-full md:w-1/3 flex flex-col items-center justify-center my-4 md:my-0">
-              <div className="text-4xl font-black text-zinc-700 italic">VS</div>
-              <div className="mt-3 px-4 py-1 bg-zinc-900 rounded text-xs text-zinc-400 font-mono border border-zinc-800">
-                SPREAD: {marquee_matchup?.spread || 0}
-              </div>
-            </div>
-            
-            <div className="text-center w-full md:w-1/3">
-              <p className="text-zinc-400 font-mono text-sm mb-1 tracking-wider">TEAM 2</p>
-              <p className="text-2xl font-black text-white">{marquee_matchup?.teamB?.name || 'Unknown'}</p>
-              <p className="text-orange-400 font-mono mt-2 text-lg">Pts: {marquee_matchup?.teamB?.proj || 0}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Weekly Cash Tracker */}
-          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 relative hover:border-zinc-700 transition-colors">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-950/50 rounded-lg">
-                  <Banknote className="text-green-500" size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">The Bounty Board</h3>
-                  <p className="text-zinc-400 text-xs mt-1 uppercase tracking-wider">Highest Output / Payouts</p>
-                </div>
-              </div>
-              <div className="flex bg-zinc-950 rounded-lg p-1 border border-zinc-800">
-                <button
-                  onClick={() => setBountyView('live')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'live' ? 'bg-green-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
-                >
-                  LIVE SEASON
-                </button>
-                <button
-                  onClick={() => setBountyView('all')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${bountyView === 'all' ? 'bg-green-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
-                >
-                  ALL TIME
-                </button>
-              </div>
-            </div>
-
-            <div className="h-48 mb-6 bg-zinc-950/50 rounded-lg p-2 border border-zinc-800/50">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={filtered_history}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                  <XAxis 
-                    dataKey={(v) => bountyView === 'live' ? `W${v.week}` : `S${v.season.slice(-2)}W${v.week}`} 
-                    stroke="#475569" 
-                    fontSize={10} 
-                    tickLine={false}
-                  />
-                  <YAxis stroke="#475569" fontSize={10} tickLine={false} width={30} />
-                  <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', borderRadius: '8px' }}
-                    itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
-                    labelStyle={{ color: '#94a3b8', fontSize: '10px', marginBottom: '4px' }}
-                    cursor={{ fill: '#0f172a' }}
-                    labelFormatter={(label, payload) => payload?.[0]?.payload?.owner + ' (' + label + ')'}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
-                  <Bar dataKey="actual" name="Actual Points" fill="#22c55e" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="expected" name="Expected Points" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-3">
-              {(filtered_bounty || []).map((team: any, i: number) => (
-                <div key={team.roster_id} className="flex flex-col bg-zinc-950/50 p-4 rounded-lg border border-zinc-800/50 hover:bg-zinc-800/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span className={`font-black text-lg ${i === 0 ? 'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : 'text-zinc-600'}`}>#{i+1}</span>
-                      <span className="text-zinc-200 font-bold">{team.name}</span>
-                    </div>
-                    <span className="text-green-400 font-mono font-bold text-lg">${team.cashWon}</span>
-                  </div>
-                  {bountyView === 'all' && team.breakdown && team.breakdown.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-zinc-800/50 flex flex-wrap gap-1">
-                      {team.breakdown.map((b: string, j: number) => (
-                        <span key={j} className="text-[10px] bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800">{b}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {filtered_bounty.length === 0 && (
-                <div className="text-center py-6 text-zinc-500 text-sm italic">
-                  No payouts tracked for this view.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Monday Autopsy */}
-          <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 relative hover:border-zinc-700 transition-colors">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-red-950/50 rounded-lg">
-                <Skull className="text-red-500" size={24} />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Monday Autopsy</h3>
-                <p className="text-zinc-400 text-xs mt-1 uppercase tracking-wider">Brutal Bench Blunder</p>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-red-950/40 to-zinc-950 border border-red-900/30 rounded-lg p-5 shadow-inner">
-              <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle size={16} className="text-red-500" />
-                <p className="text-red-400 font-bold text-sm">Victim: {monday_autopsy?.victim || 'Unknown'} (Margin: {monday_autopsy?.margin || 0} pts)</p>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm mb-3 border-b border-red-900/20 pb-3">
-                <span className="text-zinc-300 font-medium">Started: {monday_autopsy?.started?.name} <span className="text-zinc-500">({monday_autopsy?.started?.points} pts)</span></span>
-              </div>
-              <div className="flex justify-between items-center text-sm mb-4">
-                <span className="text-zinc-300 font-medium">Benched: {monday_autopsy?.benched?.name} <span className="text-green-500">({monday_autopsy?.benched?.points} pts)</span></span>
-              </div>
-              
-              <div className="mt-5 p-3 bg-zinc-950 rounded border-l-2 border-red-500 relative">
-                <Zap size={14} className="absolute -left-[9px] top-1/2 -translate-y-1/2 text-red-500 bg-zinc-950" />
-                <p className="text-xs text-zinc-400 italic leading-relaxed">
-                  "You outsmarted yourself. The data was there, but you went with your gut. Now you're holding an L. Revoke your GM credentials." 
-                  <br/><span className="text-orange-600 font-bold mt-1 inline-block">— AI Analyst</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // --- MATRIX TAB ---
-  const getDotColor = (state: string) => {
-    switch (state) {
-      case 'Dynasty Juggernaut': return '#6366f1'; // amber-500
-      case 'All-In Contender': return '#f43f5e'; // rose-500
-      case 'Rebuilding': return '#10b981'; // emerald-500
-      case 'Purgatory': return '#64748b'; // zinc-500
-      case 'Middle of the Pack': return '#eab308'; // yellow-500
-      default: return '#94a3b8';
-    }
-  };
-
-  const xMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.max_pf - b.max_pf)[Math.floor(matrixData.length/2)].max_pf : 1500;
-  const yMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.future_capital_score - b.future_capital_score)[Math.floor(matrixData.length/2)].future_capital_score : 5000;
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const p = payload[0].payload;
-      return (
-        <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-xl text-sm z-50 relative">
-          <div className="flex items-center gap-3 mb-3">
-            {p.avatar && <img src={`https://sleepercdn.com/avatars/${p.avatar}`} className="w-8 h-8 rounded-full" alt="avatar" />}
-            <div>
-              <p className="font-bold text-zinc-100">{p.team_name}</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">{p.lifecycle_state}</p>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <p className="text-zinc-400">Max PF: <span className="text-zinc-200 font-mono">{p.max_pf?.toFixed(1)}</span></p>
-            <p className="text-zinc-400">Future Draft Capital: <span className="text-zinc-200 font-mono">{p.future_capital_score?.toFixed(0)}</span></p>
-            <p className="text-zinc-400 pt-2 border-t border-zinc-800 mt-2">Action: <span className="font-semibold text-emerald-400">{p.action_recommendation}</span></p>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const MatrixTab = () => (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h3 className="text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-              <Crosshair className="text-amber-500" /> TEAM POWER MATRIX
-            </h3>
-            <p className="text-zinc-400 text-sm mt-1">Current Contender Score vs. Future Draft Capital</p>
-          </div>
-        </div>
-        
-        <div className="h-[550px] w-full relative bg-zinc-950/50 rounded-xl p-4 border border-zinc-800">
-          <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 40 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              
-              <XAxis 
-                type="number" 
-                dataKey="max_pf" 
-                name="Max PF" 
-                domain={['dataMin - 100', 'dataMax + 100']}
-                stroke="#475569"
-                tick={{fill: '#94a3b8', fontSize: 12}}
-                tickFormatter={(value) => value.toFixed(0)}
-                label={{ value: 'Current Contender Score (Max PF)', position: 'insideBottom', offset: -30, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
-              />
-              
-              <YAxis 
-                type="number" 
-                dataKey="future_capital_score" 
-                name="Future Draft Capital" 
-                domain={['dataMin - 1000', 'dataMax + 1000']}
-                stroke="#475569"
-                tick={{fill: '#94a3b8', fontSize: 12}}
-                tickFormatter={(value) => value.toFixed(0)}
-                label={{ value: 'Future Draft Capital Value', angle: -90, position: 'insideLeft', offset: -20, fill: '#64748b', fontSize: 12, fontWeight: 600, style: { textTransform: 'uppercase', letterSpacing: '0.1em' } }}
-              />
-
-              <RechartsTooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#334155' }} />
-              
-              <ReferenceLine x={xMedian} stroke="#334155" strokeDasharray="5 5" />
-              <ReferenceLine y={yMedian} stroke="#334155" strokeDasharray="5 5" />
-
-              <Scatter name="Teams" data={matrixData}>
-                {matrixData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getDotColor(entry.lifecycle_state)} className="drop-shadow-lg transition-all duration-300 hover:opacity-80 cursor-pointer" />
-                ))}
-              </Scatter>
-            </ScatterChart>
-          </ResponsiveContainer>
-          
-          {/* Quadrant Labels */}
-          <div className="absolute top-12 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-amber-500">Dynasty Juggernaut</span>
-          </div>
-          <div className="absolute top-12 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-emerald-500">Rebuilding</span>
-          </div>
-          <div className="absolute bottom-24 left-32 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-zinc-500">Purgatory</span>
-          </div>
-          <div className="absolute bottom-24 right-12 opacity-30 pointer-events-none z-0 hidden md:block">
-            <span className="text-xl font-bold uppercase tracking-wider text-rose-500">All-In Contender</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // --- AUTOPSY TAB ---
-  const AutopsyTab = () => {
-    if (!autopsyData) {
-      return (
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-12 text-center shadow-xl">
-          <ArrowRightLeft className="text-purple-500 mx-auto mb-4" size={48} />
-          <h3 className="text-2xl font-black text-white italic mb-2">NO TRADES DETECTED</h3>
-          <p className="text-zinc-400">There are no completed trades in this league yet.</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <ArrowRightLeft className="text-purple-500" size={32} />
-                <h3 className="text-3xl font-black text-white italic tracking-tight">TRADE AUTOPSY</h3>
-              </div>
-              <p className="text-zinc-400 text-sm">Analyzing the most recent transaction based on actual points scored since execution.</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <select 
-                value={selectedTrade}
-                onChange={(e) => handleTradeSelect(e.target.value)}
-                className="bg-zinc-950 border border-zinc-700 text-zinc-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500"
-              >
-                <option value="">-- Most Recent Trade --</option>
-                {tradesList.map(t => (
-                  <option key={t.transaction_id} value={t.transaction_id}>
-                    {t.date}: {t.teams.join(' / ')}
-                  </option>
-                ))}
-              </select>
-              <div className="px-4 py-2 bg-zinc-950 rounded-lg border border-zinc-800 text-xs font-mono text-zinc-400 flex items-center gap-2">
-                <Activity size={14} className="text-orange-500" /> LIVE DATA SYNC
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent shadow-[0_0_20px_rgba(168,85,247,0.8)]"></div>
-            
-            <div className="text-center mb-10 mt-4">
-              <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase mb-3">Executed: {autopsyData.date}</p>
-              <div className="inline-flex items-center gap-2 bg-purple-950/40 text-purple-400 px-6 py-2 rounded-full text-sm font-black tracking-widest border border-purple-900/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-                <ShieldAlert size={16} /> FLEECE ALERT
-              </div>
-            </div>
-
-            <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative">
-              <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-[1px] bg-zinc-800 -translate-y-1/2 z-0"></div>
-
-              {/* Team A */}
-              <div className="w-full md:w-[45%] bg-gradient-to-b from-zinc-900 to-zinc-950 p-6 rounded-xl border border-green-900/30 shadow-[0_0_20px_rgba(34,197,94,0.05)] relative z-10">
-                <div className="text-center mb-6">
-                  <h4 className="text-white font-bold text-lg">{autopsyData.teamA}</h4>
-                  <p className="text-green-500/80 text-xs font-mono uppercase mt-1">Received</p>
-                </div>
-                <div className="space-y-3">
-                  {(autopsyData.assetsA || []).map((asset: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-lg border border-zinc-800/50 hover:border-green-900/50 transition-colors">
-                      <span className="text-zinc-200 font-medium">{asset.name}</span>
-                      <span className="text-green-400 font-mono font-bold">+{asset.pointsSince} pts</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* VS */}
-              <div className="flex-shrink-0 flex items-center justify-center relative z-10 py-4 md:py-0">
-                <div className="w-12 h-12 bg-zinc-950 rounded-full border border-zinc-800 flex items-center justify-center shadow-lg">
-                  <span className="text-zinc-600 font-black italic">VS</span>
-                </div>
-              </div>
-
-              {/* Team B */}
-              <div className="w-full md:w-[45%] bg-gradient-to-b from-zinc-900 to-zinc-950 p-6 rounded-xl border border-red-900/30 shadow-[0_0_20px_rgba(248,113,113,0.05)] relative z-10">
-                <div className="text-center mb-6">
-                  <h4 className="text-white font-bold text-lg">{autopsyData.teamB}</h4>
-                  <p className="text-red-500/80 text-xs font-mono uppercase mt-1">Received</p>
-                </div>
-                <div className="space-y-3">
-                  {(autopsyData.assetsB || []).map((asset: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-lg border border-zinc-800/50 hover:border-red-900/50 transition-colors">
-                      <span className="text-zinc-200 font-medium">{asset.name}</span>
-                      <span className="text-red-400 font-mono font-bold">+{asset.pointsSince} pts</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10 text-center bg-zinc-900/50 py-6 rounded-xl border border-zinc-800">
-              <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest mb-2">Net Point Differential</p>
-              <p className="text-5xl font-black text-green-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)] tracking-tighter">
-                {autopsyData.netDifference}
-              </p>
-              <p className="text-zinc-400 text-sm mt-4 italic max-w-lg mx-auto">
-                "{autopsyData.winner_name} didn't just win a trade, they funded a dynasty. This asset mismanagement should be reviewed by the commissioner."
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const TICKER_MESSAGES = [
-    "🚨 INJURY ALERT: Monitor player statuses before kickoff.",
-    "💸 CASH CHASE: The Bounty Board leader extends their lead.",
-    "📉 PURGATORY WARNING: If you are in the red quadrant, it is time to blow it up.",
-    "🔥 HOT TAKE: Draft capital is overrated. Win now.",
-    "👀 SCENE: Is your league active or dead? Send a trade offer today."
+    "🚨 INJURY ALERT: Monitor player practice reports before weekly lineup lock.",
+    "💸 CASH CHASE: The Bounty Board leader extends their Max PF lead in the division.",
+    "📉 PURGATORY WARNING: Teams in the lower-left quadrant should initiate a strategic retooling.",
+    "🔥 QUANT TAKE: Draft pick depreciation accelerates by 18% post-draft. Trade picks during the rookie hype apex.",
+    "⚡ TRADE ARBITRAGE: Multiple buy-low candidates identified in the Action Center.",
+    "👀 SLEEPER SYNC: Real-time transaction and roster sync active across all 12 teams."
+  ];
+
+  const TABS = [
+    { id: 'action', label: 'Action Center', icon: Target },
+    { id: 'team', label: 'Team Analyzer', icon: Search },
+    { id: 'studio', label: 'The Studio', icon: Activity },
+    { id: 'matrix', label: 'Power Matrix', icon: Crosshair },
+    { id: 'trade', label: 'Trade Architect', icon: Briefcase },
+    { id: 'autopsy', label: 'Trade Autopsy', icon: ArrowRightLeft }
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Tab Navigation Area */}
-      <div className="border-b border-zinc-800 bg-zinc-900/50 sticky top-0 z-40 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
-        <div className="flex gap-2 p-2 max-w-6xl mx-auto overflow-x-auto hide-scrollbar">
-          {[
-            { id: 'action', label: 'Action Center', icon: <Target size={18} /> },
-            { id: 'team', label: 'Team Analyzer', icon: <Search size={18} /> },
-            { id: 'studio', label: 'The Studio', icon: <Activity size={18} /> },
-            { id: 'matrix', label: 'Power Matrix', icon: <Crosshair size={18} /> },
-            { id: 'trade', label: 'Trade Architect', icon: <Briefcase size={18} /> },
-            { id: 'autopsy', label: 'Trade Autopsy', icon: <ArrowRightLeft size={18} /> }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
-                activeTab === tab.id 
-                  ? 'bg-orange-500/10 text-orange-400 shadow-[inset_0_0_10px_rgba(6,182,212,0.2)] border border-orange-500/30' 
-                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 border border-transparent'
-              }`}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+    <div className="flex flex-col min-h-[calc(100vh-5rem)]">
+      
+      {/* Sub-Tab Navigation Header */}
+      <div className="border-b border-zinc-800/80 bg-zinc-900/60 backdrop-blur-md sticky top-16 z-30 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 mb-6 shadow-md">
+        <div className="flex gap-2 max-w-[1440px] mx-auto overflow-x-auto hide-scrollbar">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                  isActive 
+                    ? 'bg-zinc-800 text-white border shadow-lg' 
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 border border-transparent'
+                }`}
+                style={isActive ? { 
+                  borderColor: currentTheme.border, 
+                  boxShadow: `0 0 12px ${currentTheme.glow}`,
+                  backgroundColor: 'rgba(24, 24, 27, 0.9)'
+                } : {}}
+              >
+                <Icon size={16} style={isActive ? { color: currentTheme.primary } : {}} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8 pb-24">
+      {/* Main Tab Content Area */}
+      <div className="flex-1 w-full max-w-[1440px] mx-auto pb-12">
         {activeTab === 'action' && <ActionCenterTab />}
         {activeTab === 'team' && <TeamAnalyzerTab />}
         {activeTab === 'studio' && <StudioTab />}
@@ -539,20 +98,25 @@ export default function DynastyBrainApp() {
         {activeTab === 'autopsy' && <AutopsyTab />}
       </div>
 
-      {/* Persistent Ticker */}
-      <div className="fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-xl border-t border-orange-900/50 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
-        <div className="flex items-stretch h-10">
-          <div className="bg-orange-600 text-white font-black italic px-4 flex items-center justify-center gap-2 z-20 shadow-[5px_0_15px_rgba(0,0,0,0.8)] min-w-[120px]">
-            <AlertTriangle size={16} /> BREAKING
+      {/* Fixed Persistent Breaking News Ticker */}
+      <div className="fixed bottom-0 left-0 w-full bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.6)]">
+        <div className="flex items-stretch h-9 sm:h-10">
+          <div 
+            className="text-zinc-950 font-black italic px-3 sm:px-4 flex items-center justify-center gap-1.5 z-20 shadow-md text-xs tracking-wider shrink-0"
+            style={{ backgroundColor: currentTheme.primary }}
+          >
+            <AlertTriangle size={15} className="stroke-[2.5]" /> 
+            <span>BREAKING</span>
           </div>
-          <div className="flex-1 overflow-hidden relative flex items-center bg-zinc-900/50">
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-zinc-950/90 to-transparent z-10"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-950/90 to-transparent z-10"></div>
+          
+          <div className="flex-1 overflow-hidden relative flex items-center bg-zinc-900/40">
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-zinc-950 to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-950 to-transparent z-10"></div>
             
-            <div className="animate-[marquee_30s_linear_infinite] whitespace-nowrap inline-flex items-center">
+            <div className="animate-marquee-slow whitespace-nowrap inline-flex items-center text-xs font-mono">
               {[...TICKER_MESSAGES, ...TICKER_MESSAGES].map((msg, i) => (
-                <span key={i} className="text-orange-100 font-mono text-[13px] inline-flex items-center">
-                  <span className="mx-6 text-orange-700">|</span>
+                <span key={i} className="text-zinc-300 inline-flex items-center">
+                  <span className="mx-4 text-zinc-600">|</span>
                   {msg}
                 </span>
               ))}
@@ -561,19 +125,6 @@ export default function DynastyBrainApp() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}} />
     </div>
   );
 }

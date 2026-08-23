@@ -7,16 +7,19 @@ import {
   ShieldAlert, Activity, Info, AlertTriangle, TrendingUp, Swords, Skull, Zap, Search
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
+import { useTheme } from '@/context/ThemeContext';
+import { getApiUrl } from '@/config/api';
 
 export default function TeamAnalyzerTab() {
   const { leagueId } = useLeague();
+  const { currentTheme } = useTheme();
   const [rosters, setRosters] = useState<any[]>([]);
   const [selectedRosterId, setSelectedRosterId] = useState<string>('');
   const [analyzerData, setAnalyzerData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Colors for charts (Athletic Intel theme)
-  const COLORS = ['#f97316', '#f59e0b', '#ef4444', '#10b981', '#3b82f6'];
+  const COLORS = [currentTheme.primary, '#f59e0b', '#ef4444', '#10b981', '#3b82f6'];
 
   useEffect(() => {
     if (!leagueId) return;
@@ -24,7 +27,7 @@ export default function TeamAnalyzerTab() {
     // Fetch available rosters to populate the dropdown
     async function fetchRosters() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com';
+        const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
         if (res.ok) {
           const mData = await res.json();
@@ -46,7 +49,7 @@ export default function TeamAnalyzerTab() {
     async function fetchAnalyzerData() {
       setIsLoading(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com';
+        const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/api/quant/team-analyzer/${leagueId}/${selectedRosterId}`);
         if (res.ok) {
           const data = await res.json();

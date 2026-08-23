@@ -5,14 +5,22 @@ out/
 build/
 .env.local
 .env
+.env.*
 
 # Python / FastAPI
 venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+*.bak.py
 
 # Database & Data files
+*.sqlite
+*.db
+*.parquet
+backend/data/
+Data Dumps/
+*.csv
 
 # OS / Editor
 .DS_Store
@@ -20,5 +28,3 @@ __pycache__/
 .idea/
 
 .vercel
-Data Dumps/
-*.csv

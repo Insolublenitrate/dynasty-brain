@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import TopNav from "@/components/TopNav";
+import AppLayout from "@/components/layout/AppLayout";
 import { LeagueProvider } from "@/context/LeagueContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Waiver WireTap | Quant Engine",
-  description: "Advanced Fantasy Football Analytics",
+  description: "Advanced Fantasy Football Dynasty Analytics",
+  themeColor: "#09090b",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
+  icons: {
+    icon: "/icon.png",
+  },
+  openGraph: {
+    title: "Waiver WireTap | Quant Engine",
+    description: "Advanced Fantasy Football Dynasty Analytics",
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({
@@ -17,16 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-200 h-screen overflow-hidden`}>
-        <LeagueProvider>
-          <div className="flex flex-col h-full bg-zinc-950">
-            <TopNav />
-            <main className="flex-1 overflow-y-auto relative">
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} font-sans bg-zinc-950 text-zinc-100 antialiased`}>
+        <ThemeProvider>
+          <LeagueProvider>
+            <AppLayout>
               {children}
-            </main>
-          </div>
-        </LeagueProvider>
+            </AppLayout>
+          </LeagueProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

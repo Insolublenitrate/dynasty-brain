@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-neon-green: var(--neon-green);
+  --color-neon-blue: var(--neon-blue);
+  --color-neon-orange: var(--neon-orange);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090b; /* Zinc 950 base for authentic carbon feel */
+    --foreground: #f4f4f5; /* Zinc 100 */
+    --primary: #f97316; /* Electric Orange default */
+    --primary-foreground: #09090b;
+    --secondary: #18181b; /* Zinc 900 */
+    --secondary-foreground: #f4f4f5;
+    --accent: #f97316; /* Electric Orange */
+    --accent-foreground: #09090b;
+    --muted: #27272a; /* Zinc 800 */
+    --muted-foreground: #a1a1aa; /* Zinc 400 */
+    --card: #121215;
+    --card-foreground: #f4f4f5;
+    --border: #27272a;
+    
+    /* Theme dynamic CSS variables */
+    --accent-primary: #f97316;
+    --accent-glow: rgba(249, 115, 22, 0.4);
+    --accent-border: rgba(249, 115, 22, 0.3);
+    --accent-subtle: rgba(249, 115, 22, 0.1);
+
+    /* Neon presets */
+    --neon-green: #10b981;
+    --neon-blue: #06b6d4;
+    --neon-orange: #f97316;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: #09090b;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Carbon Weave & Micro-grid Background */
+.bg-carbon {
+  background-color: #09090b;
+  background-image: 
+    linear-gradient(45deg, #111115 25%, transparent 25%), 
+    linear-gradient(-45deg, #111115 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #111115 75%), 
+    linear-gradient(-45deg, transparent 75%, #111115 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+.bg-carbon-mesh {
+  background-color: #09090b;
+  background-image: 
+    radial-gradient(circle at 50% 0%, var(--accent-subtle) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* Glowing utilities */
+.glow-accent {
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.glow-accent-sm {
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.border-accent {
+  border-color: var(--accent-border);
+}
+
+.bg-accent-subtle {
+  background-color: var(--accent-subtle);
+}
+
+.text-accent {
+  color: var(--accent-primary);
+}
+
+/* Playbook Route Animations */
+@keyframes routeDraw {
+  0% {
+    stroke-dashoffset: 600;
+    opacity: 0.2;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 0.85;
+  }
+  100% {
+    stroke-dashoffset: -600;
+    opacity: 0.2;
+  }
+}
+
+@keyframes motionPulse {
+  0%, 100% {
+    opacity: 0.3;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    opacity: 0.8;
+    stroke-dashoffset: -40;
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.playbook-route-draw {
+  stroke-dasharray: 600;
+  animation: routeDraw 8s ease-in-out infinite;
+}
+
+.playbook-route-draw-delay {
+  stroke-dasharray: 600;
+  animation: routeDraw 10s ease-in-out infinite 2s;
+}
+
+.playbook-route-draw-fast {
+  stroke-dasharray: 600;
+  animation: routeDraw 6s ease-in-out infinite 1s;
+}
+
+.playbook-motion-pulse {
+  animation: motionPulse 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  transform-origin: 180px 140px;
+  animation: spinSlow 40s linear infinite;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee-slow {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
