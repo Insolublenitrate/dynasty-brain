@@ -1,0 +1,37 @@
+{
+  "appId": "world.kindofabigdill.ffdashboard",
+  "appName": "Dynasty Brain",
+  "webDir": "out",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://ffdashboard.kindofabigdill.world",
+    "cleartext": true
+  },
+  "android": {
+    "backgroundColor": "#09090b",
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "ios": {
+    "backgroundColor": "#09090b",
+    "contentInset": "always",
+    "preferredContentMode": "mobile",
+    "scheme": "DynastyBrain",
+    "limitsNavigationsToAppBoundDomains": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#09090b",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#09090b"
+    }
+  }
+}

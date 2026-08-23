@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, Smartphone, CheckCircle2, Sparkles, ExternalLink, X, Shield, ArrowRight, Layers, Flame } from "lucide-react";
+import { Download, Smartphone, CheckCircle2, Sparkles, ExternalLink, X, Shield, ArrowRight, Layers, Flame, Apple, Play } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import PlaybookLogo from "./PlaybookLogo";
 
@@ -14,8 +14,19 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
   const { currentTheme } = useTheme();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [activePlatform, setActivePlatform] = useState<"android" | "ios">("android");
 
   useEffect(() => {
+    // Auto-detect iOS vs Android
+    if (typeof window !== "undefined") {
+      const ua = window.navigator.userAgent || "";
+      if (/iPad|iPhone|iPod/.test(ua) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)) {
+        setActivePlatform("ios");
+      } else {
+        setActivePlatform("android");
+      }
+    }
+
     const handleBeforeInstall = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -23,7 +34,6 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
-    // Check if already running standalone
     if (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone) {
       setIsInstalled(true);
     }
@@ -65,25 +75,52 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
           <PlaybookLogo size={48} animated={true} />
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-white italic tracking-tight">
-                DOWNLOAD & INSTALL APP
+              <h2 className="text-xl sm:text-2xl font-black text-white italic tracking-tight font-sans">
+                INSTALL MOBILE APP
               </h2>
             </div>
             <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest mt-0.5">
-              Android Standalone WebAPK & Native App
+              iOS & Android Native Standalone WebApp
             </p>
           </div>
+        </div>
+
+        {/* Platform Selector Tabs */}
+        <div className="grid grid-cols-2 gap-2 bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 font-mono text-xs font-bold">
+          <button
+            onClick={() => setActivePlatform("android")}
+            className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${
+              activePlatform === "android"
+                ? "bg-zinc-800 text-white shadow-md border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Smartphone size={16} className="text-emerald-400" />
+            <span>Android (APK / PWA)</span>
+          </button>
+
+          <button
+            onClick={() => setActivePlatform("ios")}
+            className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${
+              activePlatform === "ios"
+                ? "bg-zinc-800 text-white shadow-md border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Apple size={16} className="text-zinc-200" />
+            <span>Apple iOS (iPhone/iPad)</span>
+          </button>
         </div>
 
         {/* App Status Banner */}
         <div className="bg-zinc-950/80 rounded-2xl p-4 border border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center">
               <Smartphone size={22} />
             </div>
             <div>
               <p className="text-sm font-bold text-white">Full-Screen Mobile Experience</p>
-              <p className="text-[11px] text-zinc-400">Zero address bars • Standalone icon • Fast caching</p>
+              <p className="text-[11px] text-zinc-400">Zero address bars • Standalone home icon • Fast caching</p>
             </div>
           </div>
           {isInstalled && (
@@ -93,49 +130,81 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
           )}
         </div>
 
-        {/* Option 1: Instant Android 1-Click Install */}
-        <div className="space-y-3">
-          <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest block">
-            Option 1: Instant 1-Tap Mobile Install (Recommended)
-          </span>
+        {/* ANDROID CONTENT */}
+        {activePlatform === "android" && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <button
+              onClick={handleInstallClick}
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(249,115,22,0.35)] flex items-center justify-center gap-2.5"
+            >
+              <Download size={18} />
+              <span>Install App on Android Home Screen</span>
+            </button>
 
-          <button
-            onClick={handleInstallClick}
-            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(249,115,22,0.35)] flex items-center justify-center gap-2.5"
-          >
-            <Download size={18} />
-            <span>Install App on Android Home Screen</span>
-          </button>
-        </div>
-
-        {/* Option 2: Step-By-Step Chrome Browser Install Guide */}
-        <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-2.5 font-mono text-xs text-zinc-300">
-          <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
-            📋 2-Step Manual Install for Android Chrome:
-          </span>
-          <div className="flex items-start gap-2.5 text-zinc-300">
-            <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
-            <span>Tap the browser menu <strong>(⋮ 3 vertical dots)</strong> in Chrome / Brave.</span>
+            <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-2.5 font-mono text-xs text-zinc-300">
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
+                📋 Manual 2-Step Android Install:
+              </span>
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
+                <span>Tap the browser menu <strong>(⋮ 3 vertical dots)</strong> in Chrome / Brave.</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
+                <span>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-start gap-2.5 text-zinc-300">
-            <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
-            <span>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
-          </div>
-        </div>
+        )}
 
-        {/* GitHub APK Builder Link */}
+        {/* IOS CONTENT */}
+        {activePlatform === "ios" && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <div className="bg-zinc-950/90 rounded-2xl p-5 border border-zinc-800 space-y-3 font-mono text-xs text-zinc-300">
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
+                🍏 3-Step Apple Safari iPhone / iPad Install:
+              </span>
+              
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</span>
+                <div>
+                  <p className="font-bold text-white font-sans text-xs">Tap the Safari Share Icon</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap the <strong>Share button (box with upward arrow ⎋)</strong> at the bottom of Safari.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</span>
+                <div>
+                  <p className="font-bold text-white font-sans text-xs">Select "Add to Home Screen"</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen" (➕)</strong>.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">3</span>
+                <div>
+                  <p className="font-bold text-white font-sans text-xs">Tap "Add"</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top-right corner. Dynasty Brain will launch full-screen on your iPhone!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Capacitor Cross-Platform Native Project Link */}
         <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs font-mono text-zinc-400">
           <div className="flex items-center gap-2">
             <Shield size={14} className="text-emerald-400" />
-            <span>Capacitor Native APK Package</span>
+            <span>Capacitor iOS & Android Engine</span>
           </div>
           <a
-            href="https://github.com/Insolublenitrate/dynasty-brain/releases"
+            href="https://github.com/Insolublenitrate/dynasty-brain"
             target="_blank"
             rel="noreferrer"
             className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition-colors"
           >
-            <span>GitHub Releases</span>
+            <span>GitHub Sync</span>
             <ExternalLink size={12} />
           </a>
         </div>
