@@ -1,0 +1,54 @@
+{
+  "name": "Waiver WireTap: Dynasty Brain",
+  "short_name": "DynastyBrain",
+  "description": "Tactical Fantasy Football Dynasty Analytics & Quant Engine",
+  "start_url": "/dynasty-room",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "portrait-primary",
+  "categories": ["sports", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dynasty Room",
+      "short_name": "Dynasty",
+      "description": "View Dynasty Power Tiers & Matrix",
+      "url": "/dynasty-room",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Ask Madden",
+      "short_name": "Madden",
+      "description": "AI Football War Room & Start/Sit Advice",
+      "url": "/ask-madden",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Player Analyzer",
+      "short_name": "Players",
+      "description": "Compare EPA, VORP, and Efficiency",
+      "url": "/player-analyzer",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    }
+  ]
+}

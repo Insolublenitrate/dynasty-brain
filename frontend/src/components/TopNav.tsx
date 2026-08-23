@@ -1,15 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Activity, Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, Sparkles } from "lucide-react";
+import { Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, Sparkles, Smartphone, Activity } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SettingsModal from "@/components/SettingsModal";
+import InstallAppModal from "@/components/InstallAppModal";
+import PlaybookLogo from "@/components/PlaybookLogo";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function TopNav() {
   const pathname = usePathname();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const { currentTheme } = useTheme();
 
   const navItems = [
@@ -37,15 +40,10 @@ export default function TopNav() {
       <header className="bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 sticky top-0 z-40">
         <div className="max-w-[1440px] mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-4">
           
-          {/* Logo */}
+          {/* Logo with Animated X & O Tactical Playbook */}
           <Link href="/dynasty-room" className="flex items-center gap-3 hover:opacity-90 transition-opacity shrink-0">
-            <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transition-transform hover:scale-105"
-              style={{ backgroundColor: currentTheme.primary, boxShadow: `0 0 15px ${currentTheme.glow}` }}
-            >
-              <Activity size={20} className="text-zinc-950 stroke-[2.5]" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden sm:block">
+            <PlaybookLogo size={36} animated={true} />
+            <h1 className="text-xl md:text-2xl font-black text-white italic tracking-wider hidden sm:block font-sans">
               WAIVER <span style={{ color: currentTheme.primary, textShadow: `0 0 10px ${currentTheme.glow}` }}>WIRETAP</span>
             </h1>
           </Link>
@@ -63,8 +61,17 @@ export default function TopNav() {
             })}
           </nav>
 
-          {/* Right Actions: Settings Button */}
+          {/* Right Actions: Install App Button & Settings Button */}
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="px-2.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm"
+              title="Download & Install Android App"
+            >
+              <Smartphone size={15} className="text-emerald-400" />
+              <span className="hidden sm:inline">Get App</span>
+            </button>
+
             <button 
               onClick={() => setIsSettingsOpen(true)}
               className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700 transition-all flex items-center gap-1.5 text-xs font-bold"
@@ -77,9 +84,16 @@ export default function TopNav() {
         </div>
       </header>
 
+      {/* Settings Modal */}
       <SettingsModal 
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)} 
+      />
+
+      {/* Install App Modal */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
       />
     </>
   );
