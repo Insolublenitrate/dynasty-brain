@@ -586,18 +586,20 @@ def get_power_rankings(league_id: str):
         
         sp_cache = get_sleeper_players_cache()
         
-        team_scores = []
-        pos_points = {"QB": {}, "RB": {}, "WR": {}, "TE": {}}
-        
+        # 1. Fetch Max PF / Optimal Points from 2024 matchups
+        max_pfs = {}
+        for r in rosters:
+            m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", MatchupHistory.season == "2024").all()
+            max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
+
+        # 2. Evaluate Rosters, Draft Capital, and Positional Monopolies
+        raw_evals = []
         for r in rosters:
             picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
             quant_picks = [QuantDraftPick(year=int(p.season), round=p.round) for p in picks]
             capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
             
             player_ids = r.players or []
-            starter_ids = r.starters or []
-            
-            # Positional asset count and ages
             ages = []
             pos_counts = {"QB": 0, "RB": 0, "WR": 0, "TE": 0}
             
@@ -610,77 +612,132 @@ def get_power_rankings(league_id: str):
                     pos_counts[pos] += 1
                     
             avg_age = round(sum(ages) / len(ages), 1) if ages else 25.5
-            
-            # Quant scores
-            starter_score = round(r.fpts * 0.45, 1) if r.fpts else 650.0
-            depth_score = round(len(player_ids) * 28.5, 1)
-            cap_score = round(capital_score * 0.08, 1)
-            composite = round(starter_score + depth_score + cap_score, 1)
-            
-            # Archetype assignment
-            if avg_age >= 27.5 and r.wins >= 8:
+            mpf = max_pfs.get(r.roster_id, 1500.0)
+
+            raw_evals.append({
+                "roster_id": r.roster_id,
+                "name": owner_map.get(r.roster_id),
+                "avatar": avatar_map.get(r.roster_id),
+                "max_pf": mpf,
+                "capital_score": capital_score,
+                "player_count": len(player_ids),
+                "avg_age": avg_age,
+                "pos_counts": pos_counts,
+                "record": f"{r.wins}-{r.losses}",
+                "wins": r.wins,
+                "losses": r.losses
+            })
+
+        # 3. Statistical Standardization (Z-Scores)
+        all_mpf = [t["max_pf"] for t in raw_evals]
+        all_cap = [t["capital_score"] for t in raw_evals]
+        all_depth = [t["player_count"] for t in raw_evals]
+
+        mean_mpf, std_mpf = float(np.mean(all_mpf)), max(float(np.std(all_mpf)), 1.0)
+        mean_cap, std_cap = float(np.mean(all_cap)), max(float(np.std(all_cap)), 1.0)
+        mean_depth, std_depth = float(np.mean(all_depth)), max(float(np.std(all_depth)), 1.0)
+
+        team_scores = []
+        for t in raw_evals:
+            z_starter = (t["max_pf"] - mean_mpf) / std_mpf
+            z_cap = (t["capital_score"] - mean_cap) / std_cap
+            z_depth = (t["player_count"] - mean_depth) / std_depth
+
+            # Weights: 55% Starter Max PF, 35% Future Draft Capital, 10% Depth
+            composite_z = (z_starter * 0.55) + (z_cap * 0.35) + (z_depth * 0.10)
+            composite_100 = round(50.0 + (composite_z * 15.0), 1)
+
+            # Sub-scores on 0-100 scale
+            starter_sub = round(50.0 + (z_starter * 15.0), 1)
+            capital_sub = round(50.0 + (z_cap * 15.0), 1)
+            depth_sub = round(50.0 + (z_depth * 15.0), 1)
+
+            # Archetype Assignment
+            avg_age = t["avg_age"]
+            capital_val = t["capital_score"]
+            mpf_val = t["max_pf"]
+            pos_c = t["pos_counts"]
+
+            if mpf_val >= mean_mpf and avg_age >= 27.2 and capital_val < mean_cap:
                 archetype = "The Win-Now Goliath"
                 badge = "🏆 WIN-NOW"
                 longevity = 1.5
                 blurb = "Elite veteran firepower built for immediate championship contention, but facing imminent aging cliff."
-            elif capital_score >= 6000 and avg_age <= 24.5:
+            elif capital_val >= mean_cap * 1.15 and avg_age <= 25.0:
                 archetype = "The Draft Dragon"
                 badge = "🐉 CAPITAL HOARDER"
                 longevity = 4.0
                 blurb = "Cornered the draft market with deep rookie assets. Primed for multi-year dynasty dominance."
-            elif avg_age >= 28.0 and r.losses >= 7:
+            elif avg_age >= 27.8 and mpf_val < mean_mpf:
                 archetype = "The Aging Empire"
                 badge = "⏳ AGING CLIFF"
                 longevity = 1.0
-                blurb = "Stuck with declining veteran value without the playoff wins to justify it. Immediate retool recommended."
-            elif pos_counts.get("WR", 0) >= 8:
+                blurb = "Stuck with declining veteran value without elite scoring output. Strategic retool recommended."
+            elif pos_c.get("WR", 0) >= 8:
                 archetype = "The WR Oligarch"
                 badge = "🧊 WR MONOPOLY"
                 longevity = 3.0
                 blurb = "Dominates the modern pass-heavy dynasty meta with deep wide receiver asset leverage."
+            elif mpf_val < mean_mpf * 0.85 and capital_val >= mean_cap:
+                archetype = "The Productive Struggle"
+                badge = "📈 REBUILD APEX"
+                longevity = 3.5
+                blurb = "Pivoted into a high-leverage youth & pick accumulation cycle for rapid future ascent."
             else:
                 archetype = "The Balanced Contender"
                 badge = "⚡ BALANCED CORE"
                 longevity = 2.5
                 blurb = "Solid foundational balance between young starters and future draft equity."
 
+            # Natural Tier Cutoffs based on composite Z-score
+            if composite_z >= 0.85:
+                tier = "Tier S (Apex Dynasty)"
+                tier_color = "#a855f7" # Purple
+            elif composite_z >= 0.30:
+                tier = "Tier A (True Contenders)"
+                tier_color = "#3b82f6" # Blue
+            elif composite_z >= -0.35:
+                tier = "Tier B (Playoff Threat)"
+                tier_color = "#10b981" # Emerald
+            elif composite_z >= -0.80:
+                tier = "Tier C (Retool Phase)"
+                tier_color = "#f97316" # Orange
+            else:
+                tier = "Tier D (Rebuild Mode)"
+                tier_color = "#ef4444" # Red
+
             team_scores.append({
-                "roster_id": r.roster_id,
-                "name": owner_map.get(r.roster_id),
-                "avatar": avatar_map.get(r.roster_id),
-                "composite_score": composite,
-                "starter_score": starter_score,
-                "depth_score": depth_score,
-                "capital_score": cap_score,
+                "roster_id": t["roster_id"],
+                "name": t["name"],
+                "avatar": t["avatar"],
+                "composite_score": composite_100,
+                "z_score": round(composite_z, 2),
+                "starter_score": starter_sub,
+                "depth_score": depth_sub,
+                "capital_score": capital_sub,
+                "max_pf": round(mpf_val, 1),
+                "future_capital_score": round(capital_val, 0),
                 "avg_age": avg_age,
                 "archetype": archetype,
                 "badge": badge,
                 "longevity": longevity,
                 "blurb": blurb,
-                "fpts": round(r.fpts, 1),
-                "record": f"{r.wins}-{r.losses}"
+                "tier": tier,
+                "tier_color": tier_color,
+                "record": t["record"]
             })
-            
+
         team_scores = sorted(team_scores, key=lambda x: x["composite_score"], reverse=True)
-        
-        # Tier assignment
         for idx, t in enumerate(team_scores):
             t["rank"] = idx + 1
-            if idx <= 1:
-                t["tier"] = "Tier S (Apex Dynasty)"
-                t["tier_color"] = "#a855f7" # Purple
-            elif idx <= 4:
-                t["tier"] = "Tier A (True Contenders)"
-                t["tier_color"] = "#3b82f6" # Blue
-            elif idx <= 7:
-                t["tier"] = "Tier B (Playoff Hunt)"
-                t["tier_color"] = "#10b981" # Emerald
-            else:
-                t["tier"] = "Tier C/D (Retool & Rebuild)"
-                t["tier_color"] = "#f97316" # Orange
 
         return {
-            "power_rankings": team_scores
+            "power_rankings": team_scores,
+            "league_benchmarks": {
+                "mean_max_pf": round(mean_mpf, 1),
+                "mean_capital": round(mean_cap, 0),
+                "median_score": 50.0
+            }
         }
     finally:
         session.close()
