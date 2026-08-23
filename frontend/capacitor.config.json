@@ -1,10 +1,10 @@
 {
-  "appId": "world.kindofabigdill.ffdashboard",
-  "appName": "Dynasty Brain",
+  "appId": "world.kindofabigdill.waiverwiretap",
+  "appName": "Waiver Wiretap",
   "webDir": "out",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://ffdashboard.kindofabigdill.world",
+    "url": "https://waiverwiretap.kindofabigdill.com",
     "cleartext": true
   },
   "android": {
@@ -17,7 +17,7 @@
     "backgroundColor": "#09090b",
     "contentInset": "always",
     "preferredContentMode": "mobile",
-    "scheme": "DynastyBrain",
+    "scheme": "WaiverWiretap",
     "limitsNavigationsToAppBoundDomains": true
   },
   "plugins": {

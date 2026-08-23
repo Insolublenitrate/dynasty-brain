@@ -16,21 +16,21 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Waiver WireTap | Quant Engine",
-  description: "Advanced Fantasy Football Dynasty Analytics & Tactical War Room",
+  title: "Waiver Wiretap | Quant & AI Dynasty War Room",
+  description: "Tactical Fantasy Football Dynasty Analytics, Z-Score Power Tiers & Coach Madden AI War Room",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Dynasty Brain",
+    title: "Waiver Wiretap",
   },
   icons: {
     icon: "/icon.png",
-    apple: "/icon.png",
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Waiver WireTap | Quant Engine",
-    description: "Advanced Fantasy Football Dynasty Analytics & Tactical War Room",
+    title: "Waiver Wiretap | Quant & AI Dynasty War Room",
+    description: "Tactical Fantasy Football Dynasty Analytics, Z-Score Power Tiers & Coach Madden AI War Room",
     images: ["/opengraph-image.png"],
   },
 };

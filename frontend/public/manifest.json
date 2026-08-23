@@ -1,7 +1,7 @@
 {
-  "name": "Waiver WireTap: Dynasty Brain",
-  "short_name": "DynastyBrain",
-  "description": "Tactical Fantasy Football Dynasty Analytics & Quant Engine",
+  "name": "Waiver Wiretap",
+  "short_name": "Waiver Wiretap",
+  "description": "Tactical Fantasy Football Dynasty Analytics, Quant Tiers & AI War Room",
   "start_url": "/dynasty-room",
   "display": "standalone",
   "background_color": "#09090b",
