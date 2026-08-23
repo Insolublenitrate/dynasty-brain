@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, ReferenceLine, Cell
+  ResponsiveContainer, ReferenceLine, ReferenceArea, Cell
 } from 'recharts';
-import { Crosshair, Info, TrendingUp, AlertTriangle, Shield, Sparkles, ChevronRight } from 'lucide-react';
+import { Crosshair, Info, TrendingUp, AlertTriangle, Shield, Sparkles, ChevronRight, Trophy, Zap, Skull, History } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
@@ -120,13 +120,13 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
       <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl">
         
         {/* Header and Legend */}
-        <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="mb-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
               <Crosshair size={26} style={{ color: currentTheme.primary }} /> POWER MATRIX
             </h3>
             <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
-              Roster Production (Max PF) vs Future Draft Capital (Quadrants defined by league medians)
+              Roster Production (Max PF) vs Future Draft Capital
             </p>
           </div>
           
@@ -147,34 +147,85 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
           </div>
         </div>
 
-        {/* Scatter Chart Container */}
-        <div className="h-[360px] sm:h-[460px] md:h-[520px] w-full bg-zinc-950/90 p-2 sm:p-4 rounded-xl border border-zinc-800 relative overflow-hidden">
-          
-          {/* Responsive Quadrant Labels */}
-          <div className="absolute top-3 right-3 sm:top-5 sm:right-5 text-right pointer-events-none z-0">
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-purple-400/60 bg-purple-950/30 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-purple-900/40">
-              Championship Window
-            </span>
-          </div>
-          <div className="absolute top-3 left-10 sm:top-5 sm:left-14 pointer-events-none z-0">
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-emerald-400/60 bg-emerald-950/30 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-emerald-900/40">
-              Productive Struggle
-            </span>
-          </div>
-          <div className="absolute bottom-12 left-10 sm:bottom-14 sm:left-14 pointer-events-none z-0">
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-red-400/60 bg-red-950/30 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-red-900/40">
-              The Abyss (Purgatory)
-            </span>
-          </div>
-          <div className="absolute bottom-12 right-3 sm:bottom-14 sm:right-5 text-right pointer-events-none z-0">
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-orange-400/60 bg-orange-950/30 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-orange-900/40">
-              Aging Giant (Retool)
-            </span>
+        {/* 4-Quadrant Strategic Navigation HUD */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4">
+          <div className="bg-purple-950/20 border border-purple-900/40 rounded-xl p-2.5 flex items-start gap-2">
+            <Trophy size={16} className="text-purple-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="text-[9px] font-mono text-purple-400 font-bold uppercase tracking-wider block">Top Right (Q1)</span>
+              <p className="text-xs font-black text-purple-200 leading-tight">Championship Window</p>
+              <p className="text-[10px] text-zinc-400 mt-0.5">High Max PF • High Capital</p>
+            </div>
           </div>
 
+          <div className="bg-emerald-950/20 border border-emerald-900/40 rounded-xl p-2.5 flex items-start gap-2">
+            <Zap size={16} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="text-[9px] font-mono text-emerald-400 font-bold uppercase tracking-wider block">Top Left (Q2)</span>
+              <p className="text-xs font-black text-emerald-200 leading-tight">Productive Struggle</p>
+              <p className="text-[10px] text-zinc-400 mt-0.5">Young Core • High Capital</p>
+            </div>
+          </div>
+
+          <div className="bg-orange-950/20 border border-orange-900/40 rounded-xl p-2.5 flex items-start gap-2">
+            <History size={16} className="text-orange-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="text-[9px] font-mono text-orange-400 font-bold uppercase tracking-wider block">Bottom Right (Q4)</span>
+              <p className="text-xs font-black text-orange-200 leading-tight">Aging Giant</p>
+              <p className="text-[10px] text-zinc-400 mt-0.5">High Max PF • Low Capital</p>
+            </div>
+          </div>
+
+          <div className="bg-red-950/20 border border-red-900/40 rounded-xl p-2.5 flex items-start gap-2">
+            <Skull size={16} className="text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="text-[9px] font-mono text-red-400 font-bold uppercase tracking-wider block">Bottom Left (Q3)</span>
+              <p className="text-xs font-black text-red-200 leading-tight">The Abyss</p>
+              <p className="text-[10px] text-zinc-400 mt-0.5">Low Max PF • Low Capital</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Scatter Chart Container */}
+        <div className="h-[360px] sm:h-[460px] md:h-[520px] w-full bg-zinc-950/90 p-2 sm:p-4 rounded-xl border border-zinc-800 relative overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart margin={{ top: 25, right: 20, bottom: 25, left: -10 }}>
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 30, left: -5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+              
+              {/* Subtle Quadrant Color Tint Areas */}
+              <ReferenceArea 
+                x1={xMedian} 
+                x2={maxX}
+                y1={yMedian} 
+                y2={maxY}
+                fill="#a855f7" 
+                fillOpacity={0.04} 
+              />
+              <ReferenceArea 
+                x1={minX} 
+                x2={xMedian}
+                y1={yMedian} 
+                y2={maxY}
+                fill="#10b981" 
+                fillOpacity={0.04} 
+              />
+              <ReferenceArea 
+                x1={minX} 
+                x2={xMedian}
+                y1={minY} 
+                y2={yMedian}
+                fill="#ef4444" 
+                fillOpacity={0.04} 
+              />
+              <ReferenceArea 
+                x1={xMedian} 
+                x2={maxX}
+                y1={minY} 
+                y2={yMedian}
+                fill="#f97316" 
+                fillOpacity={0.04} 
+              />
+
               <XAxis 
                 type="number" 
                 dataKey="max_pf" 
@@ -186,7 +237,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 label={{ 
                   value: 'Roster Power (Max PF) →', 
                   position: 'bottom', 
-                  offset: 8, 
+                  offset: 10, 
                   fill: '#71717a', 
                   fontSize: 10,
                   fontWeight: 600
