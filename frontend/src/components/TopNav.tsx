@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Activity, Database, GraduationCap, Radar, Trophy, Settings, Flame, Search } from "lucide-react";
+import { Activity, Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SettingsModal from "@/components/SettingsModal";
@@ -14,6 +14,7 @@ export default function TopNav() {
 
   const navItems = [
     { href: "/dynasty-room", label: "Dynasty Room", icon: Activity },
+    { href: "/ask-madden", label: "Ask Madden 🎙️", icon: Sparkles },
     { href: "/player-analyzer", label: "Player Analyzer", icon: Search },
     { href: "/cross-reference", label: "Cross Reference", icon: Radar },
     { href: "/top-performers", label: "Top Performers", icon: Trophy },

@@ -23,13 +23,14 @@ app.add_middleware(
 )
 
 
-from api.routers import league, dynasty, players, trades, rookies
+from api.routers import league, dynasty, players, trades, rookies, madden
 
 app.include_router(league.router, tags=['League'])
 app.include_router(dynasty.router, tags=['Dynasty'])
 app.include_router(players.router, tags=['Players'])
 app.include_router(trades.router, tags=['Trades'])
 app.include_router(rookies.router, tags=['Rookies'])
+app.include_router(madden.router, tags=['Madden'])
 
 @app.get("/api/health")
 def health():
