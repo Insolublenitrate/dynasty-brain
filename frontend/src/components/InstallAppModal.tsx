@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, Smartphone, CheckCircle2, Sparkles, ExternalLink, X, Shield, ArrowRight, Layers, Flame, Apple, Play } from "lucide-react";
+import { Download, Smartphone, CheckCircle2, Sparkles, ExternalLink, X, Shield, ArrowRight, Layers, Flame, Apple, Play, Compass, HardHat } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import PlaybookLogo from "./PlaybookLogo";
 
@@ -76,11 +76,11 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl sm:text-2xl font-black text-white italic tracking-tight font-sans">
-                INSTALL MOBILE APP
+                INSTALL WAIVER WIRETAP
               </h2>
             </div>
             <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest mt-0.5">
-              iOS & Android Native Standalone WebApp
+              Mobile App & Standalone War Room
             </p>
           </div>
         </div>
@@ -108,7 +108,12 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
             }`}
           >
             <Apple size={16} className="text-zinc-200" />
-            <span>Apple iOS (iPhone/iPad)</span>
+            <span className="flex items-center gap-1.5">
+              <span>Apple iOS</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                Film Room 🏈
+              </span>
+            </span>
           </button>
         </div>
 
@@ -157,38 +162,65 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
           </div>
         )}
 
-        {/* IOS CONTENT */}
+        {/* IOS CONTENT (UNDER CONSTRUCTION / FILM ROOM) */}
         {activePlatform === "ios" && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <div className="bg-zinc-950/90 rounded-2xl p-5 border border-zinc-800 space-y-3 font-mono text-xs text-zinc-300">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
-                🍏 3-Step Apple Safari iPhone / iPad Install:
-              </span>
+            
+            {/* Witty Football Construction / Film Room Banner */}
+            <div className="bg-amber-950/30 border-2 border-amber-600/50 rounded-2xl p-4 space-y-2 relative overflow-hidden">
+              <div className="flex items-center gap-2.5 text-amber-400">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
+                  <Compass size={18} className="animate-spin" style={{ animationDuration: '6s' }} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono font-black uppercase tracking-widest block text-amber-400">
+                    🏈 IN THE FILM ROOM • PRACTICE SQUAD
+                  </span>
+                  <h4 className="text-sm font-black text-white italic tracking-tight">
+                    OFFICIAL REVIEW: iOS APP STORE LAUNCH
+                  </h4>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-zinc-300 font-sans leading-relaxed pt-1">
+                Coach is currently breaking down game film and running two-a-days to push the native iOS app through Apple's goal line defense. <strong>Official App Store release is in the Red Zone!</strong>
+              </p>
+            </div>
+
+            {/* The "Call An Audible" Workaround Play */}
+            <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-3 font-mono text-xs text-zinc-300">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                  <Flame size={12} /> 📣 CALL AN AUDIBLE: Run Safari Home Screen Play
+                </span>
+                <span className="text-[9px] text-zinc-500 uppercase">Available Today</span>
+              </div>
               
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</span>
+                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
                 <div>
-                  <p className="font-bold text-white font-sans text-xs">Tap the Safari Share Icon</p>
-                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap the <strong>Share button (box with upward arrow ⎋)</strong> at the bottom of Safari.</p>
+                  <p className="font-bold text-white font-sans text-xs">Snap the Ball in Safari</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap the <strong>Share button (⎋ box with upward arrow)</strong> at the bottom toolbar.</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</span>
+                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
                 <div>
-                  <p className="font-bold text-white font-sans text-xs">Select "Add to Home Screen"</p>
+                  <p className="font-bold text-white font-sans text-xs">Hit the Open Receiver</p>
                   <p className="text-zinc-400 text-[11px] mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen" (➕)</strong>.</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">3</span>
+                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">3</span>
                 <div>
-                  <p className="font-bold text-white font-sans text-xs">Tap "Add"</p>
-                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top-right corner. Dynasty Brain will launch full-screen on your iPhone!</p>
+                  <p className="font-bold text-white font-sans text-xs">Touchdown! 🏈</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top right. Waiver Wiretap launches in full-screen on your iPhone!</p>
                 </div>
               </div>
             </div>
+
           </div>
         )}
 

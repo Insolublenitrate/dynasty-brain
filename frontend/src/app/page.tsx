@@ -316,14 +316,18 @@ export default function LandingPage() {
           
           {/* iOS Card */}
           <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-5 space-y-2.5">
-            <div className="flex items-center gap-2 text-white font-bold text-sm font-sans">
-              <Apple size={18} />
-              <span>Apple iOS (iPhone / iPad)</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white font-bold text-sm font-sans">
+                <Apple size={18} />
+                <span>Apple iOS (iPhone / iPad)</span>
+              </div>
+              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold uppercase">
+                Film Room 🏈
+              </span>
             </div>
             <p className="text-zinc-400 text-[11px] font-sans">
-              1. Open Safari & visit <strong>waiverwiretap.kindofabigdill.com</strong><br />
-              2. Tap the <strong>Share button (⎋)</strong><br />
-              3. Tap <strong>"Add to Home Screen" (➕)</strong>
+              <strong>Native App on Practice Squad</strong> (App Store soon).<br />
+              <strong>Audible play:</strong> Open Safari & tap <strong>Share (⎋)</strong> &rarr; <strong>"Add to Home Screen" (➕)</strong> for full-screen mode today!
             </p>
           </div>
 
