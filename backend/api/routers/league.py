@@ -38,91 +38,43 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
         if not rosters:
             return {"error": "No rosters found for this league."}
             
+        sp_cache = get_sleeper_players_cache()
+        
+        # 1. Fetch 2024 active season Matchup totals (Max PF) for each team
+        max_pfs = {}
+        for r in rosters:
+            m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", MatchupHistory.season == "2024").all()
+            max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
+
         data = []
         for r in rosters:
             owner_name = (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
             
             # Get picks owned by this roster
             picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
-            
-            # Map DB picks to Quant DraftPicks
-            quant_picks = []
-            for p in picks:
-                quant_picks.append(QuantDraftPick(year=int(p.season), round=p.round))
-                
+            quant_picks = [QuantDraftPick(year=int(p.season), round=p.round) for p in picks]
             future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
             
-            # Calculate expected points and max_pf based on actual player data in the roster
-            roster_expected_pts = 0.0
-            roster_max_pf = 0.0
-            age_sum = 0.0
-            age_count = 0
-            
-            # Since players is a list of player IDs
-            if r.players and len(r.players) > 0:
-                player_ids = r.players
-                # Fetch their advanced stats from 2022 onwards (historical dynasty timeline)
-                stats = session.query(PlayerAdvancedStats).filter(
-                    PlayerAdvancedStats.player_id.in_(player_ids),
-                    PlayerAdvancedStats.season >= 2022
-                ).all()
+            player_ids = r.players or []
+            ages = []
+            for pid in player_ids:
+                p_info = sp_cache.get(str(pid), {})
+                age = p_info.get("age", 25)
+                if age: ages.append(age)
                 
-                # Aggregate historical points by player
-                player_pts = {}
-                player_age = {}
-                for st in stats:
-                    pid = st.player_id
-                    pts = st.fantasy_points_ppr or 0.0
-                    if pid not in player_pts:
-                        player_pts[pid] = []
-                        player_age[pid] = []
-                    player_pts[pid].append(pts)
-                    player_age[pid].append(26.0) # PlayerAdvancedStats doesn't have age, we default to 26
-                    
-                for pid, pts_list in player_pts.items():
-                    avg_pts = sum(pts_list) / len(pts_list)
-                    roster_max_pf += avg_pts
-                    age_sum += (sum(player_age[pid]) / len(player_age[pid]))
-                    age_count += 1
-                    
-                # For expected points, we might just look at starters if r.starters is available
-                if r.starters and len(r.starters) > 0:
-                    roster_expected_pts = sum((sum(player_pts[pid])/len(player_pts[pid])) for pid in r.starters if pid in player_pts)
-                else:
-                    # If no starters defined, assume top 9 players
-                    avg_player_pts = [(sum(pts)/len(pts)) for pts in player_pts.values()]
-                    top_players = sorted(avg_player_pts, reverse=True)[:9]
-                    roster_expected_pts = sum(top_players)
-                    
-            if roster_max_pf == 0: roster_max_pf = 1500.0
-            if roster_expected_pts == 0: roster_expected_pts = 1200.0
+            age_score = round(sum(ages) / len(ages), 1) if ages else 25.5
+            actual_pts = r.fpts or max_pfs.get(r.roster_id, 1500.0)
+            max_pf = max_pfs.get(r.roster_id, 1500.0)
+            expected_pts = round(max_pf * 0.92, 1)
+            point_differential = round(actual_pts - expected_pts, 1)
             
-            actual_pts = r.fpts or roster_expected_pts
-            expected_pts = roster_expected_pts
-            max_pf = roster_max_pf
-            point_differential = actual_pts - expected_pts
-            age_score = (age_sum / age_count) if age_count > 0 else 26.5
+            # Power Index (70% Max PF optimal ceiling, 30% actual pts)
+            power_index = round((max_pf * 0.7) + (actual_pts * 0.3), 1)
             
-            # Mock Manager Habits (Still heuristic since we lack trade history DB)
-            import random
-            rng = random.Random(f"{league_id}-{r.roster_id}")
-            trade_frequency = rng.uniform(0, 40) # 0 to 40 trades a year
-            draft_success_rate = rng.uniform(0.1, 0.6) # 10% to 60% hit rate
-            
-            # X-Axis: Current Power Index (Weighted aggregate in "points" scale)
-            power_index = (max_pf * 0.6) + (expected_pts * 0.3) + (point_differential * 0.1)
-            
-            # Y-Axis: Dynasty Health Score (0-100 scale)
-            # Roster Age (40%): Scale age to a 0-100 score. 24 is 100, 29 is 0.
+            # Dynasty Health Score (0-100 scale)
             age_normalized = max(0, min(100, (29.0 - age_score) * 20))
-            # Draft Capital (30%): Scale future capital (0 - 10000 typically)
-            capital_normalized = min(100, (future_capital_score / 10000.0) * 100)
-            # Manager Trade Frequency (15%): Scale 0-30 trades to 0-100
-            trade_normalized = min(100, (trade_frequency / 30.0) * 100)
-            # Draft Success (15%): Scale to 0-100
-            draft_normalized = min(100, (draft_success_rate / 0.6) * 100)
-            
-            health_score = (age_normalized * 0.4) + (capital_normalized * 0.3) + (trade_normalized * 0.15) + (draft_normalized * 0.15)
+            capital_normalized = min(100, (future_capital_score / 20000.0) * 100)
+            health_score = round((age_normalized * 0.4) + (capital_normalized * 0.6), 1)
             
             data.append({
                 "roster_id": r.roster_id,
@@ -133,8 +85,6 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 "point_differential": point_differential,
                 "roster_age_score": age_score,
                 "future_capital_score": future_capital_score,
-                "trade_frequency": trade_frequency,
-                "draft_success_rate": draft_success_rate,
                 "power_index": power_index,
                 "health_score": health_score,
                 "avatar": r.user.avatar if r.user else None
@@ -628,14 +578,21 @@ def get_power_rankings(league_id: str):
                 "losses": r.losses
             })
 
-        # 3. Statistical Standardization (Z-Scores)
+        # 3. Statistical Standardization (Z-Scores) & Relative Rankings
         all_mpf = [t["max_pf"] for t in raw_evals]
         all_cap = [t["capital_score"] for t in raw_evals]
         all_depth = [t["player_count"] for t in raw_evals]
+        all_ages = [t["avg_age"] for t in raw_evals]
 
         mean_mpf, std_mpf = float(np.mean(all_mpf)), max(float(np.std(all_mpf)), 1.0)
         mean_cap, std_cap = float(np.mean(all_cap)), max(float(np.std(all_cap)), 1.0)
         mean_depth, std_depth = float(np.mean(all_depth)), max(float(np.std(all_depth)), 1.0)
+
+        max_pf_sorted = sorted(raw_evals, key=lambda x: x["max_pf"], reverse=True)
+        cap_sorted = sorted(raw_evals, key=lambda x: x["capital_score"], reverse=True)
+        rb_sorted = sorted(raw_evals, key=lambda x: x["pos_counts"]["RB"], reverse=True)
+        wr_sorted = sorted(raw_evals, key=lambda x: x["pos_counts"]["WR"], reverse=True)
+        qb_sorted = sorted(raw_evals, key=lambda x: x["pos_counts"]["QB"], reverse=True)
 
         team_scores = []
         for t in raw_evals:
@@ -643,8 +600,8 @@ def get_power_rankings(league_id: str):
             z_cap = (t["capital_score"] - mean_cap) / std_cap
             z_depth = (t["player_count"] - mean_depth) / std_depth
 
-            # Weights: 55% Starter Max PF, 35% Future Draft Capital, 10% Depth
-            composite_z = (z_starter * 0.55) + (z_cap * 0.35) + (z_depth * 0.10)
+            # Weights: 70% Starter Max PF, 30% Future Draft Capital
+            composite_z = (z_starter * 0.70) + (z_cap * 0.30)
             composite_100 = round(50.0 + (composite_z * 15.0), 1)
 
             # Sub-scores on 0-100 scale
@@ -652,42 +609,68 @@ def get_power_rankings(league_id: str):
             capital_sub = round(50.0 + (z_cap * 15.0), 1)
             depth_sub = round(50.0 + (z_depth * 15.0), 1)
 
-            # Archetype Assignment
+            # Archetype Assignment via Relative League Distribution
             avg_age = t["avg_age"]
             capital_val = t["capital_score"]
             mpf_val = t["max_pf"]
             pos_c = t["pos_counts"]
+            rb_c = pos_c.get("RB", 0)
+            wr_c = pos_c.get("WR", 0)
+            qb_c = pos_c.get("QB", 0)
 
-            if mpf_val >= mean_mpf and avg_age >= 27.2 and capital_val < mean_cap:
-                archetype = "The Win-Now Goliath"
-                badge = "🏆 WIN-NOW"
-                longevity = 1.5
-                blurb = "Elite veteran firepower built for immediate championship contention, but facing imminent aging cliff."
-            elif capital_val >= mean_cap * 1.15 and avg_age <= 25.0:
-                archetype = "The Draft Dragon"
-                badge = "🐉 CAPITAL HOARDER"
+            pf_rank = next(i for i, x in enumerate(max_pf_sorted) if x["roster_id"] == t["roster_id"]) + 1
+            cap_rank = next(i for i, x in enumerate(cap_sorted) if x["roster_id"] == t["roster_id"]) + 1
+
+            if pf_rank == 1:
+                archetype = "The Dynasty Juggernaut"
+                badge = "👑 DYNASTY APEX"
+                longevity = 2.5
+                blurb = "The #1 scoring juggernaut in the league. Dominating in pure weekly Max PF starter firepower."
+            elif pf_rank <= 3 and capital_val >= mean_cap:
+                archetype = "The Championship Goliath"
+                badge = "🏆 WIN-NOW GOLIATH"
+                longevity = 3.0
+                blurb = "Elite top-3 scoring ceiling paired with healthy draft pick capital reserves."
+            elif cap_rank == 1 and pf_rank >= 8:
+                archetype = "The Productive Struggle"
+                badge = "📈 REBUILD APEX"
                 longevity = 4.0
-                blurb = "Cornered the draft market with deep rookie assets. Primed for multi-year dynasty dominance."
-            elif avg_age >= 27.8 and mpf_val < mean_mpf:
+                blurb = "Holding the #1 future draft pick equity in the league during an intentional, high-leverage rebuild."
+            elif cap_rank <= 3 and pf_rank >= 7:
+                archetype = "The Draft Dragon"
+                badge = "🐉 DRAFT DRAGON"
+                longevity = 3.5
+                blurb = "Cornered the future draft pick market with top-tier multi-year rookie capital."
+            elif avg_age >= 26.6 and pf_rank >= 7:
                 archetype = "The Aging Empire"
-                badge = "⏳ AGING CLIFF"
+                badge = "⏳ AGING RETOOL"
                 longevity = 1.0
-                blurb = "Stuck with declining veteran value without elite scoring output. Strategic retool recommended."
-            elif pos_c.get("WR", 0) >= 8:
+                blurb = "Older average roster age without top scoring output. Immediate asset retool recommended."
+            elif rb_c == rb_sorted[0]["pos_counts"]["RB"] and rb_c >= 11:
+                archetype = "The Ground & Pound"
+                badge = "🚜 RB FACTORY"
+                longevity = 2.0
+                blurb = "League-leading running back depth built to control weekly ground touch volume."
+            elif qb_c == qb_sorted[0]["pos_counts"]["QB"] and qb_c >= 6:
+                archetype = "The Superflex QB Vault"
+                badge = "🏰 QB CITADEL"
+                longevity = 3.0
+                blurb = "Dominates the quarterback room with the deepest QB portfolio in the league."
+            elif wr_c >= 13:
                 archetype = "The WR Oligarch"
                 badge = "🧊 WR MONOPOLY"
                 longevity = 3.0
-                blurb = "Dominates the modern pass-heavy dynasty meta with deep wide receiver asset leverage."
-            elif mpf_val < mean_mpf * 0.85 and capital_val >= mean_cap:
-                archetype = "The Productive Struggle"
-                badge = "📈 REBUILD APEX"
-                longevity = 3.5
-                blurb = "Pivoted into a high-leverage youth & pick accumulation cycle for rapid future ascent."
+                blurb = "Heavywide receiver asset allocation built for modern high-reception longevity."
+            elif capital_val >= mean_cap and pf_rank <= 5:
+                archetype = "The Rising Contender"
+                badge = "⚡ RISING CONTENDER"
+                longevity = 3.0
+                blurb = "Upper-half scoring firepower backed by solid future draft equity."
             else:
                 archetype = "The Balanced Contender"
-                badge = "⚡ BALANCED CORE"
+                badge = "🎯 BALANCED CORE"
                 longevity = 2.5
-                blurb = "Solid foundational balance between young starters and future draft equity."
+                blurb = "Solid foundational balance between weekly starters and future draft equity."
 
             # Natural Tier Cutoffs based on composite Z-score
             if composite_z >= 0.85:

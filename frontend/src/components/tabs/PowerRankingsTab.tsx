@@ -83,18 +83,14 @@ export default function PowerRankingsTab() {
             The Dynasty Power Model normalizes all teams against league-wide statistical distributions ($Z$-scores) centered on a <strong>0–100 scale</strong> where <strong>50.0 is the exact league median</strong>.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 font-mono text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
             <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-              <span className="text-purple-400 font-bold block mb-1">55% Starter Firepower</span>
-              <p className="text-zinc-400 text-[11px] font-sans">Max PF (Optimal points potential) measuring true weekly starting lineup ceiling.</p>
+              <span className="text-purple-400 font-bold block mb-1">70% Starter Firepower (Max PF)</span>
+              <p className="text-zinc-400 text-[11px] font-sans">Active season Max PF (optimal points potential) measuring true weekly starting lineup ceiling.</p>
             </div>
             <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-              <span className="text-emerald-400 font-bold block mb-1">35% Draft Capital Equity</span>
-              <p className="text-zinc-400 text-[11px] font-sans">Total value of 2025–2027 draft pick inventory evaluated via Time-Value-of-Money depreciation.</p>
-            </div>
-            <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-              <span className="text-blue-400 font-bold block mb-1">10% Roster Depth</span>
-              <p className="text-zinc-400 text-[11px] font-sans">Active bench asset count and insulation against injuries and bye weeks.</p>
+              <span className="text-emerald-400 font-bold block mb-1">30% Draft Capital Equity</span>
+              <p className="text-zinc-400 text-[11px] font-sans">Total value of multi-year draft pick inventory evaluated via Time-Value-of-Money depreciation.</p>
             </div>
           </div>
 
