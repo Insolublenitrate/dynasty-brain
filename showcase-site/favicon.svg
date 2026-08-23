@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <pattern id="turfGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="16" y2="0" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08" />
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08" />
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#f97316" />
+    </marker>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="#0c100d" />
+  <rect width="100" height="100" rx="22" fill="url(#turfGrid)" />
+  <rect width="96" height="96" x="2" y="2" rx="20" fill="none" stroke="rgba(249, 115, 22, 0.35)" stroke-width="2" />
+  
+  <!-- Line of Scrimmage -->
+  <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.25" />
+  
+  <!-- Route Line -->
+  <path d="M 28 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="4.5" stroke-linecap="round" marker-end="url(#arrow)" filter="url(#glow)" />
+  
+  <!-- Pass Vector -->
+  <line x1="28" y1="68" x2="72" y2="36" stroke="#22c55e" stroke-width="2" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.8" />
+  
+  <!-- QB Node -->
+  <circle cx="28" cy="68" r="5" fill="#f97316" stroke="#ffffff" stroke-width="1.5" />
+  <text x="28" y="71" font-family="sans-serif" font-size="6" font-weight="900" fill="#ffffff" text-anchor="middle">QB</text>
+  
+  <!-- Target Node -->
+  <circle cx="76" cy="34" r="5.5" fill="#22c55e" stroke="#ffffff" stroke-width="1.5" />
+  <text x="76" y="37" font-family="sans-serif" font-size="6" font-weight="900" fill="#000000" text-anchor="middle">WR</text>
+</svg>

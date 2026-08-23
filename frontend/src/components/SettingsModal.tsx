@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, Settings, Palette, Database, Check, Sparkles, RefreshCw, AlertCircle, Compass } from 'lucide-react';
+import { 
+  X, Settings, Palette, Database, Check, Sparkles, RefreshCw, AlertCircle, 
+  Compass, ExternalLink, HelpCircle, Shield, ChevronDown, ChevronUp, Radio
+} from 'lucide-react';
 import { useTheme, THEME_CONFIGS, AccentColor } from '@/context/ThemeContext';
-import { useLeague } from '@/context/LeagueContext';
-
+import { useLeague, LeaguePlatform } from '@/context/LeagueContext';
 import { getApiUrl } from '@/config/api';
 
 interface SettingsModalProps {
@@ -14,15 +16,24 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { accent, setAccent, carbonEnabled, setCarbonEnabled, playbookEnabled, setPlaybookEnabled } = useTheme();
-  const { leagueId, setLeagueId } = useLeague();
+  const { leagueId, platform, leagueName, setLeagueId } = useLeague();
   
+  // Platform selection state
+  const [selectedPlatform, setSelectedPlatform] = useState<LeaguePlatform>(platform || 'sleeper');
   const [inputLeagueId, setInputLeagueId] = useState(leagueId || '');
+  const [season, setSeason] = useState(2024);
+  
+  // ESPN private credentials
+  const [espnS2, setEspnS2] = useState('');
+  const [swid, setSwid] = useState('');
+  const [showEspnHelp, setShowEspnHelp] = useState(false);
+
   const [isIngesting, setIsIngesting] = useState(false);
   const [ingestStatus, setIngestStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSaveLeague = async (e: React.FormEvent) => {
+  const handleLinkLeague = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputLeagueId.trim()) return;
 
@@ -31,30 +42,41 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
     try {
       const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/league/ingest/${inputLeagueId.trim()}`, {
+      const payload: any = {
+        platform: selectedPlatform,
+        league_id: inputLeagueId.trim(),
+        season: Number(season) || 2024,
+      };
+
+      if (selectedPlatform === 'espn') {
+        if (espnS2.trim()) payload.espn_s2 = espnS2.trim();
+        if (swid.trim()) payload.swid = swid.trim();
+      }
+
+      const res = await fetch(`${apiUrl}/api/leagues/link`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+      
       const data = await res.json();
 
       if (res.ok && data.status === 'success') {
-        setLeagueId(inputLeagueId.trim());
-        setIngestStatus({ type: 'success', message: 'League successfully ingested and switched!' });
+        const name = data.league_name || `${selectedPlatform.toUpperCase()} League`;
+        setLeagueId(inputLeagueId.trim(), selectedPlatform, name);
+        setIngestStatus({ 
+          type: 'success', 
+          message: `Linked ${data.league_name || selectedPlatform.toUpperCase()} (${data.total_teams || 10} teams)! Reloading...` 
+        });
         setTimeout(() => {
           window.location.reload();
-        }, 800);
+        }, 1000);
       } else {
-        setLeagueId(inputLeagueId.trim());
-        setIngestStatus({ type: 'success', message: 'League ID set! Reloading data...' });
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
+        const errMsg = data.error || 'Failed to link league. Please check your credentials / League ID.';
+        setIngestStatus({ type: 'error', message: errMsg });
       }
-    } catch (err) {
-      setLeagueId(inputLeagueId.trim());
-      setIngestStatus({ type: 'success', message: 'Saved league ID locally.' });
-      setTimeout(() => {
-        window.location.reload();
-      }, 800);
+    } catch (err: any) {
+      setIngestStatus({ type: 'error', message: `Connection error: ${err.message || 'Server unreachable'}` });
     } finally {
       setIsIngesting(false);
     }
@@ -63,33 +85,202 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-lg bg-zinc-900 border border-zinc-700/80 rounded-2xl shadow-2xl overflow-hidden text-zinc-100"
+        className="relative w-full max-w-lg bg-zinc-900 border border-zinc-700/80 rounded-3xl shadow-2xl overflow-hidden text-zinc-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-950/60">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent-subtle border border-accent flex items-center justify-center">
-              <Settings size={18} className="text-accent" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+              <Settings size={18} />
             </div>
-            <h3 className="text-lg font-black tracking-wide text-white uppercase">Engine Settings</h3>
+            <div>
+              <h3 className="text-base font-black tracking-wide text-white uppercase italic">
+                WAR ROOM & LEAGUE SETTINGS
+              </h3>
+              <p className="text-[10px] font-mono text-zinc-400">Multi-Platform Ingestion & Visual Themes</p>
+            </div>
           </div>
           <button 
             onClick={onClose}
-            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-zinc-800 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-          {/* Theme & Color Customization */}
-          <div className="space-y-3">
+          
+          {/* ========================================================================= */}
+          {/* MULTI-PLATFORM LEAGUE LINKER */}
+          {/* ========================================================================= */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                <Database size={14} className="text-orange-400" /> Link Fantasy League
+              </label>
+              {leagueName && (
+                <span className="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-1">
+                  <Check size={10} /> {leagueName}
+                </span>
+              )}
+            </div>
+
+            {/* Platform Selector Tabs */}
+            <div className="grid grid-cols-3 gap-2 bg-zinc-950 p-1 rounded-2xl border border-zinc-800 font-mono text-xs">
+              <button
+                type="button"
+                onClick={() => setSelectedPlatform('sleeper')}
+                className={`py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 font-bold ${
+                  selectedPlatform === 'sleeper'
+                    ? 'bg-orange-500 text-zinc-950 shadow-md'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <span>⚡ Sleeper</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedPlatform('espn')}
+                className={`py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 font-bold ${
+                  selectedPlatform === 'espn'
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <span>🔴 ESPN</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedPlatform('yahoo')}
+                className={`py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 font-bold ${
+                  selectedPlatform === 'yahoo'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <span>🟣 Yahoo</span>
+              </button>
+            </div>
+
+            {/* Platform Specific Form */}
+            <form onSubmit={handleLinkLeague} className="space-y-3 bg-zinc-950/70 p-4 rounded-2xl border border-zinc-800 font-mono text-xs">
+              
+              {/* League ID Input */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-zinc-400 uppercase font-bold">
+                  {selectedPlatform === 'sleeper' && 'Sleeper League ID'}
+                  {selectedPlatform === 'espn' && 'ESPN League ID (From League URL)'}
+                  {selectedPlatform === 'yahoo' && 'Yahoo League ID / Key'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={inputLeagueId}
+                  onChange={(e) => setInputLeagueId(e.target.value)}
+                  placeholder={
+                    selectedPlatform === 'sleeper' ? 'e.g. 1312567432052760576' :
+                    selectedPlatform === 'espn' ? 'e.g. 123456789' : 'e.g. 123456 or 449.l.123456'
+                  }
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono text-xs"
+                />
+              </div>
+
+              {/* Season Input (for ESPN / Yahoo) */}
+              {selectedPlatform !== 'sleeper' && (
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 uppercase font-bold">Season Year</label>
+                  <input
+                    type="number"
+                    value={season}
+                    onChange={(e) => setSeason(Number(e.target.value))}
+                    placeholder="2024"
+                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              )}
+
+              {/* ESPN Private League Cookie Option */}
+              {selectedPlatform === 'espn' && (
+                <div className="space-y-2 pt-2 border-t border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowEspnHelp(!showEspnHelp)}
+                    className="text-[11px] text-amber-400 hover:text-amber-300 font-bold flex items-center justify-between w-full"
+                  >
+                    <span>🔒 Is your ESPN League Private? (Optional Cookies)</span>
+                    {showEspnHelp ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+
+                  {showEspnHelp && (
+                    <div className="space-y-2 p-3 bg-zinc-900/90 rounded-xl border border-zinc-800 text-[10px] text-zinc-300">
+                      <p className="text-zinc-400">
+                        Public ESPN leagues do not need cookies. For private leagues, copy your cookies from espn.com:
+                      </p>
+                      <div>
+                        <label className="text-zinc-400 uppercase">espn_s2 Cookie Value</label>
+                        <input
+                          type="text"
+                          value={espnS2}
+                          onChange={(e) => setEspnS2(e.target.value)}
+                          placeholder="Long string starting with AE..."
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-white text-[10px] mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-zinc-400 uppercase">SWID Cookie Value</label>
+                        <input
+                          type="text"
+                          value={swid}
+                          onChange={(e) => setSwid(e.target.value)}
+                          placeholder="{12345678-ABCD-...}"
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-white text-[10px] mt-1"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isIngesting || !inputLeagueId.trim()}
+                className="w-full py-3 rounded-xl font-black text-xs uppercase tracking-wider bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-3"
+              >
+                {isIngesting ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" /> Ingesting & Syncing...
+                  </>
+                ) : (
+                  `Connect & Sync ${selectedPlatform.toUpperCase()} League`
+                )}
+              </button>
+
+              {ingestStatus && (
+                <div className={`p-3 rounded-xl text-xs font-medium flex items-center gap-2 ${
+                  ingestStatus.type === 'success' 
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                    : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                }`}>
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{ingestStatus.message}</span>
+                </div>
+              )}
+
+            </form>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* THEME & COLOR CUSTOMIZATION */}
+          {/* ========================================================================= */}
+          <div className="space-y-3 pt-2 border-t border-zinc-800">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Palette size={14} className="text-accent" /> Accent Color & Theme
+                <Palette size={14} className="text-orange-400" /> Visual Theme & Tactical Accent
               </label>
-              <span className="text-xs font-bold text-accent px-2 py-0.5 rounded bg-accent-subtle border border-accent">
+              <span className="text-xs font-bold text-orange-400 px-2 py-0.5 rounded-md bg-orange-500/10 border border-orange-500/30">
                 {THEME_CONFIGS[accent].name}
               </span>
             </div>
@@ -103,118 +294,52 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     key={themeKey}
                     type="button"
                     onClick={() => setAccent(themeKey)}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                      isSelected 
-                        ? 'border-white bg-zinc-800 text-white shadow-lg ring-1 ring-white/50' 
-                        : 'border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                    className={`flex items-center gap-2.5 p-2 rounded-xl border text-left transition-all ${
+                      isSelected
+                        ? 'bg-zinc-800 text-white shadow-md border-orange-500'
+                        : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
                     }`}
                   >
-                    <span 
-                      className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm" 
-                      style={{ backgroundColor: config.primary, boxShadow: `0 0 8px ${config.glow}` }}
+                    <div 
+                      className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 shadow-sm"
+                      style={{ backgroundColor: config.primary }}
                     />
-                    <span className="truncate">{config.name.split(' ')[0]}</span>
-                    {isSelected && <Check size={14} className="ml-auto text-white shrink-0" />}
+                    <span className="text-xs font-bold truncate">{config.name}</span>
                   </button>
                 );
               })}
             </div>
-          </div>
 
-          {/* Visual FX Toggles */}
-          <div className="space-y-3">
-            {/* Animated Coaches Playbook Toggle */}
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800 flex items-center justify-between">
+            {/* Coaches Playbook Toggle */}
+            <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800 flex items-center justify-between mt-2">
               <div className="space-y-0.5">
-                <div className="text-sm font-bold text-white flex items-center gap-2">
-                  <Compass size={15} className="text-accent" /> Animated Coaches Playbook
+                <div className="text-xs font-bold text-white flex items-center gap-2">
+                  <Compass size={14} className="text-orange-400" /> Animated Coaches Playbook
                 </div>
-                <div className="text-xs text-zinc-400">
-                  Render animated routes, pre-snap motions, and X's & O's
+                <div className="text-[10px] text-zinc-400">
+                  Render animated route lines, pre-snap motions, and chalkboard graphics
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setPlaybookEnabled(!playbookEnabled)}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
+                className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors ${
                   playbookEnabled ? 'bg-orange-500 justify-end' : 'bg-zinc-700 justify-start'
                 }`}
-                style={playbookEnabled ? { backgroundColor: 'var(--accent-primary)' } : {}}
-              >
-                <div className="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform" />
-              </button>
-            </div>
-
-            {/* Carbon Background Toggle */}
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="text-sm font-bold text-white flex items-center gap-2">
-                  <Sparkles size={15} className="text-accent" /> Carbon Weave Texture
-                </div>
-                <div className="text-xs text-zinc-400">
-                  Render authentic carbon micro-pattern backdrop
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCarbonEnabled(!carbonEnabled)}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${
-                  carbonEnabled ? 'bg-orange-500 justify-end' : 'bg-zinc-700 justify-start'
-                }`}
-                style={carbonEnabled ? { backgroundColor: 'var(--accent-primary)' } : {}}
               >
                 <div className="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform" />
               </button>
             </div>
           </div>
 
-          {/* Sleeper League Configuration */}
-          <form onSubmit={handleSaveLeague} className="space-y-3 pt-2 border-t border-zinc-800">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-              <Database size={14} className="text-accent" /> Sleeper League ID
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputLeagueId}
-                onChange={(e) => setInputLeagueId(e.target.value)}
-                placeholder="e.g. 1103525203001847808"
-                className="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
-              />
-              <button
-                type="submit"
-                disabled={isIngesting || !inputLeagueId.trim()}
-                className="px-4 py-2.5 rounded-xl font-bold text-sm bg-accent-subtle text-accent border border-accent hover:bg-accent-subtle/80 transition-all flex items-center gap-2 disabled:opacity-50"
-              >
-                {isIngesting ? (
-                  <>
-                    <RefreshCw size={14} className="animate-spin" /> Ingesting...
-                  </>
-                ) : (
-                  'Switch'
-                )}
-              </button>
-            </div>
-
-            {ingestStatus && (
-              <div className={`p-3 rounded-lg text-xs font-medium flex items-center gap-2 ${
-                ingestStatus.type === 'success' 
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-              }`}>
-                <AlertCircle size={14} className="shrink-0" />
-                <span>{ingestStatus.message}</span>
-              </div>
-            )}
-          </form>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs text-zinc-500">
-          <span>Waiver WireTap Quant Engine v3.0</span>
+        <div className="px-6 py-3.5 border-t border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-mono text-zinc-500">
+          <span>Waiver Wiretap Engine v3.5 • Multi-Platform</span>
           <button 
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold transition-colors"
+            className="px-4 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold transition-colors"
           >
             Done
           </button>

@@ -14,19 +14,27 @@ import { useTheme } from "@/context/ThemeContext";
 
 const FAQS = [
   {
-    category: "Getting Started & Sleeper Sync",
+    category: "Multi-Platform League Linking (Sleeper, ESPN, Yahoo)",
     questions: [
       {
-        q: "How does Waiver Wiretap sync with my Sleeper dynasty league?",
-        a: "Waiver Wiretap connects directly to the public Sleeper REST API. Simply enter your public Sleeper League ID in the League Settings (or URL parameter), and the quant engine instantly ingests all 10–14 rosters, active starters, bench depth, future 2025–2027 draft pick ownership, and historical scored matchups with zero passwords or credentials required."
+        q: "How do I link an ESPN Fantasy Football league?",
+        a: "1. Open your ESPN Fantasy Football league on espn.com.\n2. Copy the League ID from your browser's URL (e.g. fantasy.espn.com/football/league?leagueId=123456789).\n3. In Waiver Wiretap, open Settings > Tap the '🔴 ESPN' tab > Enter your League ID and Season.\n4. If your ESPN league is Public, tap 'Connect & Sync'. If it is Private, enter your 'espn_s2' and 'SWID' cookies in the optional fields."
+      },
+      {
+        q: "How do I link a Yahoo Fantasy Football league?",
+        a: "1. Open your Yahoo Fantasy league on football.fantasysports.yahoo.com.\n2. Copy your Yahoo League ID / Key (e.g. 123456 or 449.l.123456).\n3. In Waiver Wiretap, open Settings > Tap the '🟣 Yahoo' tab > Enter your League ID and tap 'Connect & Sync'."
+      },
+      {
+        q: "How does Waiver Wiretap sync with Sleeper dynasty leagues?",
+        a: "Waiver Wiretap connects directly to the public Sleeper REST API. Simply enter your public Sleeper League ID in League Settings, and the quant engine instantly ingests all rosters, starters, bench depth, future draft picks, and historical matchups with zero login credentials required."
       },
       {
         q: "Where do I find my Sleeper League ID?",
-        a: "In the Sleeper mobile app or website: Open your league > Tap the League Settings gear icon > Scroll down to 'General' > Tap 'League ID' to copy the 18-digit number (e.g. 1312567432052760576)."
+        a: "In the Sleeper mobile app: Open your league > Tap the League Settings gear icon > Scroll down to 'General' > Tap 'League ID' to copy the 18-digit number (e.g. 1312567432052760576)."
       },
       {
         q: "Does Waiver Wiretap support Superflex, TE Premium, and Custom Scoring?",
-        a: "Yes! The quant engine dynamically recognizes Superflex roster configurations, adjusts quarterback replacement-level VORP baselines, and properly values tight ends and multi-flex positions based on your league's starting requirements."
+        a: "Yes! The quant engine dynamically recognizes Superflex roster configurations, adjusts quarterback replacement-level VORP baselines, and properly values tight ends and multi-flex positions based on your league's starting requirements across all platforms."
       }
     ]
   },

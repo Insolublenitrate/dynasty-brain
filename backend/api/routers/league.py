@@ -12,6 +12,93 @@ from services.utils import fetch_parquet
 
 router = APIRouter()
 
+from pydantic import BaseModel
+from typing import Optional, Dict, Any, List
+from platform_ingest import ingest_espn_league, ingest_yahoo_league
+
+class LinkLeagueRequest(BaseModel):
+    platform: str # 'sleeper', 'espn', 'yahoo'
+    league_id: str
+    season: Optional[int] = 2024
+    espn_s2: Optional[str] = None
+    swid: Optional[str] = None
+    custom_data: Optional[Dict[str, Any]] = None
+
+@router.get("/api/leagues/platforms")
+def get_supported_platforms():
+    return {
+        "platforms": [
+            {
+                "id": "sleeper",
+                "name": "Sleeper Fantasy",
+                "badge": "Instant Sync",
+                "color": "#f97316",
+                "fields": ["league_id"],
+                "description": "Full automated sync via public Sleeper REST API with real-time trades, rosters, and picks."
+            },
+            {
+                "id": "espn",
+                "name": "ESPN Fantasy Football",
+                "badge": "API v3",
+                "color": "#ef4444",
+                "fields": ["league_id", "season", "espn_s2", "swid"],
+                "description": "Direct connection to ESPN Fantasy API v3. Supports public leagues and private leagues with cookie tokens."
+            },
+            {
+                "id": "yahoo",
+                "name": "Yahoo Fantasy",
+                "badge": "Connector",
+                "color": "#a855f7",
+                "fields": ["league_id", "season"],
+                "description": "Standardized connection to Yahoo Fantasy Football league rosters, draft picks, and scoring."
+            }
+        ]
+    }
+
+@router.post("/api/leagues/link")
+def link_league(req: LinkLeagueRequest):
+    platform = req.platform.lower().strip()
+    league_id = req.league_id.strip()
+    season = req.season or 2024
+    
+    session = SessionLocal()
+    try:
+        if platform == "sleeper":
+            ingest_data(league_id)
+            league = session.query(League).filter(League.league_id == league_id).first()
+            if not league:
+                return {"error": "Failed to sync Sleeper league. Please verify the League ID."}
+            return {
+                "status": "success",
+                "platform": "sleeper",
+                "league_id": league.league_id,
+                "league_name": league.name,
+                "total_teams": league.total_rosters or 10,
+                "season": league.season,
+                "message": f"Successfully synced Sleeper league '{league.name}'"
+            }
+        elif platform == "espn":
+            res = ingest_espn_league(
+                league_id=league_id,
+                season=season,
+                espn_s2=req.espn_s2,
+                swid=req.swid,
+                session=session
+            )
+            return res
+        elif platform == "yahoo":
+            res = ingest_yahoo_league(
+                league_id=league_id,
+                season=season,
+                custom_data=req.custom_data,
+                session=session
+            )
+            return res
+        else:
+            return {"error": f"Unsupported platform '{platform}'. Supported platforms: sleeper, espn, yahoo."}
+    finally:
+        session.close()
+
 @router.post("/api/league/ingest/{league_id}")
 def ingest_league(league_id: str):
     try:
