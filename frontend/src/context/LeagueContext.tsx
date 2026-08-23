@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getApiUrl } from '@/config/api';
 
-const DEFAULT_LEAGUE_ID = '1103525203001847808';
+const DEFAULT_LEAGUE_ID = '1312567432052760576';
 
 type LeagueContextType = {
   leagueId: string | null;
