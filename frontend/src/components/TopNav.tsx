@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, Sparkles, Smartphone, Activity } from "lucide-react";
+import { Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, Sparkles, Smartphone, Activity, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SettingsModal from "@/components/SettingsModal";
@@ -24,6 +24,7 @@ export default function TopNav() {
     { href: "/database", label: "Database", icon: Database },
     { href: "/rookie-analyzer", label: "Rookies", icon: GraduationCap },
     { href: "/war-room", label: "War Room", icon: Flame },
+    { href: "/support", label: "Support", icon: HelpCircle },
   ];
 
   const getLinkClasses = (path: string) => {

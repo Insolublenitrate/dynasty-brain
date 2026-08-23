@@ -372,6 +372,7 @@ export default function LandingPage() {
           <Link href="/player-analyzer" className="hover:text-white transition-colors">Player Analyzer</Link>
           <Link href="/cross-reference" className="hover:text-white transition-colors">Cross Reference</Link>
           <Link href="/war-room" className="hover:text-white transition-colors">War Room</Link>
+          <Link href="/support" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">Support & FAQ</Link>
         </div>
 
         <p className="text-[11px] text-zinc-600 font-mono pt-2">
