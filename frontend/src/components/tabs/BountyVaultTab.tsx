@@ -109,92 +109,105 @@ export default function BountyVaultTab() {
     : formattedHistory.filter((w: any) => w.season === historySeasonFilter);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-12">
       
-      {/* ── STADIUM JUMBOTRON HEADER ────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-emerald-950/60 via-zinc-900/90 to-amber-950/40 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+      {/* ── STADIUM JUMBOTRON HEADER (MOBILE-OPTIMIZED) ─────────────────── */}
+      <div className="bg-gradient-to-r from-emerald-950/60 via-zinc-900/90 to-amber-950/40 border border-emerald-500/30 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none transform rotate-12">
           <Trophy size={180} className="text-amber-400" />
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
           <div>
-            <div className="flex items-center gap-2.5 mb-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-black uppercase flex items-center gap-1.5 shadow-sm">
-                <Coins size={13} className="text-emerald-400 animate-bounce" />
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-xs font-black uppercase flex items-center gap-1.5 shadow-sm">
+                <Coins size={12} className="text-emerald-400 animate-bounce" />
                 HIGH-STAKES BOUNTY VAULT
               </span>
-              <span className="text-xs font-mono text-zinc-400">
+              <span className="text-[11px] sm:text-xs font-mono text-zinc-400 truncate max-w-[180px] sm:max-w-none">
                 {leagueName || "Dynasty League"}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight flex items-center gap-3 font-sans">
+            <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight flex items-center gap-2 sm:gap-3 font-sans">
               <span>🏈 THE CASH ENDZONE</span>
             </h2>
             <p className="text-zinc-400 text-xs font-mono mt-1">
-              Official ledger of weekly high score payouts, season scoring crowns, and championship cash.
+              Official ledger of weekly high score payouts, scoring crowns, and championship cash.
             </p>
           </div>
 
           {/* Cumulative Pot Card */}
-          <div className="bg-zinc-950/90 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-xl shrink-0">
-            <div className="p-3 bg-emerald-500/20 rounded-2xl border border-emerald-500/40">
-              <Banknote size={28} className="text-emerald-400" />
+          <div className="bg-zinc-950/90 border border-emerald-500/40 rounded-2xl p-4 sm:p-5 flex items-center justify-between sm:justify-start gap-4 shadow-xl shrink-0 w-full lg:w-auto">
+            <div className="flex items-center gap-3.5">
+              <div className="p-2.5 sm:p-3 bg-emerald-500/20 rounded-2xl border border-emerald-500/40 shrink-0">
+                <Banknote size={26} className="text-emerald-400" />
+              </div>
+              <div>
+                <div className="text-[9px] sm:text-[10px] font-mono uppercase text-zinc-400 font-bold tracking-wider">Total Bounties Awarded</div>
+                <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 leading-tight">
+                  ${totalLeagueCashDisbursed.toLocaleString()}
+                </div>
+                <div className="text-[9px] sm:text-[10px] font-mono text-zinc-500 mt-0.5">
+                  Across {bountyBoard.length} Franchises
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-[10px] font-mono uppercase text-zinc-400 font-bold tracking-wider">Total Bounties Awarded</div>
-              <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
-                ${totalLeagueCashDisbursed.toLocaleString()}
-              </div>
-              <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
-                Across {bountyBoard.length} Franchises
-              </div>
+
+            <div className="hidden sm:block text-right border-l border-zinc-800 pl-4">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase block">Top Earner</span>
+              <span className="text-xs font-bold text-amber-300 truncate block max-w-[120px]">
+                {displayList[0]?.name || "N/A"}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Prize Pool Rules Ribbon */}
-        <div className="mt-6 pt-4 border-t border-zinc-800/80 flex flex-wrap items-center gap-2 sm:gap-4 text-xs font-mono">
-          <span className="text-zinc-400 uppercase font-bold text-[10px]">Payout Grid:</span>
-          <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold flex items-center gap-1">
-            🏆 1st: $600
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold flex items-center gap-1">
-            🥈 2nd: $200
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold flex items-center gap-1">
-            👑 Max Pts: $60
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold flex items-center gap-1">
-            ⚡ Weekly High: $10
-          </span>
+        <div className="mt-5 pt-3.5 border-t border-zinc-800/80">
+          <div className="text-zinc-400 uppercase font-bold text-[9px] sm:text-[10px] font-mono mb-2">
+            League Payout Schedule:
+          </div>
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-3 text-xs font-mono">
+            <span className="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold flex items-center justify-center gap-1 text-[11px]">
+              🏆 1st: $600
+            </span>
+            <span className="px-2.5 py-1 rounded-xl bg-zinc-800/80 border border-zinc-700 text-zinc-300 font-bold flex items-center justify-center gap-1 text-[11px]">
+              🥈 2nd: $200
+            </span>
+            <span className="px-2.5 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold flex items-center justify-center gap-1 text-[11px]">
+              👑 Max Pts: $60
+            </span>
+            <span className="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center gap-1 text-[11px]">
+              ⚡ Wk High: $10
+            </span>
+          </div>
         </div>
       </div>
 
       {/* ── FOOTBALL TURF PROGRESSION (VISUAL GRIDIRON FIELD) ────────────── */}
-      <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md">
-        <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden backdrop-blur-md">
+        <div className="flex items-center justify-between gap-4 mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
             <Target size={18} style={{ color: currentTheme.primary }} />
-            <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider font-mono">
+            <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider font-mono">
               Gridiron Cash Race
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-zinc-400">
-            {bountyView === 'live' ? `Season ${currentSeason} Payouts` : 'All-Time Bankroll'}
+          <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400">
+            {bountyView === 'live' ? `Season ${currentSeason}` : 'All-Time'}
           </span>
         </div>
 
         {/* Visual Football Turf Field */}
-        <div className="relative bg-gradient-to-r from-emerald-950/80 via-emerald-900/40 to-emerald-950/90 rounded-2xl border-2 border-emerald-600/40 p-4 shadow-inner overflow-hidden">
+        <div className="relative bg-gradient-to-r from-emerald-950/80 via-emerald-900/40 to-emerald-950/90 rounded-2xl border-2 border-emerald-600/40 p-3 sm:p-4 shadow-inner overflow-hidden">
           
           {/* Yard Line Markers */}
-          <div className="flex justify-between items-center text-[9px] font-mono font-bold text-emerald-300/60 pb-2 border-b border-emerald-700/30 uppercase">
-            <span>OWN 10</span>
+          <div className="flex justify-between items-center text-[7.5px] sm:text-[9px] font-mono font-bold text-emerald-300/60 pb-2 border-b border-emerald-700/30 uppercase">
+            <span>10</span>
             <span>20</span>
             <span>30</span>
             <span>40</span>
-            <span className="text-emerald-300 font-black">50 (MIDFIELD)</span>
+            <span className="text-emerald-300 font-black">50 (MID)</span>
             <span>40</span>
             <span>30</span>
             <span>20</span>
@@ -203,28 +216,28 @@ export default function BountyVaultTab() {
           </div>
 
           {/* Teams Running Down the Gridiron */}
-          <div className="space-y-3 pt-3">
-            {displayList.slice(0, 5).map((team: any, idx: number) => {
+          <div className="space-y-2.5 sm:space-y-3 pt-3">
+            {displayList.slice(0, 6).map((team: any, idx: number) => {
               const cash = bountyView === 'live' ? team.liveCash : team.totalCash;
-              const pct = Math.min(Math.max((cash / maxEarnerCash) * 100, 8), 100);
+              const pct = Math.min(Math.max((cash / maxEarnerCash) * 100, 10), 100);
 
               return (
                 <div key={team.roster_id} className="relative space-y-1">
                   <div className="flex justify-between items-center text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">{idx === 0 ? '👑' : `#${idx + 1}`}</span>
-                      <span className="font-bold text-white truncate max-w-[140px] sm:max-w-[200px]">{team.name}</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-emerald-400 font-bold text-xs">{idx === 0 ? '👑' : `#${idx + 1}`}</span>
+                      <span className="font-bold text-white truncate max-w-[130px] sm:max-w-[220px] text-xs">{team.name}</span>
                     </div>
-                    <span className="font-mono font-black text-emerald-300">${cash}</span>
+                    <span className="font-mono font-black text-emerald-300 text-xs">${cash}</span>
                   </div>
 
                   {/* Turf Run Line Bar */}
-                  <div className="h-5 bg-zinc-950/70 rounded-lg p-0.5 border border-emerald-800/40 relative overflow-hidden flex items-center">
+                  <div className="h-6 sm:h-5 bg-zinc-950/80 rounded-lg p-0.5 border border-emerald-800/40 relative overflow-hidden flex items-center shadow-inner">
                     <div 
-                      className="h-full rounded-md bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 shadow-lg transition-all duration-700 flex items-center justify-end pr-1.5"
+                      className="h-full rounded-md bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 shadow-md transition-all duration-700 flex items-center justify-end pr-1"
                       style={{ width: `${pct}%` }}
                     >
-                      <span className="text-[10px] select-none">🏈</span>
+                      <span className="text-[11px] select-none filter drop-shadow">🏈</span>
                     </div>
                   </div>
                 </div>
@@ -238,9 +251,9 @@ export default function BountyVaultTab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Franchise Bounty Ledger */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
                   <Banknote className="text-emerald-400" size={20} />
@@ -254,12 +267,12 @@ export default function BountyVaultTab() {
               </div>
               
               {/* Live vs All-Time Switcher */}
-              <div className="flex bg-zinc-950 rounded-xl p-1 border border-zinc-800 shadow-inner">
+              <div className="grid grid-cols-2 w-full sm:w-auto bg-zinc-950 rounded-xl p-1 border border-zinc-800 shadow-inner">
                 <button
                   onClick={() => setBountyView('live')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                  className={`py-1.5 px-3 rounded-lg text-xs font-mono font-bold transition-all text-center ${
                     bountyView === 'live' 
-                      ? 'bg-emerald-500 text-zinc-950 shadow-md' 
+                      ? 'bg-emerald-500 text-zinc-950 shadow-md font-black' 
                       : 'text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -267,9 +280,9 @@ export default function BountyVaultTab() {
                 </button>
                 <button
                   onClick={() => setBountyView('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                  className={`py-1.5 px-3 rounded-lg text-xs font-mono font-bold transition-all text-center ${
                     bountyView === 'all' 
-                      ? 'bg-emerald-500 text-zinc-950 shadow-md' 
+                      ? 'bg-emerald-500 text-zinc-950 shadow-md font-black' 
                       : 'text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -278,7 +291,7 @@ export default function BountyVaultTab() {
               </div>
             </div>
 
-            <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[440px] overflow-y-auto pr-1">
               {displayList.map((b: any, idx: number) => {
                 const isExpanded = expandedTeam === b.roster_id;
                 const displayCash = bountyView === 'live' ? b.liveCash : b.totalCash;
@@ -290,16 +303,16 @@ export default function BountyVaultTab() {
                     className="bg-zinc-950/80 rounded-2xl border border-zinc-800/80 hover:border-zinc-700 transition-all overflow-hidden cursor-pointer"
                     onClick={() => setExpandedTeam(isExpanded ? null : b.roster_id)}
                   >
-                    <div className="flex items-center justify-between p-3.5">
-                      <div className="flex items-center gap-3">
-                        <span className={`font-mono text-sm font-black w-6 flex items-center justify-center ${
+                    <div className="flex items-center justify-between p-3 sm:p-3.5">
+                      <div className="flex items-center gap-2.5 sm:gap-3 overflow-hidden">
+                        <span className={`font-mono text-sm font-black w-5 sm:w-6 flex items-center justify-center shrink-0 ${
                           idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-zinc-300' : idx === 2 ? 'text-amber-700' : 'text-zinc-500'
                         }`}>
                           {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
                         </span>
-                        <div>
-                          <p className="font-bold text-white text-sm">{b.name}</p>
-                          <p className="text-zinc-500 text-[11px] font-mono flex items-center gap-1.5">
+                        <div className="overflow-hidden">
+                          <p className="font-bold text-white text-xs sm:text-sm truncate">{b.name}</p>
+                          <p className="text-zinc-500 text-[10px] sm:text-[11px] font-mono flex items-center gap-1">
                             <span className="text-emerald-400/90 font-semibold">{displayBreakdown.length} Bounties</span>
                             <span>•</span>
                             <span className="text-zinc-400">Tap to inspect</span>
@@ -307,16 +320,16 @@ export default function BountyVaultTab() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono font-black text-emerald-400 text-base">
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <span className="font-mono font-black text-emerald-400 text-sm sm:text-base">
                           ${displayCash}
                         </span>
-                        {isExpanded ? <ChevronUp size={15} className="text-zinc-400" /> : <ChevronDown size={15} className="text-zinc-600" />}
+                        {isExpanded ? <ChevronUp size={14} className="text-zinc-400" /> : <ChevronDown size={14} className="text-zinc-600" />}
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="px-4 pb-3.5 pt-1.5 border-t border-zinc-900 bg-zinc-950 flex flex-wrap gap-1.5 animate-in fade-in duration-200">
+                      <div className="px-3 sm:px-4 pb-3 pt-1.5 border-t border-zinc-900 bg-zinc-950 flex flex-wrap gap-1.5 animate-in fade-in duration-200">
                         {displayBreakdown.length === 0 ? (
                           <span className="text-xs text-zinc-500 italic py-1">No individual itemized bounties recorded yet for this filter.</span>
                         ) : (
@@ -345,7 +358,7 @@ export default function BountyVaultTab() {
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-zinc-800/80 text-[10px] text-zinc-500 font-mono flex justify-between">
+          <div className="mt-3 pt-2.5 border-t border-zinc-800/80 text-[9px] sm:text-[10px] text-zinc-500 font-mono flex justify-between">
             <span>Bounties auto-calculated from regular season & playoff bracket sync.</span>
           </div>
         </div>
