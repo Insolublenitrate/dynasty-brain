@@ -12,6 +12,7 @@ import ActionCenterTab from '@/components/tabs/ActionCenterTab';
 import ScheduleTab from '@/components/tabs/ScheduleTab';
 import TeamAnalyzerTab from '@/components/tabs/TeamAnalyzerTab';
 import StudioTab from '@/components/tabs/StudioTab';
+import BountyVaultTab from '@/components/tabs/BountyVaultTab';
 import MatrixTab from '@/components/tabs/MatrixTab';
 import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
 import AutopsyTab from '@/components/tabs/AutopsyTab';
@@ -31,7 +32,7 @@ function DynastyRoomContent() {
   const [activeArena, setActiveArena] = useState(arenaParam);
 
   // Sub-tab selectors for multi-module arenas
-  const [commandSub, setCommandSub] = useState<'action' | 'studio'>('action');
+  const [commandSub, setCommandSub] = useState<'action' | 'studio' | 'bounties'>('action');
   const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
   const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy'>('architect');
 
@@ -123,7 +124,7 @@ function DynastyRoomContent() {
             <div className="flex items-center gap-1 bg-zinc-900/60 p-1 rounded-xl border border-zinc-800/80 self-start sm:self-auto overflow-x-auto hide-scrollbar">
               <button
                 onClick={() => setCommandSub('action')}
-                className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                   commandSub === 'action' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'action' ? { color: currentTheme.primary } : {}}
@@ -133,13 +134,21 @@ function DynastyRoomContent() {
               </button>
               <button
                 onClick={() => setCommandSub('studio')}
-                className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 ${
                   commandSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'studio' ? { color: currentTheme.primary } : {}}
               >
                 <Radio size={12} />
                 <span>The Studio Feed</span>
+              </button>
+              <button
+                onClick={() => setCommandSub('bounties')}
+                className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                  commandSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md font-black' : 'text-emerald-400 hover:text-emerald-300'
+                }`}
+              >
+                <span>🏈 Bounty Vault & Cash</span>
               </button>
             </div>
           )}
@@ -239,6 +248,7 @@ function DynastyRoomContent() {
           <div>
             {commandSub === 'action' && <ActionCenterTab />}
             {commandSub === 'studio' && <StudioTab />}
+            {commandSub === 'bounties' && <BountyVaultTab />}
           </div>
         )}
 
