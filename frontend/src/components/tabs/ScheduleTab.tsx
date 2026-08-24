@@ -908,92 +908,189 @@ export default function ScheduleTab() {
         </div>
       )}
 
-      {/* ── 4. BOX SCORE & STARTERS MODAL ─────────────────────────────────── */}
+      {/* ── 4. BOX SCORE & STARTERS MODAL (MOBILE-FIRST REDESIGN) ──────────── */}
       {activeBoxScore && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
           <div 
-            className="bg-zinc-900 border-2 border-zinc-700 rounded-3xl max-w-2xl w-full p-6 relative shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto"
+            className="bg-zinc-900 border-2 border-zinc-700 rounded-3xl max-w-2xl w-full p-4 sm:p-6 relative shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-800">
               <div>
-                <span className="text-[10px] font-mono uppercase text-orange-400 font-bold">
-                  Week {selectedWeek} · Matchup #{activeBoxScore.matchup_id}
-                </span>
-                <h3 className="text-xl font-black uppercase text-white tracking-tight">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase text-orange-400 font-black">
+                    Week {selectedWeek} · Matchup #{activeBoxScore.matchup_id}
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+                    {activeBoxScore.is_played ? 'Official Box Score' : '🔮 Preseason Forecast'}
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-2xl font-black uppercase text-white tracking-tight mt-0.5">
                   Tale of the Tape: Starter vs Starter
                 </h3>
               </div>
               <button 
                 onClick={() => setActiveBoxScore(null)}
-                className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition-colors font-mono text-sm"
+                className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition-colors font-mono text-xs font-bold border border-zinc-800"
               >
                 ✕ Close
               </button>
             </div>
 
-            {/* Matchup Summary Card */}
-            <div className="grid grid-cols-2 gap-4 bg-zinc-950 p-4 rounded-2xl border border-zinc-800">
-              <div>
-                <h4 className="text-sm font-bold text-white">{activeBoxScore.team_a?.team_name}</h4>
-                <p className="text-2xl font-black font-mono text-emerald-400 mt-1">
-                  {activeBoxScore.is_played 
-                    ? (activeBoxScore.team_a ? activeBoxScore.team_a.points.toFixed(2) : '0.00')
-                    : (activeBoxScore.team_a ? (activeBoxScore.team_a.projected_points?.toFixed(2) || '125.00') : '0.00')}
-                </p>
-                <span className="text-[10px] font-mono text-zinc-400">
-                  {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
-                </span>
-              </div>
+            {/* Matchup Head-to-Head Summary Card */}
+            <div className="bg-zinc-950/90 p-4 rounded-2xl border border-zinc-800 shadow-inner">
+              <div className="grid grid-cols-2 gap-3 items-center">
+                
+                {/* Team A */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    {activeBoxScore.team_a?.avatar ? (
+                      <img 
+                        src={`https://sleepercdn.com/avatars/thumbs/${activeBoxScore.team_a.avatar}`} 
+                        alt="" 
+                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700" 
+                      />
+                    ) : null}
+                    <h4 className="text-xs sm:text-sm font-black text-white truncate max-w-[130px] sm:max-w-[180px]">
+                      {activeBoxScore.team_a?.team_name || 'Team A'}
+                    </h4>
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+                    {activeBoxScore.is_played 
+                      ? (activeBoxScore.team_a ? activeBoxScore.team_a.points.toFixed(2) : '0.00')
+                      : (activeBoxScore.team_a ? (activeBoxScore.team_a.projected_points?.toFixed(2) || '125.00') : '0.00')}
+                  </div>
+                  <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase block">
+                    {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
+                  </span>
+                </div>
 
-              <div className="text-right">
-                <h4 className="text-sm font-bold text-white">{activeBoxScore.team_b?.team_name || 'BYE'}</h4>
-                <p className="text-2xl font-black font-mono text-emerald-400 mt-1">
-                  {activeBoxScore.is_played 
-                    ? (activeBoxScore.team_b ? activeBoxScore.team_b.points.toFixed(2) : '0.00')
-                    : (activeBoxScore.team_b ? (activeBoxScore.team_b.projected_points?.toFixed(2) || '125.00') : '0.00')}
-                </p>
-                <span className="text-[10px] font-mono text-zinc-400">
-                  {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
-                </span>
+                {/* Team B */}
+                <div className="text-right space-y-1">
+                  <div className="flex items-center justify-end gap-2">
+                    <h4 className="text-xs sm:text-sm font-black text-white truncate max-w-[130px] sm:max-w-[180px]">
+                      {activeBoxScore.team_b?.team_name || 'BYE'}
+                    </h4>
+                    {activeBoxScore.team_b?.avatar ? (
+                      <img 
+                        src={`https://sleepercdn.com/avatars/thumbs/${activeBoxScore.team_b.avatar}`} 
+                        alt="" 
+                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700" 
+                      />
+                    ) : null}
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+                    {activeBoxScore.is_played 
+                      ? (activeBoxScore.team_b ? activeBoxScore.team_b.points.toFixed(2) : '0.00')
+                      : (activeBoxScore.team_b ? (activeBoxScore.team_b.projected_points?.toFixed(2) || '125.00') : '0.00')}
+                  </div>
+                  <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase block">
+                    {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
+                  </span>
+                </div>
+
               </div>
             </div>
 
             {/* Starters Breakdown */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-mono font-bold uppercase text-zinc-400">
-                Starting Lineup Player Performances
-              </h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-mono font-bold uppercase text-zinc-400 tracking-wider">
+                  Starting Lineup Head-to-Head Slots
+                </h4>
+                <span className="text-[10px] font-mono text-zinc-500">
+                  {(activeBoxScore.team_a?.starters || []).length} Starters
+                </span>
+              </div>
 
-              <div className="space-y-1.5 font-mono text-xs">
+              <div className="space-y-2.5">
                 {(activeBoxScore.team_a?.starters || []).map((pA: any, idx: number) => {
                   const pB = activeBoxScore.team_b?.starters?.[idx];
-                  const scoreA = activeBoxScore.is_played ? pA.points : (pA.projected_points || 12.0);
-                  const scoreB = pB ? (activeBoxScore.is_played ? pB.points : (pB.projected_points || 12.0)) : 0;
+                  const scoreA = typeof pA.points === 'number' && activeBoxScore.is_played ? pA.points : (pA.projected_points || 12.0);
+                  const scoreB = pB ? (typeof pB.points === 'number' && activeBoxScore.is_played ? pB.points : (pB.projected_points || 12.0)) : 0;
+                  const diff = scoreA - scoreB;
+                  const posName = pA.position || (idx === 0 ? 'QB' : idx < 3 ? 'RB' : idx < 5 ? 'WR' : idx === 5 ? 'TE' : 'FLEX');
 
                   return (
                     <div 
                       key={idx}
-                      className="grid grid-cols-5 items-center bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/80 text-center gap-2"
+                      className="bg-zinc-950/80 rounded-2xl border border-zinc-800/90 p-2.5 sm:p-3 hover:border-zinc-700 transition-all shadow-sm space-y-2"
                     >
-                      {/* Team A Player */}
-                      <div className="col-span-2 text-left min-w-0">
-                        <p className="text-white font-bold truncate">{pA.name}</p>
-                        <span className="text-[10px] text-zinc-400">{pA.team} · {pA.position}</span>
+                      {/* Top Slot Header */}
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold uppercase">
+                          🏈 Slot #{idx + 1} · {posName}
+                        </span>
+                        
+                        <span className={`font-bold px-2 py-0.5 rounded text-[9.5px] border ${
+                          diff > 0 
+                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' 
+                            : diff < 0 
+                            ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' 
+                            : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                        }`}>
+                          {diff > 0 
+                            ? `+${diff.toFixed(1)} pts ${activeBoxScore.team_a?.team_name || 'Team A'}` 
+                            : diff < 0 
+                            ? `+${Math.abs(diff).toFixed(1)} pts ${activeBoxScore.team_b?.team_name || 'Team B'}` 
+                            : 'TIED'}
+                        </span>
                       </div>
 
-                      {/* Score Comparison */}
-                      <div className="col-span-1 text-center bg-zinc-900 py-1 rounded-lg border border-zinc-800">
-                        <span className="text-emerald-400 font-bold">{scoreA}</span>
-                        <span className="text-zinc-600 mx-1">|</span>
-                        <span className="text-emerald-400 font-bold">{scoreB}</span>
-                      </div>
+                      {/* 2-Sided Positional Matchup Cards (No text overlapping!) */}
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        
+                        {/* Starter A */}
+                        <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 transition-all ${
+                          scoreA >= scoreB 
+                            ? 'bg-emerald-950/25 border-emerald-500/40 shadow-sm' 
+                            : 'bg-zinc-900/50 border-zinc-800/80'
+                        }`}>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <p className="font-bold text-white text-xs sm:text-sm truncate">
+                              {pA.name || 'Starter'}
+                            </p>
+                            <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                              {pA.team || 'NFL'} · {pA.position || posName}
+                            </p>
+                          </div>
+                          
+                          <div className="text-right shrink-0">
+                            <span className="font-mono font-black text-sm sm:text-base text-emerald-400">
+                              {scoreA.toFixed(1)}
+                            </span>
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase leading-none mt-0.5">
+                              pts
+                            </span>
+                          </div>
+                        </div>
 
-                      {/* Team B Player */}
-                      <div className="col-span-2 text-right min-w-0">
-                        <p className="text-white font-bold truncate">{pB?.name || 'Empty'}</p>
-                        <span className="text-[10px] text-zinc-400">{pB?.team || 'NFL'} · {pB?.position || 'FLEX'}</span>
+                        {/* Starter B */}
+                        <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 transition-all ${
+                          scoreB >= scoreA 
+                            ? 'bg-emerald-950/25 border-emerald-500/40 shadow-sm' 
+                            : 'bg-zinc-900/50 border-zinc-800/80'
+                        }`}>
+                          <div className="min-w-0 flex-1 overflow-hidden">
+                            <p className="font-bold text-white text-xs sm:text-sm truncate">
+                              {pB?.name || 'Empty'}
+                            </p>
+                            <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                              {pB?.team || 'NFL'} · {pB?.position || posName}
+                            </p>
+                          </div>
+                          
+                          <div className="text-right shrink-0">
+                            <span className="font-mono font-black text-sm sm:text-base text-emerald-400">
+                              {scoreB.toFixed(1)}
+                            </span>
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase leading-none mt-0.5">
+                              pts
+                            </span>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   );
@@ -1002,12 +1099,12 @@ export default function ScheduleTab() {
             </div>
 
             {/* Coach Madden Breakdown Note */}
-            <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-transparent border border-orange-500/20 p-4 rounded-2xl">
+            <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-transparent border border-orange-500/20 p-3.5 sm:p-4 rounded-2xl shadow-sm">
               <div className="flex items-center gap-2 text-orange-400 text-xs font-bold uppercase font-mono mb-1">
                 <Sparkles size={14} /> Coach Madden Tactical Insight
               </div>
-              <p className="text-xs text-zinc-300 leading-relaxed font-mono">
-                BOOM! Notice the starter efficiency! When your starters outproduce projections by double digits in the flex slots, you control the clock and win the matchup!
+              <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed font-mono">
+                BOOM! Notice the starter efficiency! When your flex starters outproduce projections by double digits, you control the clock and capture the win!
               </p>
             </div>
 
@@ -1018,3 +1115,4 @@ export default function ScheduleTab() {
     </div>
   );
 }
+
