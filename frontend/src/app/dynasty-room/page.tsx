@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
-  AlertTriangle, Swords, Trophy, Crown, Dices, ChevronDown, Layers
+  AlertTriangle, Swords, Trophy, Crown, Dices, ChevronDown, Layers,
+  CalendarDays
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import ActionCenterTab from '@/components/tabs/ActionCenterTab';
+import ScheduleTab from '@/components/tabs/ScheduleTab';
 import TeamAnalyzerTab from '@/components/tabs/TeamAnalyzerTab';
 import StudioTab from '@/components/tabs/StudioTab';
 import MatrixTab from '@/components/tabs/MatrixTab';
@@ -55,6 +57,7 @@ export default function DynastyRoomPage() {
 
   const TABS = [
     { id: 'action', label: 'Action Center', shortLabel: 'Action', icon: Target, category: 'Core' },
+    { id: 'schedule', label: 'Matchups & Schedule', shortLabel: 'Schedule', icon: CalendarDays, category: 'Core' },
     { id: 'studio', label: 'The Studio', shortLabel: 'Studio', icon: Activity, category: 'Core' },
     { id: 'matrix', label: 'Power Matrix', shortLabel: 'Matrix', icon: Crosshair, category: 'Analytics' },
     { id: 'power', label: 'Power Tiers', shortLabel: 'Tiers', icon: Crown, category: 'Analytics' },
@@ -84,6 +87,7 @@ export default function DynastyRoomPage() {
             >
               <optgroup label="⚡ Strategic & Live" className="bg-zinc-900 text-zinc-300">
                 <option value="action">🎯 Action Center</option>
+                <option value="schedule">📅 Matchups & Schedule</option>
                 <option value="studio">📡 The Studio</option>
                 <option value="matrix">🎯 Power Matrix</option>
                 <option value="power">👑 Dynasty Power Tiers</option>
@@ -135,6 +139,7 @@ export default function DynastyRoomPage() {
       {/* Main Tab Content Area */}
       <div className="flex-1 w-full max-w-[1440px] mx-auto pb-12">
         {activeTab === 'action' && <ActionCenterTab />}
+        {activeTab === 'schedule' && <ScheduleTab />}
         {activeTab === 'studio' && <StudioTab />}
         {activeTab === 'matrix' && <MatrixTab />}
         {activeTab === 'power' && <PowerRankingsTab />}

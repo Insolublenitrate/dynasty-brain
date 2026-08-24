@@ -898,4 +898,284 @@ def simulate_matchup(league_id: str, team_a: int = Query(1), team_b: int = Query
         session.close()
 
 
+@router.get("/api/quant/schedule/{league_id}")
+def get_league_schedule(league_id: str, season: Optional[str] = None):
+    """
+    Returns the comprehensive 18-week schedule, weekly matchups, starter box scores,
+    and individual team schedules for any synced fantasy league.
+    """
+    session = SessionLocal()
+    try:
+        league = session.query(League).filter(League.league_id == league_id).first()
+        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        
+        if not rosters:
+            return {"error": f"No rosters found for league {league_id}. Please link league first."}
+
+        target_season = season or (league.season if league else "2024")
+        sp_cache = get_sleeper_players_cache()
+
+        # Build owner, user name, and avatar mappings
+        owner_names = {}
+        team_avatars = {}
+        roster_meta = {}
+
+        for r in rosters:
+            d_name = r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}"
+            avatar = r.user.avatar if r.user else None
+            owner_names[r.roster_id] = d_name
+            team_avatars[r.roster_id] = avatar
+            roster_meta[r.roster_id] = {
+                "wins": r.wins or 0,
+                "losses": r.losses or 0,
+                "ties": r.ties or 0,
+                "fpts": r.fpts or 0.0,
+                "players": r.players or []
+            }
+
+        # Query all MatchupHistory records for this league
+        matchups_query = session.query(MatchupHistory).filter(
+            MatchupHistory.league_id == league_id
+        ).order_by(MatchupHistory.week.asc()).all()
+
+        # Group matchups by week
+        weeks_map = {}
+        for w in range(1, 19):
+            weeks_map[w] = []
+
+        for m in matchups_query:
+            # Parse roster_id integer
+            r_int = None
+            if m.roster_id:
+                try:
+                    parts = str(m.roster_id).split("_")
+                    r_int = int(parts[-1]) if len(parts) > 1 else int(m.roster_id)
+                except:
+                    pass
+
+            if r_int and m.week in weeks_map:
+                # Format starters detail
+                starters_list = []
+                starters_ids = m.starters or []
+                starters_pts = m.starters_points or []
+                
+                for idx, pid in enumerate(starters_ids):
+                    p_info = sp_cache.get(str(pid), {})
+                    p_name = p_info.get("full_name") or f"Player {pid}"
+                    p_pos = p_info.get("position") or "FLEX"
+                    p_team = p_info.get("team") or "NFL"
+                    score = float(starters_pts[idx]) if idx < len(starters_pts) and starters_pts[idx] is not None else 0.0
+                    
+                    starters_list.append({
+                        "player_id": str(pid),
+                        "name": p_name,
+                        "position": p_pos,
+                        "team": p_team,
+                        "points": round(score, 2)
+                    })
+
+                # Calculate bench points
+                total_pts = float(m.points or 0.0)
+                starter_pts_sum = sum(s["points"] for s in starters_list) if starters_list else total_pts
+                bench_pts = max(0.0, round(total_pts - starter_pts_sum, 2))
+
+                weeks_map[m.week].append({
+                    "roster_id": r_int,
+                    "matchup_id": m.matchup_id or 1,
+                    "team_name": owner_names.get(r_int, f"Team {r_int}"),
+                    "avatar": team_avatars.get(r_int),
+                    "points": round(total_pts, 2),
+                    "starters": starters_list,
+                    "bench_points": bench_pts
+                })
+
+        # Process paired weekly matchups and compute high/low/median
+        formatted_weeks = []
+        current_detected_week = 1
+        all_team_weekly_scores = {r.roster_id: {} for r in rosters}
+
+        for w in range(1, 19):
+            week_entries = weeks_map.get(w, [])
+            # Pair matchups by matchup_id
+            by_matchup_id = {}
+            scores_in_week = []
+
+            for entry in week_entries:
+                m_id = entry["matchup_id"]
+                if m_id not in by_matchup_id:
+                    by_matchup_id[m_id] = []
+                by_matchup_id[m_id].append(entry)
+                if entry["points"] > 0:
+                    scores_in_week.append(entry["points"])
+                all_team_weekly_scores[entry["roster_id"]][w] = entry["points"]
+
+            paired_matchups = []
+            for m_id, teams in by_matchup_id.items():
+                if len(teams) >= 2:
+                    t1, t2 = teams[0], teams[1]
+                    margin = round(abs(t1["points"] - t2["points"]), 2)
+                    winner = "team_a" if t1["points"] > t2["points"] else ("team_b" if t2["points"] > t1["points"] else "tie")
+                    
+                    # Status: Final vs Upcoming
+                    is_played = (t1["points"] > 0 or t2["points"] > 0)
+                    if is_played and w > current_detected_week:
+                        current_detected_week = w
+
+                    paired_matchups.append({
+                        "matchup_id": m_id,
+                        "is_played": is_played,
+                        "status": "FINAL" if is_played else "UPCOMING",
+                        "team_a": t1,
+                        "team_b": t2,
+                        "winner": winner if is_played else None,
+                        "margin": margin,
+                        "win_prob_a": 50.0 if not is_played else (100.0 if winner == "team_a" else 0.0),
+                        "win_prob_b": 50.0 if not is_played else (100.0 if winner == "team_b" else 0.0)
+                    })
+                elif len(teams) == 1:
+                    # Bye or single team
+                    paired_matchups.append({
+                        "matchup_id": m_id,
+                        "is_played": teams[0]["points"] > 0,
+                        "status": "FINAL" if teams[0]["points"] > 0 else "BYE",
+                        "team_a": teams[0],
+                        "team_b": None,
+                        "winner": "team_a",
+                        "margin": 0.0,
+                        "win_prob_a": 100.0,
+                        "win_prob_b": 0.0
+                    })
+
+            # Calculate High, Low, Median for week
+            high_scorer = max(week_entries, key=lambda x: x["points"]) if week_entries and max(x["points"] for x in week_entries) > 0 else None
+            low_scorer = min([x for x in week_entries if x["points"] > 0], key=lambda x: x["points"]) if scores_in_week else None
+            median_val = round(float(np.median(scores_in_week)), 2) if scores_in_week else 0.0
+
+            formatted_weeks.append({
+                "week": w,
+                "has_games": len(paired_matchups) > 0,
+                "is_active": (w == current_detected_week),
+                "is_playoffs": (w >= 15),
+                "matchups": paired_matchups,
+                "high_score": {
+                    "team_name": high_scorer["team_name"],
+                    "points": high_scorer["points"]
+                } if high_scorer else None,
+                "low_score": {
+                    "team_name": low_scorer["team_name"],
+                    "points": low_scorer["points"]
+                } if low_scorer else None,
+                "median_score": median_val
+            })
+
+        # Build Franchise Season Schedule Timelines
+        franchises_schedules = []
+        for r in rosters:
+            r_id = r.roster_id
+            t_name = owner_names.get(r_id, f"Team {r_id}")
+            t_avatar = team_avatars.get(r_id)
+            
+            schedule_games = []
+            total_pf = 0.0
+            total_pa = 0.0
+            wins_count = 0
+            losses_count = 0
+            ties_count = 0
+            all_play_wins = 0
+            all_play_losses = 0
+
+            for w_data in formatted_weeks:
+                w_num = w_data["week"]
+                # Find matchup for this team in this week
+                found_matchup = None
+                is_team_a = True
+
+                for m in w_data["matchups"]:
+                    if m["team_a"] and m["team_a"]["roster_id"] == r_id:
+                        found_matchup = m
+                        is_team_a = True
+                        break
+                    elif m["team_b"] and m["team_b"]["roster_id"] == r_id:
+                        found_matchup = m
+                        is_team_a = False
+                        break
+
+                if found_matchup:
+                    my_data = found_matchup["team_a"] if is_team_a else found_matchup["team_b"]
+                    opp_data = found_matchup["team_b"] if is_team_a else found_matchup["team_a"]
+                    
+                    my_score = my_data["points"] if my_data else 0.0
+                    opp_score = opp_data["points"] if opp_data else 0.0
+                    
+                    result = "UPCOMING"
+                    if found_matchup["is_played"]:
+                        if my_score > opp_score:
+                            result = "W"
+                            wins_count += 1
+                        elif my_score < opp_score:
+                            result = "L"
+                            losses_count += 1
+                        else:
+                            result = "T"
+                            ties_count += 1
+                        total_pf += my_score
+                        total_pa += opp_score
+
+                        # All-Play calculation against other league scores in that week
+                        for other_r_id, other_weeks in all_team_weekly_scores.items():
+                            if other_r_id != r_id and w_num in other_weeks and other_weeks[w_num] > 0:
+                                if my_score > other_weeks[w_num]:
+                                    all_play_wins += 1
+                                elif my_score < other_weeks[w_num]:
+                                    all_play_losses += 1
+
+                    schedule_games.append({
+                        "week": w_num,
+                        "matchup_id": found_matchup["matchup_id"],
+                        "opponent_roster_id": opp_data["roster_id"] if opp_data else None,
+                        "opponent_name": opp_data["team_name"] if opp_data else "BYE",
+                        "opponent_avatar": opp_data["avatar"] if opp_data else None,
+                        "team_score": my_score,
+                        "opp_score": opp_score,
+                        "result": result,
+                        "margin": round(abs(my_score - opp_score), 2),
+                        "starters_detail": my_data["starters"] if my_data else []
+                    })
+
+            franchises_schedules.append({
+                "roster_id": r_id,
+                "team_name": t_name,
+                "avatar": t_avatar,
+                "wins": wins_count,
+                "losses": losses_count,
+                "ties": ties_count,
+                "points_for": round(total_pf, 2),
+                "points_against": round(total_pa, 2),
+                "point_differential": round(total_pf - total_pa, 2),
+                "all_play_record": f"{all_play_wins}-{all_play_losses}",
+                "all_play_win_pct": round((all_play_wins / max(1, all_play_wins + all_play_losses)) * 100, 1),
+                "schedule": schedule_games
+            })
+
+        # Sort franchises by wins then points for
+        franchises_schedules.sort(key=lambda x: (x["wins"], x["points_for"]), reverse=True)
+
+        return {
+            "status": "success",
+            "league_id": league_id,
+            "league_name": league.name if league else "Dynasty League",
+            "season": target_season,
+            "current_week": current_detected_week,
+            "total_weeks": 18,
+            "weeks": formatted_weeks,
+            "franchises": franchises_schedules
+        }
+
+    except Exception as e:
+        return {"error": f"Failed to retrieve schedule: {str(e)}"}
+    finally:
+        session.close()
+
+
+
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Fantasy Dashboard
+Comment=Launch Fantasy Football Dashboard
+Exec=bash __USER_HOME__/fantasy_dashboard/pi_deployment/launcher.sh
+Icon=__USER_HOME__/fantasy_dashboard/pi_deployment/logo.jpg
+Terminal=false
+Type=Application
+Categories=Utility;
