@@ -167,7 +167,33 @@
     revealEls.forEach(function (el) { observer.observe(el); });
   }
 
-  // 5. Mobile Download Platform Switcher (Android vs iOS)
+  // 5. Mobile Download Platform Switcher & 1-Click PWA Install Trigger
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const pwaBtn = document.getElementById('btn-pwa-install');
+    if (pwaBtn) {
+      pwaBtn.textContent = '📲 Install App on This Device';
+    }
+  });
+
+  const pwaInstallBtn = document.getElementById('btn-pwa-install');
+  if (pwaInstallBtn) {
+    pwaInstallBtn.addEventListener('click', async () => {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          pwaInstallBtn.textContent = '✅ App Installed!';
+        }
+        deferredInstallPrompt = null;
+      } else {
+        window.open('https://ffdashboard.kindofabigdill.world', '_blank');
+      }
+    });
+  }
+
   const platformBtns = document.querySelectorAll('.platform-btn');
   const androidGuide = document.getElementById('guide-android');
   const iosGuide = document.getElementById('guide-ios');
