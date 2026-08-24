@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, Cell
+  BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
+  ResponsiveContainer, Cell, ReferenceLine
 } from 'recharts';
 import { 
   Banknote, Trophy, Flame, ChevronDown, ChevronUp, Sparkles, 
@@ -107,6 +107,40 @@ export default function BountyVaultTab() {
   const filteredHistory = historySeasonFilter === 'all'
     ? formattedHistory
     : formattedHistory.filter((w: any) => w.season === historySeasonFilter);
+
+  const [chartMode, setChartMode] = useState<'trend' | 'bar' | 'hall'>('trend');
+
+  const formatXAxis = (tickItem: string) => {
+    if (!tickItem) return '';
+    if (historySeasonFilter !== 'all') {
+      const match = tickItem.match(/W(\d+)/);
+      return match ? `W${match[1]}` : tickItem;
+    }
+    return tickItem.replace(/20(\d\d)\s*/, "'$1 ");
+  };
+
+  const CustomChartTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const isCentury = data.points >= 200;
+      return (
+        <div className="bg-zinc-950/95 border border-zinc-700 p-3 rounded-2xl shadow-2xl backdrop-blur-md font-mono text-xs space-y-1 z-50">
+          <div className="flex items-center justify-between gap-3 text-[10px] text-zinc-400 border-b border-zinc-800 pb-1">
+            <span>{data.season} · WEEK {data.week}</span>
+            {isCentury && <span className="text-amber-400 font-bold flex items-center gap-1">🔥 200+ PTS</span>}
+          </div>
+          <div className="text-white font-bold truncate text-sm">
+            {data.owner || 'Franchise'}
+          </div>
+          <div className="flex items-baseline gap-1 text-emerald-400 font-black text-lg">
+            <span>{Number(data.points).toFixed(1)}</span>
+            <span className="text-[10px] text-zinc-400 font-normal">pts</span>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-12">
@@ -363,13 +397,13 @@ export default function BountyVaultTab() {
           </div>
         </div>
 
-        {/* All-Time Single-Game High Score Leaderboard & Chart */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+        {/* ── ALL-TIME SINGLE-GAME HIGH SCORE JUMBOTRON & VISUALIZER ──────── */}
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between space-y-4">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-3">
                 <div 
-                  className="p-2.5 rounded-2xl border" 
+                  className="p-2.5 rounded-2xl border shrink-0" 
                   style={{ backgroundColor: `${currentTheme.primary}15`, borderColor: `${currentTheme.primary}30` }}
                 >
                   <Flame size={20} style={{ color: currentTheme.primary }} />
@@ -380,51 +414,78 @@ export default function BountyVaultTab() {
                 </div>
               </div>
 
-              {seasonsAvailable.length > 1 && (
+              {/* View Switchers (Trend vs Bar vs Hall) */}
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <div className="flex bg-zinc-950 rounded-xl p-1 border border-zinc-800 shadow-inner">
                   <button
-                    onClick={() => setHistorySeasonFilter('all')}
+                    onClick={() => setChartMode('trend')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
-                      historySeasonFilter === 'all' 
-                        ? 'bg-zinc-800 text-white shadow' 
-                        : 'text-zinc-400 hover:text-white'
+                      chartMode === 'trend' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
                     }`}
                   >
-                    ALL
+                    📈 Curve
                   </button>
-                  {seasonsAvailable.map((s: string) => (
+                  <button
+                    onClick={() => setChartMode('bar')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                      chartMode === 'bar' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    📊 Bars
+                  </button>
+                  <button
+                    onClick={() => setChartMode('hall')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                      chartMode === 'hall' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    🏆 Top 10
+                  </button>
+                </div>
+
+                {/* Season Filter */}
+                {seasonsAvailable.length > 1 && (
+                  <div className="flex bg-zinc-950 rounded-xl p-1 border border-zinc-800 shadow-inner">
                     <button
-                      key={s}
-                      onClick={() => setHistorySeasonFilter(s)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
-                        historySeasonFilter === s 
-                          ? 'bg-zinc-800 text-white shadow' 
-                          : 'text-zinc-400 hover:text-white'
+                      onClick={() => setHistorySeasonFilter('all')}
+                      className={`px-2 py-1 rounded-lg text-[11px] font-mono font-bold transition-all ${
+                        historySeasonFilter === 'all' ? 'bg-zinc-800 text-white shadow' : 'text-zinc-400 hover:text-white'
                       }`}
                     >
-                      {s}
+                      ALL
                     </button>
-                  ))}
-                </div>
-              )}
+                    {seasonsAvailable.map((s: string) => (
+                      <button
+                        key={s}
+                        onClick={() => setHistorySeasonFilter(s)}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-mono font-bold transition-all ${
+                          historySeasonFilter === s ? 'bg-zinc-800 text-white shadow' : 'text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Top 6 High Score Badges Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-6">
-              {top10Scores.slice(0, 6).map((score: any, idx: number) => (
+            {/* Top Single Game Highlights Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+              {top10Scores.slice(0, 4).map((score: any, idx: number) => (
                 <div 
                   key={idx}
-                  className="bg-zinc-950/80 border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-md"
+                  className="bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-2.5 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-sm"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">{score.season} W{score.week}</span>
-                    <span className="text-xs">{idx === 0 ? '🔥🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '⚡'}</span>
+                  <div className="flex items-center justify-between text-[9px] font-mono font-bold text-zinc-500 uppercase">
+                    <span>{score.season} W{score.week}</span>
+                    <span>{idx === 0 ? '👑 1st' : idx === 1 ? '🥈 2nd' : idx === 2 ? '🥉 3rd' : '⚡ 4th'}</span>
                   </div>
-                  <div className="my-1.5">
-                    <div className="text-base sm:text-lg font-black font-mono" style={{ color: currentTheme.primary }}>
+                  <div className="my-1">
+                    <div className="text-base sm:text-lg font-black font-mono text-emerald-400 leading-tight">
                       {(score.points || score.actual || 0).toFixed(1)} pts
                     </div>
-                    <div className="text-[11px] font-bold text-white truncate">
+                    <div className="text-[11px] font-bold text-white truncate mt-0.5">
                       {score.owner}
                     </div>
                   </div>
@@ -432,41 +493,91 @@ export default function BountyVaultTab() {
               ))}
             </div>
 
-            {/* Progression Chart */}
-            <div className="h-44 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={filteredHistory} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                  <XAxis 
-                    dataKey="label" 
-                    stroke="#71717a" 
-                    fontSize={9} 
-                    interval={filteredHistory.length > 20 ? 3 : 1}
-                  />
-                  <YAxis stroke="#71717a" fontSize={9} domain={['auto', 'auto']} />
-                  <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '10px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}
-                    formatter={(val: any, name: any, item: any) => [
-                      `${val} pts (${item.payload.owner})`,
-                      'High Score'
-                    ]}
-                    labelStyle={{ color: '#a1a1aa', fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}
-                  />
-                  <Bar dataKey="points" name="Weekly High" radius={[4, 4, 0, 0]}>
-                    {filteredHistory.map((entry: any, index: number) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.season === currentSeason ? currentTheme.primary : '#52525b'} 
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {/* ── VISUAL CHART CONTAINER (NO OVERLAPPING TICKS) ─────────── */}
+            {chartMode === 'hall' ? (
+              <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 font-mono text-xs">
+                {top10Scores.map((score: any, idx: number) => (
+                  <div 
+                    key={idx}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700 transition-all"
+                  >
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <span className="font-bold text-zinc-500 w-5 text-center">#{idx + 1}</span>
+                      <div className="overflow-hidden">
+                        <p className="font-bold text-white text-xs truncate">{score.owner}</p>
+                        <p className="text-[10px] text-zinc-500">{score.season} · Week {score.week}</p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="font-black text-emerald-400 text-sm">
+                        {(score.points || score.actual || 0).toFixed(2)}
+                      </span>
+                      <span className="text-[9px] text-zinc-500 ml-1">pts</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : chartMode === 'trend' ? (
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={filteredHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="scoreGlow" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                    <XAxis 
+                      dataKey="label" 
+                      stroke="#71717a" 
+                      fontSize={10} 
+                      tickFormatter={formatXAxis}
+                      interval={filteredHistory.length > 12 ? Math.floor(filteredHistory.length / 5) : 0}
+                    />
+                    <YAxis stroke="#71717a" fontSize={10} domain={['dataMin - 10', 'dataMax + 10']} />
+                    <RechartsTooltip content={<CustomChartTooltip />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="points" 
+                      stroke="#10b981" 
+                      strokeWidth={2.5} 
+                      fillOpacity={1} 
+                      fill="url(#scoreGlow)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={filteredHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                    <XAxis 
+                      dataKey="label" 
+                      stroke="#71717a" 
+                      fontSize={10} 
+                      tickFormatter={formatXAxis}
+                      interval={filteredHistory.length > 12 ? Math.floor(filteredHistory.length / 5) : 0}
+                    />
+                    <YAxis stroke="#71717a" fontSize={10} domain={['dataMin - 10', 'dataMax + 10']} />
+                    <RechartsTooltip content={<CustomChartTooltip />} />
+                    <Bar dataKey="points" name="Weekly High" radius={[4, 4, 0, 0]}>
+                      {filteredHistory.map((entry: any, index: number) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.season === currentSeason ? '#10b981' : '#52525b'} 
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-            <span>Historical max scores across regular season match slates.</span>
+          <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+            <span>🔥 200+ PTS qualifies franchise for Century Club Hall of Fame.</span>
           </div>
         </div>
 
