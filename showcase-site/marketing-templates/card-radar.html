@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Positional Radar Promo Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #080C09;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 64px 64px 54px;
+    }
+    .field-bg {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1080px;
+      opacity: 0.32;
+      z-index: 1;
+    }
+    .glow-cyan {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .glow-green {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(34,197,94,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .top-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      background: #0C100D;
+      border: 2px solid #f97316;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px rgba(249,115,22,0.4);
+    }
+    .brand-name {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    .pill-badge {
+      background: rgba(6,182,212,0.15);
+      border: 1px solid #06b6d4;
+      color: #22d3ee;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+    }
+    .main-body {
+      position: relative;
+      z-index: 10;
+      margin: 16px 0;
+    }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      color: #06b6d4;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .headline {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .headline span.cyan {
+      color: #22d3ee;
+    }
+    .headline span.green {
+      color: #22c55e;
+    }
+    .radar-box {
+      background: #060B08;
+      border: 2px solid rgba(6,182,212,0.4);
+      border-radius: 24px;
+      padding: 24px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(6,182,212,0.15);
+    }
+    .radar-svg-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .scores-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .score-row {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .score-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .badge-high { background: rgba(34,197,94,0.18); color: #22c55e; border: 1px solid #22c55e; }
+    .badge-mid { background: rgba(249,115,22,0.18); color: #f97316; border: 1px solid #f97316; }
+    .badge-low { background: rgba(239,68,68,0.18); color: #ef4444; border: 1px solid #ef4444; }
+
+    .bottom-footer {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(12,16,13,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px 24px;
+    }
+    .footer-left {
+      font-size: 15px;
+      font-weight: 700;
+      color: #E4E4E7;
+    }
+    .footer-left span {
+      color: #22d3ee;
+    }
+    .footer-right {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 900;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+
+  <svg class="field-bg" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="200" y1="0" x2="200" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+    <line x1="540" y1="0" x2="540" y2="1080" stroke="#06b6d4" stroke-width="3" stroke-dasharray="10 6"/>
+    <line x1="880" y1="0" x2="880" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  </svg>
+
+  <div class="glow-cyan"></div>
+  <div class="glow-green"></div>
+
+  <div class="top-header">
+    <div class="brand-group">
+      <div class="brand-logo">
+        <svg viewBox="0 0 100 100" fill="none" style="width: 32px; height: 32px;">
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="8" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="76" cy="34" r="9" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="brand-name">WAIVER WIRETAP</div>
+    </div>
+    <div class="pill-badge">POSITIONAL RADAR</div>
+  </div>
+
+  <div class="main-body">
+    <div class="eyebrow">🎯 100-INDEX LEAGUE BENCHMARK</div>
+    <h1 class="headline">
+      FIND YOUR ROSTER'S <br/>
+      <span class="cyan">HIDDEN FLAWS</span> & <span class="green">EDGES.</span>
+    </h1>
+
+    <div class="radar-box">
+      <div class="radar-svg-wrap">
+        <!-- SVG Spiderweb Chart -->
+        <svg width="320" height="320" viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="130" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <circle cx="160" cy="160" r="90" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" />
+          <circle cx="160" cy="160" r="50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+          
+          <line x1="160" y1="30" x2="160" y2="290" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+          <line x1="30" y1="160" x2="290" y2="160" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+
+          <!-- CeeDeez Nutz Polygon (High WR, Low TE) -->
+          <polygon points="160,50 270,160 160,240 60,160" fill="rgba(34,197,94,0.3)" stroke="#22c55e" stroke-width="3" />
+          
+          <!-- Position Labels -->
+          <text x="160" y="22" fill="#f97316" font-family="JetBrains Mono" font-size="14" font-weight="bold" text-anchor="middle">QB (112)</text>
+          <text x="300" y="165" fill="#22c55e" font-family="JetBrains Mono" font-size="14" font-weight="bold" text-anchor="middle">WR (152)</text>
+          <text x="160" y="310" fill="#ef4444" font-family="JetBrains Mono" font-size="14" font-weight="bold" text-anchor="middle">TE (74)</text>
+          <text x="20" y="165" fill="#38bdf8" font-family="JetBrains Mono" font-size="14" font-weight="bold" text-anchor="middle">RB (108)</text>
+        </svg>
+      </div>
+
+      <div class="scores-col">
+        <div class="score-row">
+          <span class="score-name">👑 CeeDeez Nutz (WR Bully)</span>
+          <span class="score-badge badge-high">WR: 152.4</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">🚜 Hot Chubb Time Machine</span>
+          <span class="score-badge badge-high">RB: 142.1</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">📈 1st Round Pick Addicts</span>
+          <span class="score-badge badge-mid">Picks: 168.0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">🚽 24-Hr Waffle House</span>
+          <span class="score-badge badge-low">TE: 42.1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-footer">
+    <div class="footer-left">
+      🎯 Benchmark: <span>100 = Exact League Average</span>
+    </div>
+    <div class="footer-right">
+      waiverwiretap.kindofabigdill.com
+    </div>
+  </div>
+
+</body>
+</html>

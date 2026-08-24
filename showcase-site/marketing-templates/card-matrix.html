@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>True Power Matrix Promo Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #080C09;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 64px 64px 54px;
+    }
+    .field-bg {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1080px;
+      opacity: 0.32;
+      z-index: 1;
+    }
+    .glow-purple {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .glow-orange {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(249,115,22,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .top-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      background: #0C100D;
+      border: 2px solid #f97316;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px rgba(249,115,22,0.4);
+    }
+    .brand-name {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    .pill-badge {
+      background: rgba(168,85,247,0.15);
+      border: 1px solid #a855f7;
+      color: #c084fc;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+    }
+    .main-body {
+      position: relative;
+      z-index: 10;
+      margin: 16px 0;
+    }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      color: #f97316;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .headline {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .headline span.purple {
+      color: #c084fc;
+    }
+    .headline span.orange {
+      color: #f97316;
+    }
+    .matrix-box {
+      background: #060B08;
+      border: 2px solid rgba(168,85,247,0.4);
+      border-radius: 24px;
+      padding: 24px 28px;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(168,85,247,0.15);
+    }
+    .matrix-grid {
+      position: relative;
+      height: 340px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      background: rgba(0,0,0,0.4);
+    }
+    .axis-x {
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      height: 1px;
+      border-top: 1px dashed rgba(255,255,255,0.25);
+    }
+    .axis-y {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 1px;
+      border-left: 1px dashed rgba(255,255,255,0.25);
+    }
+    .quad-tag {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .quad-tl { top: 12px; left: 16px; color: #c084fc; }
+    .quad-tr { top: 12px; right: 16px; color: #22c55e; }
+    .quad-bl { bottom: 12px; left: 16px; color: #38bdf8; }
+    .quad-br { bottom: 12px; right: 16px; color: #ef4444; }
+
+    .node {
+      position: absolute;
+      background: rgba(12,16,13,0.95);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .node em {
+      font-family: 'JetBrains Mono', monospace;
+      font-style: normal;
+      font-weight: 900;
+      color: #f97316;
+    }
+    .node-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .bottom-footer {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(12,16,13,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px 24px;
+    }
+    .footer-left {
+      font-size: 15px;
+      font-weight: 700;
+      color: #E4E4E7;
+    }
+    .footer-left span {
+      color: #c084fc;
+    }
+    .footer-right {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 900;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+
+  <svg class="field-bg" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="200" y1="0" x2="200" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+    <line x1="540" y1="0" x2="540" y2="1080" stroke="#a855f7" stroke-width="3" stroke-dasharray="10 6"/>
+    <line x1="880" y1="0" x2="880" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  </svg>
+
+  <div class="glow-purple"></div>
+  <div class="glow-orange"></div>
+
+  <div class="top-header">
+    <div class="brand-group">
+      <div class="brand-logo">
+        <svg viewBox="0 0 100 100" fill="none" style="width: 32px; height: 32px;">
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="8" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="76" cy="34" r="9" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="brand-name">WAIVER WIRETAP</div>
+    </div>
+    <div class="pill-badge">TRUE POWER MATRIX</div>
+  </div>
+
+  <div class="main-body">
+    <div class="eyebrow">⚡ ELIMINATE SCHEDULE LUCK</div>
+    <h1 class="headline">
+      SEE YOUR LEAGUE'S <br/>
+      <span class="purple">REAL DYNASTY</span> <span class="orange">POWER.</span>
+    </h1>
+
+    <div class="matrix-box">
+      <div class="matrix-grid">
+        <div class="axis-x"></div>
+        <div class="axis-y"></div>
+
+        <span class="quad-tag quad-tl">👑 DYNASTY APEX (YOUNG & ELITE)</span>
+        <span class="quad-tag quad-tr">🏆 WIN-NOW GOLIATH</span>
+        <span class="quad-tag quad-bl">📈 PRODUCTIVE STRUGGLE</span>
+        <span class="quad-tag quad-br">📉 REBUILDING VALLEY</span>
+
+        <div class="node" style="left: 10%; top: 22%;">
+          <span class="node-dot" style="background:#a855f7;"></span>
+          Puka Nacua Matata <em>57.3</em>
+        </div>
+        <div class="node" style="left: 56%; top: 16%;">
+          <span class="node-dot" style="background:#22c55e;"></span>
+          CeeDeez Nutz <em>63.4</em>
+        </div>
+        <div class="node" style="left: 56%; top: 38%;">
+          <span class="node-dot" style="background:#22c55e;"></span>
+          Run CMC & The Hamstrings <em>59.6</em>
+        </div>
+        <div class="node" style="left: 10%; top: 62%;">
+          <span class="node-dot" style="background:#38bdf8;"></span>
+          1st Round Pick Addicts <em>37.2</em>
+        </div>
+        <div class="node" style="left: 56%; top: 68%;">
+          <span class="node-dot" style="background:#ef4444;"></span>
+          Waffle House Survivor <em>24.8</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-footer">
+    <div class="footer-left">
+      📊 70% Max Points For · <span>30% Draft Capital Weight</span>
+    </div>
+    <div class="footer-right">
+      waiverwiretap.kindofabigdill.com
+    </div>
+  </div>
+
+</body>
+</html>

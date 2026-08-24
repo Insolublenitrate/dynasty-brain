@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Waiver Wiretap — Marketing & Media Kit | a KBD Product</title>
+  <meta name="description" content="Official marketing images, animated clips, GIF promo assets, and ready-to-post copy for Waiver Wiretap: The Quant & AI Fantasy Football Dynasty War Room." />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#09090B" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Waiver Wiretap" />
+  <meta property="og:url" content="https://waiverwiretap.kindofabigdill.com/media-kit.html" />
+  <meta property="og:title" content="Waiver Wiretap — Official Marketing & Media Kit" />
+  <meta property="og:description" content="Download official animated promo GIFs, social media graphics, and copy templates for Waiver Wiretap." />
+  <meta property="og:image" content="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .media-kit-wrap {
+      padding: 100px 0 80px;
+      min-height: 100vh;
+    }
+    .kit-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .kit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid var(--theme-primary);
+      color: var(--theme-primary);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .kit-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .kit-desc {
+      font-size: 1.1rem;
+      color: #A1A1AA;
+      max-width: 680px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.5;
+    }
+
+    .kit-section-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 3rem 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 0.75rem;
+    }
+    .kit-section-title span {
+      color: var(--theme-primary);
+    }
+
+    /* Grid of Assets */
+    .assets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .asset-card {
+      background: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .asset-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--theme-primary);
+    }
+    .asset-media-preview {
+      width: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .asset-media-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    .asset-info {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+    .asset-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #FFF;
+    }
+    .asset-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #A1A1AA;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .asset-meta span {
+      background: rgba(255,255,255,0.06);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .asset-actions {
+      padding: 0 1.25rem 1.25rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-download {
+      flex: 1;
+      background: var(--theme-primary);
+      color: #000;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 900;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: opacity 0.15s;
+    }
+    .btn-download:hover {
+      opacity: 0.9;
+    }
+
+    /* Copy Blocks */
+    .copy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .copy-card {
+      background: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .copy-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .copy-channel {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .copy-box {
+      background: #040705;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #D4D4D8;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-family: var(--font-sans);
+      margin-bottom: 1rem;
+    }
+    .btn-copy {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #FFF;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+    .btn-copy:hover {
+      background: rgba(34,197,94,0.15);
+      border-color: #22c55e;
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body class="carbon-weave-bg">
+
+  <!-- Interactive Floating Theme Customizer HUD -->
+  <div class="theme-hud-bar" title="Live Tactical Theme Switcher">
+    <span class="theme-hud-label">Theme</span>
+    <button type="button" class="theme-dot dot-orange active" data-theme="orange"></button>
+    <button type="button" class="theme-dot dot-cyan" data-theme="cyan"></button>
+    <button type="button" class="theme-dot dot-emerald" data-theme="emerald"></button>
+    <button type="button" class="theme-dot dot-purple" data-theme="purple"></button>
+    <button type="button" class="theme-dot dot-rose" data-theme="rose"></button>
+    <button type="button" class="theme-dot dot-amber" data-theme="amber"></button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="20" fill="#0C100D" stroke="var(--theme-border)" stroke-width="2"/>
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.3"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="var(--theme-primary)" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="5" fill="var(--theme-primary)" stroke="#ffffff" stroke-width="1.5"/>
+          <circle cx="76" cy="34" r="5.5" fill="#22c55e" stroke="#ffffff" stroke-width="1.5"/>
+        </svg>
+        <span>WAIVER WIRETAP</span>
+        <span class="kbd-tag">MEDIA KIT</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/">Showcase Home</a></li>
+        <li><a href="/demo.html">Live Demo Sandbox</a></li>
+        <li><a href="/#pricing">Pricing ($5 / $25)</a></li>
+        <li><a href="/#download">Mobile App</a></li>
+      </ul>
+
+      <a class="nav-cta" href="/demo.html">🎮 Launch Live Demo →</a>
+    </div>
+  </nav>
+
+  <main class="media-kit-wrap">
+    <div class="wrap">
+      
+      <div class="kit-header">
+        <div class="kit-badge">⚡ Official Promo & Marketing Suite</div>
+        <h1 class="kit-title">Marketing Assets & <span style="color:var(--theme-primary);">Social Media Kit</span></h1>
+        <p class="kit-desc">High-resolution graphics, animated GIFs, and ready-to-post templates to share Waiver Wiretap across Twitter/X, Reddit, Sleeper, Discord, and Instagram.</p>
+        <div>
+          <a href="/demo.html" class="btn btn-primary" style="display:inline-flex;">🎮 Test In-Browser Demo First →</a>
+        </div>
+      </div>
+
+      <!-- SECTION 1: ANIMATED CLIPS & GIFS -->
+      <h2 class="kit-section-title"><span>01.</span> Animated Looping GIFs (High-FPS)</h2>
+      <div class="assets-grid">
+        
+        <!-- GIF 1 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-madden-ai.gif" alt="Coach Madden AI Animated Clip" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🤖 Coach Madden AI War Room</div>
+            <div class="asset-meta">
+              <span>GIF Format</span>
+              <span>800 × 480</span>
+              <span>Equalizer & Telestrator</span>
+            </div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-madden-ai.gif" download="promo-madden-ai.gif" class="btn-download">⬇️ Download GIF</a>
+          </div>
+        </div>
+
+        <!-- GIF 2 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-positional-radar.gif" alt="Positional Strength Radar Animated Clip" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🎯 100-Index Positional Radar</div>
+            <div class="asset-meta">
+              <span>GIF Format</span>
+              <span>800 × 480</span>
+              <span>Morphing Spiderweb</span>
+            </div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-positional-radar.gif" download="promo-positional-radar.gif" class="btn-download">⬇️ Download GIF</a>
+          </div>
+        </div>
+
+        <!-- GIF 3 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-power-matrix.gif" alt="True Power Matrix Animated Clip" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">⚡ 4-Quadrant Power Matrix</div>
+            <div class="asset-meta">
+              <span>GIF Format</span>
+              <span>800 × 480</span>
+              <span>Laser Sweep & Nodes</span>
+            </div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-power-matrix.gif" download="promo-power-matrix.gif" class="btn-download">⬇️ Download GIF</a>
+          </div>
+        </div>
+
+        <!-- GIF 4 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-matchup-simulator.gif" alt="10,000-Sim Matchup Simulator Animated Clip" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🎲 10,000-Game Matchup Sim</div>
+            <div class="asset-meta">
+              <span>GIF Format</span>
+              <span>800 × 480</span>
+              <span>Rolling Probability</span>
+            </div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-matchup-simulator.gif" download="promo-matchup-simulator.gif" class="btn-download">⬇️ Download GIF</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECTION 2: HIGH-RES SOCIAL GRAPHICS -->
+      <h2 class="kit-section-title"><span>02.</span> High-Res Feed & Banner Graphics</h2>
+      <div class="assets-grid">
+
+        <!-- Banner -->
+        <div class="asset-card" style="grid-column: 1 / -1;">
+          <div class="asset-media-preview" style="max-height: 320px;">
+            <img src="/marketing/promo-banner-twitter.png" alt="Twitter Header Banner" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🐦 Twitter / X Tactical Header Banner</div>
+            <div class="asset-meta">
+              <span>PNG Format</span>
+              <span>1500 × 500</span>
+              <span>Stadium Field & Live HUD</span>
+            </div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-banner-twitter.png" download="promo-banner-twitter.png" class="btn-download">⬇️ Download Header Banner (1500×500)</a>
+          </div>
+        </div>
+
+        <!-- Card 1 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-square-madden.png" alt="Coach Madden AI Square Card" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🤖 Ask Coach Madden AI Card</div>
+            <div class="asset-meta"><span>1080 × 1080</span><span>Instagram / Twitter</span></div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-square-madden.png" download="promo-square-madden.png" class="btn-download">⬇️ Download Square Card</a>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-square-matrix.png" alt="True Power Matrix Square Card" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">⚡ True Power Matrix Card</div>
+            <div class="asset-meta"><span>1080 × 1080</span><span>Instagram / Twitter</span></div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-square-matrix.png" download="promo-square-matrix.png" class="btn-download">⬇️ Download Square Card</a>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-square-radar.png" alt="Positional Radar Square Card" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🎯 Positional Strength Radar Card</div>
+            <div class="asset-meta"><span>1080 × 1080</span><span>Instagram / Twitter</span></div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-square-radar.png" download="promo-square-radar.png" class="btn-download">⬇️ Download Square Card</a>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="asset-card">
+          <div class="asset-media-preview">
+            <img src="/marketing/promo-square-sacko.png" alt="Championship & Sacko Card" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">🏆 Podium & Sacko Wall Card</div>
+            <div class="asset-meta"><span>1080 × 1080</span><span>Instagram / Twitter</span></div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-square-sacko.png" download="promo-square-sacko.png" class="btn-download">⬇️ Download Square Card</a>
+          </div>
+        </div>
+
+        <!-- Card 5 (Vertical 9:16) -->
+        <div class="asset-card">
+          <div class="asset-media-preview" style="max-height: 400px;">
+            <img src="/marketing/promo-story-9x16.png" alt="9:16 Vertical Story Graphic" loading="lazy" />
+          </div>
+          <div class="asset-info">
+            <div class="asset-name">📲 9:16 Story / TikTok Graphic</div>
+            <div class="asset-meta"><span>1080 × 1920</span><span>IG Stories / TikTok</span></div>
+          </div>
+          <div class="asset-actions">
+            <a href="/marketing/promo-story-9x16.png" download="promo-story-9x16.png" class="btn-download">⬇️ Download Story (9:16)</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECTION 3: 1-CLICK COPY PLAYBOOK -->
+      <h2 class="kit-section-title"><span>03.</span> 1-Click Social Media Copy & Captions</h2>
+      <div class="copy-grid">
+
+        <!-- Copy 1: Twitter Launch -->
+        <div class="copy-card">
+          <div class="copy-top">
+            <div class="copy-channel">🐦 Twitter / X Launch Post</div>
+          </div>
+          <div class="copy-box" id="copyText1">Most fantasy managers lose their dynasty leagues because they confuse lucky wins with actual roster strength.
+
+Meet Waiver Wiretap ⚡ — the quant dynasty war room with Coach Madden AI, True Power Matrix & 10,000-sim matchup engines.
+
+Test the live in-browser demo (no login):
+🎮 https://waiverwiretap.kindofabigdill.com/demo.html</div>
+          <button type="button" class="btn-copy" onclick="copySnippet('copyText1', this)">📋 Copy Tweet</button>
+        </div>
+
+        <!-- Copy 2: Reddit DynastyFF -->
+        <div class="copy-card">
+          <div class="copy-top">
+            <div class="copy-channel">🔴 Reddit (r/DynastyFF)</div>
+          </div>
+          <div class="copy-box" id="copyText2">I built a dynasty war room that calculates True Roster Power (70% Max PF + 30% Future Draft Capital) and built a Coach Madden AI with voice audio to evaluate trades.
+
+Zero login required to test drive the 12-team demo in your browser:
+🎮 https://waiverwiretap.kindofabigdill.com/demo.html</div>
+          <button type="button" class="btn-copy" onclick="copySnippet('copyText2', this)">📋 Copy Reddit Post</button>
+        </div>
+
+        <!-- Copy 3: Sleeper Chat Drop-In -->
+        <div class="copy-card">
+          <div class="copy-top">
+            <div class="copy-channel">💬 Sleeper / League Chat</div>
+          </div>
+          <div class="copy-box" id="copyText3">Hey guys, check out where our teams actually rank without schedule luck messing up the standings. Coach Madden AI just roasted my roster 💀
+
+Test drive the demo:
+👉 https://waiverwiretap.kindofabigdill.com/demo.html</div>
+          <button type="button" class="btn-copy" onclick="copySnippet('copyText3', this)">📋 Copy Sleeper Message</button>
+        </div>
+
+        <!-- Copy 4: Discord Announcement -->
+        <div class="copy-card">
+          <div class="copy-top">
+            <div class="copy-channel">👾 Discord Community</div>
+          </div>
+          <div class="copy-box" id="copyText4">⚡ **WAIVER WIRETAP — THE DYNASTY WAR ROOM** ⚡
+
+• **True Power Matrix:** 70% Max PF / 30% Pick Capital
+• **Positional Radar:** 100-index baseline chart
+• **Coach Madden AI:** Instant voice debriefs & buy-low spots
+• **10,000-Game Sim:** True win probability engine
+
+🎮 **Free Live In-Browser Demo:**
+https://waiverwiretap.kindofabigdill.com/demo.html</div>
+          <button type="button" class="btn-copy" onclick="copySnippet('copyText4', this)">📋 Copy Discord Post</button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-content">
+      <div class="footer-brand">
+        <a href="/" class="nav-brand">
+          <span>WAIVER WIRETAP</span>
+        </a>
+        <p>The Quant & AI Fantasy Football Dynasty War Room.<br/>A product of <strong>Kind of a Big Dill (KBD)</strong>.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <a href="/">Showcase Home</a>
+          <a href="/demo.html">Live Demo Sandbox</a>
+          <a href="/media-kit.html">Marketing & Media Kit</a>
+          <a href="/#pricing">Pricing</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="/terms.html">Terms of Service</a>
+          <a href="/privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+  <script>
+    function copySnippet(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ Copied to Clipboard!';
+        btn.style.borderColor = '#22c55e';
+        btn.style.color = '#22c55e';
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2200);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -20,21 +20,37 @@ export default function Login() {
     setError('');
 
     try {
-      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
-      const res = await fetch(`${apiUrl}/api/league/ingest/${inputCode}`, {
-        method: 'POST',
-      });
-      
-      const data = await res.json();
-      
-      if (res.ok && data.status === 'success') {
-        setLeagueId(inputCode);
-        router.push('/');
-      } else {
-        setError(data.error || 'Failed to ingest league data. Check your League ID.');
+      // 1. Direct Sleeper check
+      let leagueName = 'Sleeper League';
+      try {
+        const sRes = await fetch(`https://api.sleeper.app/v1/league/${inputCode.trim()}`);
+        if (!sRes.ok) {
+          setError('Invalid Sleeper League ID. Please verify your ID in the Sleeper app.');
+          setLoading(false);
+          return;
+        }
+        const sData = await sRes.json();
+        if (sData?.name) leagueName = sData.name.trim();
+      } catch (sErr) {
+        console.warn('Direct Sleeper check skipped', sErr);
       }
+
+      // 2. Backend Ingest
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+      try {
+        const res = await fetch(`${apiUrl}/api/league/ingest/${inputCode.trim()}`, {
+          method: 'POST',
+        });
+        const data = await res.json().catch(() => ({}));
+        if (data.league_name) leagueName = data.league_name;
+      } catch (bErr) {
+        console.warn('Backend ingest will run on next request', bErr);
+      }
+      
+      setLeagueId(inputCode.trim(), 'sleeper', leagueName);
+      router.push('/');
     } catch (err) {
-      setError('Network error connecting to backend.');
+      setError('Network error connecting to Sleeper API.');
       console.error(err);
     } finally {
       setLoading(false);

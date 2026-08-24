@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waiver Wiretap Twitter Header Banner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,700;0,900;1,700;1,900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1500px;
+      height: 500px;
+      overflow: hidden;
+      background: #060907;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 60px;
+    }
+    .field-bg {
+      position: absolute;
+      inset: 0;
+      width: 1500px;
+      height: 500px;
+      opacity: 0.38;
+      z-index: 1;
+    }
+    .glow-orange {
+      position: absolute;
+      top: -100px;
+      left: 100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(249,115,22,0.28) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .glow-green {
+      position: absolute;
+      bottom: -150px;
+      right: 150px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(34,197,94,0.22) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .content-left {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+    }
+    .brand-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .logo-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #0C100D;
+      border: 1.5px solid #f97316;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(249,115,22,0.35);
+    }
+    .brand-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    .kbd-pill {
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(249,115,22,0.18);
+      border: 1px solid #f97316;
+      color: #f97316;
+      padding: 3px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+    }
+    .main-headline {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 58px;
+      line-height: 0.95;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+    .main-headline span.orange {
+      color: #f97316;
+      text-shadow: 0 0 30px rgba(249,115,22,0.5);
+    }
+    .main-headline span.turf {
+      color: #22c55e;
+      text-shadow: 0 0 30px rgba(34,197,94,0.5);
+    }
+    .subtext {
+      font-size: 16px;
+      line-height: 1.4;
+      color: #A1A1AA;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .subtext strong {
+      color: #FFFFFF;
+    }
+    .pill-strip {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #E4E4E7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-item span {
+      color: #f97316;
+    }
+    .content-right {
+      position: relative;
+      z-index: 10;
+      width: 580px;
+    }
+    .hud-card {
+      background: rgba(12, 16, 13, 0.88);
+      border: 1.5px solid rgba(249,115,22,0.4);
+      border-radius: 16px;
+      padding: 20px 22px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.6), 0 0 35px rgba(249,115,22,0.15);
+    }
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .hud-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: #f97316;
+      letter-spacing: 0.06em;
+    }
+    .hud-live {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 800;
+      color: #22c55e;
+      background: rgba(34,197,94,0.12);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .team-row-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .team-row-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      color: #f97316;
+    }
+    .madden-bubble {
+      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    .madden-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 900;
+      color: #22c55e;
+      margin-bottom: 3px;
+    }
+    .madden-quote {
+      font-size: 12px;
+      color: #E4E4E7;
+      line-height: 1.35;
+      font-style: italic;
+    }
+    .cta-bar {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .live-demo-btn {
+      background: #22c55e;
+      color: #051408;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 14px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    .domain-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full Stadium Background -->
+  <svg class="field-bg" viewBox="0 0 1500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1500" height="500" fill="#060907"/>
+    <rect x="150" y="0" width="150" height="500" fill="#080C09"/>
+    <rect x="450" y="0" width="150" height="500" fill="#080C09"/>
+    <rect x="750" y="0" width="150" height="500" fill="#080C09"/>
+    <rect x="1050" y="0" width="150" height="500" fill="#080C09"/>
+    <rect x="1350" y="0" width="150" height="500" fill="#080C09"/>
+
+    <line x1="150" y1="0" x2="150" y2="500" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+    <line x1="300" y1="0" x2="300" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="450" y1="0" x2="450" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="600" y1="0" x2="600" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="750" y1="0" x2="750" y2="500" stroke="#f97316" stroke-width="3.5" stroke-dasharray="8 4"/>
+    <line x1="900" y1="0" x2="900" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="1050" y1="0" x2="1050" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="1200" y1="0" x2="1200" y2="500" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <line x1="1350" y1="0" x2="1350" y2="500" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+
+    <text x="300" y="440" fill="rgba(255,255,255,0.1)" font-family="Chakra Petch" font-size="44" font-weight="900" text-anchor="middle">20</text>
+    <text x="450" y="440" fill="rgba(255,255,255,0.1)" font-family="Chakra Petch" font-size="44" font-weight="900" text-anchor="middle">30</text>
+    <text x="600" y="440" fill="rgba(255,255,255,0.1)" font-family="Chakra Petch" font-size="44" font-weight="900" text-anchor="middle">40</text>
+    <text x="750" y="440" fill="rgba(249,115,22,0.25)" font-family="Chakra Petch" font-size="54" font-weight="900" text-anchor="middle">50</text>
+    <text x="900" y="440" fill="rgba(255,255,255,0.1)" font-family="Chakra Petch" font-size="44" font-weight="900" text-anchor="middle">40</text>
+    <text x="1050" y="440" fill="rgba(255,255,255,0.1)" font-family="Chakra Petch" font-size="44" font-weight="900" text-anchor="middle">30</text>
+
+    <!-- Animated Post & Wheel Routes -->
+    <path d="M 540 320 L 660 220 L 780 160 L 920 120" stroke="#f97316" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-dasharray="6 4"/>
+    <path d="M 480 360 Q 420 280 500 200 T 680 110" stroke="#22c55e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="5 3"/>
+  </svg>
+
+  <div class="glow-orange"></div>
+  <div class="glow-green"></div>
+
+  <div class="content-left">
+    <div class="brand-tag-row">
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" style="width: 28px; height: 28px;">
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="3" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="7" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="76" cy="34" r="8" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+        </svg>
+      </div>
+      <span class="brand-title">WAIVER WIRETAP</span>
+      <span class="kbd-pill">KBD PRODUCT</span>
+    </div>
+
+    <h1 class="main-headline">
+      DRAFT. <span class="orange">TRADE.</span> <span class="turf">DOMINATE.</span>
+    </h1>
+
+    <p class="subtext">
+      The quant dynasty war room. Sync <strong>Sleeper, ESPN & Yahoo</strong> leagues to uncover true roster strength, eliminate schedule luck, and deploy <strong>Coach Madden AI</strong>.
+    </p>
+
+    <div class="pill-strip">
+      <div class="pill-item"><span>⚡</span> True Power Matrix</div>
+      <div class="pill-item"><span>🎯</span> 100-Index Radar</div>
+      <div class="pill-item"><span>🤖</span> Coach Madden AI</div>
+      <div class="pill-item"><span>🎲</span> 10,000-Game Sim</div>
+      <div class="pill-item"><span>📱</span> iOS / Android PWA</div>
+    </div>
+  </div>
+
+  <div class="content-right">
+    <div class="hud-card">
+      <div class="hud-top">
+        <span class="hud-label">⚡ 12-TEAM TRUE POWER MATRIX</span>
+        <span class="hud-live">● DEMO LIVE</span>
+      </div>
+      <div class="team-row">
+        <span class="team-row-name">👑 CeeDeez Nutz</span>
+        <span class="team-row-score">63.4 · Tier S (Apex)</span>
+      </div>
+      <div class="team-row">
+        <span class="team-row-name">🥈 Run CMC & The Hamstrings</span>
+        <span class="team-row-score" style="color:#22c55e;">59.6 · Tier A (Win-Now)</span>
+      </div>
+      <div class="team-row">
+        <span class="team-row-name">💎 Puka Nacua Matata</span>
+        <span class="team-row-score" style="color:#38bdf8;">57.3 · Tier A (Youth)</span>
+      </div>
+      <div class="madden-bubble">
+        <div class="madden-badge">🤖 COACH MADDEN AI (BOOM! GRADE A+)</div>
+        <div class="madden-quote">"BOOM! Alpha WR room carrying the squad! Package that late 1st for an elite TE upgrade and lock down the trophy!"</div>
+      </div>
+      <div class="cta-bar">
+        <div class="live-demo-btn">🎮 TEST DRIVE DEMO (NO LOGIN)</div>
+        <div class="domain-text">waiverwiretap.kindofabigdill.com</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

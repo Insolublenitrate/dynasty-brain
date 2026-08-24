@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Apple Touch Icon & Square Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 512px;
+      height: 512px;
+      overflow: hidden;
+      background: #080C09;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+    .field-bg {
+      position: absolute;
+      inset: 0;
+      width: 512px;
+      height: 512px;
+      opacity: 0.35;
+      z-index: 1;
+    }
+    .glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .icon-box {
+      width: 160px;
+      height: 160px;
+      background: #0C100D;
+      border: 3px solid #f97316;
+      border-radius: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 45px rgba(249,115,22,0.4);
+      margin-bottom: 24px;
+    }
+    .app-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .app-title span {
+      color: #f97316;
+    }
+    .app-tag {
+      font-size: 14px;
+      font-weight: 800;
+      color: #22c55e;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.4);
+      padding: 4px 16px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Playbook Field Lines -->
+  <svg class="field-bg" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="100" y1="0" x2="100" y2="512" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+    <line x1="256" y1="0" x2="256" y2="512" stroke="#f97316" stroke-width="3" stroke-dasharray="8 6"/>
+    <line x1="412" y1="0" x2="412" y2="512" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+    <path d="M 120 380 Q 200 240 380 180" stroke="#22c55e" stroke-width="3" stroke-dasharray="6 4" fill="none"/>
+    <circle cx="120" cy="380" r="8" fill="#22c55e"/>
+    <circle cx="380" cy="180" r="10" fill="#f97316"/>
+  </svg>
+
+  <div class="glow"></div>
+
+  <div class="content">
+    <div class="icon-box">
+      <svg viewBox="0 0 100 100" fill="none" style="width: 105px; height: 105px;">
+        <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+        <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="26" cy="68" r="8" fill="#f97316" stroke="#ffffff" stroke-width="2.5"/>
+        <circle cx="76" cy="34" r="9" fill="#22c55e" stroke="#ffffff" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="app-title">WAIVER <span>WIRETAP</span></div>
+    <div class="app-tag">DYNASTY WAR ROOM</div>
+  </div>
+</body>
+</html>

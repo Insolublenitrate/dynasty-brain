@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Animated Madden AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=JetBrains+Mono:wght@700;800;900&family=Inter:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 800px;
+      height: 500px;
+      overflow: hidden;
+      background: #060907;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px;
+    }
+    .chalkboard {
+      background: #080D0A;
+      border: 2px solid #f97316;
+      border-radius: 18px;
+      padding: 24px 28px;
+      box-shadow: 0 0 35px rgba(249,115,22,0.25);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-field {
+      position: absolute;
+      inset: 0;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .chalk-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+    .coach-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .coach-title span { color: #f97316; }
+    
+    .wave-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.4);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+    .wave-bar {
+      width: 3px;
+      height: 14px;
+      background: #f97316;
+      border-radius: 2px;
+      animation: wavePulse 1s ease-in-out infinite alternate;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 20px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 12px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.1s; height: 18px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.3s; height: 24px; }
+    .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 16px; }
+
+    @keyframes wavePulse {
+      0% { transform: scaleY(0.4); opacity: 0.6; }
+      100% { transform: scaleY(1.4); opacity: 1; }
+    }
+
+    .grade-badge {
+      background: #22c55e;
+      color: #041407;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 4px 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(34,197,94,0.5);
+    }
+    .dialog-area {
+      position: relative;
+      z-index: 5;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+    .dialog-text {
+      font-size: 16px;
+      line-height: 1.45;
+      color: #F4F4F5;
+      font-style: italic;
+    }
+    .dialog-text strong {
+      color: #f97316;
+      font-style: normal;
+    }
+    .chalk-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+    .bot-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: #22c55e;
+    }
+    .domain-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+  <div class="chalkboard">
+    <svg class="bg-field" viewBox="0 0 800 500" fill="none">
+      <line x1="200" y1="0" x2="200" y2="500" stroke="#ffffff" stroke-width="1.5" opacity="0.1"/>
+      <line x1="400" y1="0" x2="400" y2="500" stroke="#f97316" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.5"/>
+      <line x1="600" y1="0" x2="600" y2="500" stroke="#ffffff" stroke-width="1.5" opacity="0.1"/>
+      <path d="M 180 340 L 320 220 L 460 220 L 620 120" stroke="#f97316" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M 280 380 Q 420 300 580 340" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="6 4" fill="none"/>
+    </svg>
+
+    <div class="chalk-top">
+      <div class="coach-title">
+        <span>🤖</span> COACH MADDEN <span>AI</span>
+      </div>
+      <div class="wave-wrap">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+      <div class="grade-badge" id="gradeTag">BOOM! GRADE: A+</div>
+    </div>
+
+    <div class="dialog-area">
+      <div class="dialog-text" id="coachText">
+        "BOOM! You've got an absolute Goliath WR corps with <strong>CeeDee Lamb</strong> & <strong>Puka Nacua</strong>! Package that late 2027 1st for an elite TE upgrade and lock down the championship trophy!"
+      </div>
+    </div>
+
+    <div class="chalk-footer">
+      <div class="bot-tag">⚡ QUANT DYNASTY WAR ROOM</div>
+      <div class="domain-tag">waiverwiretap.kindofabigdill.com</div>
+    </div>
+  </div>
+
+  <script>
+    const quotes = [
+      {
+        grade: "BOOM! GRADE: A+",
+        color: "#22c55e",
+        text: `"BOOM! You've got an absolute Goliath WR corps with <strong>CeeDee Lamb</strong> & <strong>Puka Nacua</strong>! Package that late 2027 1st for an elite TE upgrade and lock down the championship trophy!"`
+      },
+      {
+        grade: "SCOUT GRADE: A-",
+        color: "#38bdf8",
+        text: `"WIN-NOW ALERT: <strong>Christian McCaffrey</strong> and <strong>Derrick Henry</strong> are carrying your backfield. Sell your aging RB3 before the cliff and target young draft capital!"`
+      },
+      {
+        grade: "REBUILD GRADE: B+",
+        color: "#f97316",
+        text: `"PRODUCTIVE STRUGGLE: You hold <strong>Four 1st Round Picks</strong> in 2026. Stay disciplined, don't buy veterans, and corner the upcoming rookie WR class!"`
+      }
+    ];
+
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % quotes.length;
+      const item = quotes[idx];
+      const gradeEl = document.getElementById('gradeTag');
+      gradeEl.innerText = item.grade;
+      gradeEl.style.background = item.color;
+      document.getElementById('coachText').innerHTML = item.text;
+    }, 2800);
+  </script>
+</body>
+</html>

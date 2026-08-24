@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Waiver Wiretap — Live Interactive Demo War Room | a KBD Product</title>
+  <meta name="description" content="Test drive Waiver Wiretap live in your browser. Explore the True Power Matrix, Positional Radar, Coach Madden AI, and 10,000-game matchup simulator with zero login required." />
+  
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+  <link rel="image_src" href="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#09090B" />
+
+  <!-- OpenGraph / Facebook / iMessage / WhatsApp / Discord -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Waiver Wiretap" />
+  <meta property="og:url" content="https://waiverwiretap.kindofabigdill.com/demo.html" />
+  <meta property="og:title" content="Waiver Wiretap — Live Interactive Demo War Room | a KBD Product" />
+  <meta property="og:description" content="Test drive Waiver Wiretap live in your browser with zero login required. Explore the 12-Team Power Matrix, Positional Radar, and Coach Madden AI." />
+  <meta property="og:image" content="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+  <meta property="og:image:secure_url" content="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Waiver Wiretap — Tactical Football Playbook & AI Dynasty War Room" />
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://waiverwiretap.kindofabigdill.com/demo.html" />
+  <meta name="twitter:title" content="Waiver Wiretap — Live Interactive Demo War Room | a KBD Product" />
+  <meta name="twitter:description" content="Test drive Waiver Wiretap live in your browser with zero login required. Explore the 12-Team Power Matrix, Positional Radar, and Coach Madden AI." />
+  <meta name="twitter:image" content="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+  <meta name="twitter:image:src" content="https://waiverwiretap.kindofabigdill.com/og-image-v2.png?v=2" />
+  <meta name="twitter:image:alt" content="Waiver Wiretap — Tactical Football Playbook & AI Dynasty War Room" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .demo-sandbox-wrap {
+      padding: 100px 0 60px;
+      min-height: 100vh;
+    }
+    .demo-banner-top {
+      background: linear-gradient(90deg, rgba(249,115,22,0.15), rgba(34,197,94,0.15));
+      border: 1px solid var(--theme-border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .demo-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .demo-pill-live {
+      background: #22c55e;
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    .team-picker-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .team-picker-bar::-webkit-scrollbar, .tab-strip::-webkit-scrollbar {
+      display: none;
+    }
+    .team-pill {
+      background: var(--kbd-dark-2);
+      border: 1px solid var(--kbd-border);
+      color: var(--kbd-smoke);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .team-pill:hover, .team-pill.active {
+      background: var(--theme-subtle);
+      border-color: var(--theme-primary);
+      color: #fff;
+      box-shadow: 0 0 12px var(--theme-subtle);
+    }
+    .tab-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--kbd-border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--kbd-smoke);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+    .tab-btn.active {
+      color: #fff;
+      background: var(--theme-subtle);
+      border: 1px solid var(--theme-border);
+    }
+    .demo-view-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .demo-view-panel.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="carbon-weave-bg">
+
+  <!-- Interactive Floating Theme Customizer HUD -->
+  <div class="theme-hud-bar" title="Live Tactical Theme Switcher">
+    <span class="theme-hud-label">Theme</span>
+    <button type="button" class="theme-dot dot-orange active" data-theme="orange" title="Orange & Carbon"></button>
+    <button type="button" class="theme-dot dot-cyan" data-theme="cyan" title="Cyber Cyan"></button>
+    <button type="button" class="theme-dot dot-emerald" data-theme="emerald" title="Emerald Matrix"></button>
+    <button type="button" class="theme-dot dot-purple" data-theme="purple" title="Royal Purple"></button>
+    <button type="button" class="theme-dot dot-rose" data-theme="rose" title="Crimson Strike"></button>
+    <button type="button" class="theme-dot dot-amber" data-theme="amber" title="Cyber Gold"></button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="20" fill="#0C100D" stroke="var(--theme-border)" stroke-width="2"/>
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.3"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="var(--theme-primary)" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="5" fill="var(--theme-primary)" stroke="#ffffff" stroke-width="1.5"/>
+          <circle cx="76" cy="34" r="5.5" fill="#22c55e" stroke="#ffffff" stroke-width="1.5"/>
+        </svg>
+        <span>WAIVER WIRETAP</span>
+        <span class="kbd-tag">DEMO MODE</span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/#power-matrix">Showcase Home</a></li>
+        <li><a href="/#pricing">Pricing ($5 / $25)</a></li>
+        <li><a href="/#download">Mobile App</a></li>
+        <li><a href="/#sleeper-sync">Multi-Platform Sync</a></li>
+        <li class="nav-links-mobile-cta">
+          <a href="/#pricing">Unlock Your League →</a>
+        </li>
+      </ul>
+
+      <a class="nav-cta" href="/#pricing">Unlock Your League →</a>
+
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="demo-sandbox-wrap" style="position:relative; overflow:hidden;">
+
+    <!-- Full-Bleed Animated Tactical Football Field Playbook -->
+    <svg 
+      class="hero-playbook-bg" 
+      style="position:absolute; inset:0; width:100%; height:100%; z-index:1; opacity:0.28; pointer-events:none; mask-image:radial-gradient(ellipse 90% 80% at 50% 30%, black 45%, transparent 95%); -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 30%, black 45%, transparent 95%);"
+      viewBox="0 0 1920 1080" 
+      preserveAspectRatio="xMidYMid slice"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <pattern id="demoTurfGrain" width="8" height="8" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="#060907" />
+          <circle cx="2" cy="2" r="1" fill="#0d140e" />
+          <circle cx="6" cy="6" r="1" fill="#0d140e" />
+        </pattern>
+        <pattern id="demoEndzoneChevrons" width="40" height="40" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="40" y2="40" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.15" />
+          <line x1="0" y1="40" x2="40" y2="0" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.15" />
+        </pattern>
+        <marker id="demo-arrow-primary" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="var(--theme-primary)" />
+        </marker>
+        <marker id="demo-arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#06b6d4" />
+        </marker>
+      </defs>
+
+      <rect width="1920" height="1080" fill="url(#demoTurfGrain)" />
+      <rect x="0" y="80" width="160" height="920" fill="url(#demoEndzoneChevrons)" />
+      <rect x="1760" y="80" width="160" height="920" fill="url(#demoEndzoneChevrons)" />
+
+      <!-- 10-Yard Turf Bands -->
+      <rect x="160" y="0" width="160" height="1080" fill="#0b130e" opacity="0.5" />
+      <rect x="320" y="0" width="160" height="1080" fill="#060a08" opacity="0.5" />
+      <rect x="480" y="0" width="160" height="1080" fill="#0b130e" opacity="0.5" />
+      <rect x="640" y="0" width="160" height="1080" fill="#060a08" opacity="0.5" />
+      <rect x="800" y="0" width="160" height="1080" fill="#0b130e" opacity="0.5" />
+      <rect x="960" y="0" width="160" height="1080" fill="#060a08" opacity="0.5" />
+      <rect x="1120" y="0" width="160" height="1080" fill="#0b130e" opacity="0.5" />
+      <rect x="1280" y="0" width="160" height="1080" fill="#060a08" opacity="0.5" />
+      <rect x="1440" y="0" width="160" height="1080" fill="#0b130e" opacity="0.5" />
+      <rect x="1600" y="0" width="160" height="1080" fill="#060a08" opacity="0.5" />
+
+      <!-- Borders & 50-Yard Stripe -->
+      <line x1="0" y1="80" x2="1920" y2="80" stroke="#ffffff" stroke-width="4" opacity="0.85" />
+      <line x1="0" y1="1000" x2="1920" y2="1000" stroke="#ffffff" stroke-width="4" opacity="0.85" />
+      <line x1="160" y1="80" x2="160" y2="1000" stroke="#ffffff" stroke-width="5" opacity="0.95" />
+      <line x1="1760" y1="80" x2="1760" y2="1000" stroke="#ffffff" stroke-width="5" opacity="0.95" />
+      <line x1="960" y1="80" x2="960" y2="1000" stroke="#ffffff" stroke-width="4.5" opacity="0.95" />
+
+      <!-- Yard Numbers -->
+      <g fill="#ffffff" opacity="0.5" font-size="44" font-family="'Impact', 'Arial Black', sans-serif" font-weight="bold" letter-spacing="4" text-anchor="middle">
+        <text x="320" y="200">1 0</text>
+        <text x="480" y="200">2 0</text>
+        <text x="640" y="200">3 0</text>
+        <text x="800" y="200">4 0</text>
+        <text x="960" y="200">5 0</text>
+        <text x="1120" y="200">4 0</text>
+        <text x="1280" y="200">3 0</text>
+        <text x="1440" y="200">2 0</text>
+        <text x="1600" y="200">1 0</text>
+      </g>
+
+      <!-- Midfield Animated Routes -->
+      <g class="play-sim-midfield">
+        <line x1="640" y1="110" x2="640" y2="970" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.85" />
+        <line x1="800" y1="110" x2="800" y2="970" stroke="#eab308" stroke-width="2.5" stroke-dasharray="8 4" opacity="0.8" />
+        <circle cx="630" cy="540" r="10" fill="none" stroke="var(--theme-primary)" stroke-width="3" />
+        <circle cx="560" cy="540" r="13" fill="none" stroke="var(--theme-primary)" stroke-width="2.5" />
+        <text x="560" y="544" fill="var(--theme-primary)" font-size="10" font-weight="bold" text-anchor="middle">QB</text>
+
+        <path d="M 640 240 L 880 240 L 830 205" fill="none" stroke="var(--theme-primary)" stroke-width="3.5" marker-end="url(#demo-arrow-primary)" class="playbook-route-draw" />
+        <path id="demo-slot-post" d="M 625 360 L 860 360 Q 900 370 1060 480" fill="none" stroke="var(--theme-primary)" stroke-width="3.5" marker-end="url(#demo-arrow-primary)" class="playbook-route-draw" />
+        <path id="demo-rb-wheel" d="M 530 500 Q 580 420 650 420 L 920 420" fill="none" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#demo-arrow-cyan)" class="playbook-route-draw-fast" />
+
+        <circle r="5" fill="var(--theme-primary)">
+          <animateMotion dur="4s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#demo-slot-post"/>
+          </animateMotion>
+        </circle>
+        <circle r="4" fill="#06b6d4">
+          <animateMotion dur="5s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#demo-rb-wheel"/>
+          </animateMotion>
+        </circle>
+      </g>
+    </svg>
+
+    <div class="wrap" style="position:relative; z-index:10;">
+
+      <!-- Top Demo Notice Banner -->
+      <div class="demo-banner-top">
+        <div class="demo-banner-left">
+          <span class="demo-pill-live">● LIVE INTERACTIVE DEMO</span>
+          <span style="font-size:0.88rem; font-weight:700;">
+            Loaded: <strong style="color:var(--theme-primary);">The Big Dill 12-Team Dynasty League</strong> (Zero Login Required)
+          </span>
+        </div>
+        <div>
+          <a class="btn btn-turf" style="padding:0.4rem 0.9rem; font-size:0.75rem;" href="/#pricing">
+            ⚡ Sync Your Own League Free →
+          </a>
+        </div>
+      </div>
+
+      <!-- Franchise Team Selector Strip -->
+      <div style="margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--kbd-smoke); letter-spacing:0.05em;">
+          Select Franchise to Analyze:
+        </span>
+        <span class="font-mono text-xs accent-turf" id="active-team-archetype">🏆 THE CHAMPIONSHIP GOLIATH · TIER S</span>
+      </div>
+
+      <div class="team-picker-bar" id="team-selector">
+        <button class="team-pill active" data-team="CeeDeezNutz" data-qb="138" data-wr="152" data-rb="118" data-te="78" data-flex="94" data-score="63.4" data-arch="🏆 THE CHAMPIONSHIP GOLIATH · TIER S">
+          👑 CeeDeez Nutz (63.4)
+        </button>
+        <button class="team-pill" data-team="RunCMC" data-qb="125" data-wr="130" data-rb="142" data-te="92" data-flex="105" data-score="59.6" data-arch="🏆 WIN-NOW GOLIATH · TIER A">
+          🥈 Run CMC (59.6)
+        </button>
+        <button class="team-pill" data-team="PukaMatata" data-qb="145" data-wr="148" data-rb="110" data-te="120" data-flex="135" data-score="57.3" data-arch="👑 DYNASTY APEX · TIER A">
+          💎 Puka Nacua Matata (57.3)
+        </button>
+        <button class="team-pill" data-team="HotChubb" data-qb="98" data-wr="105" data-rb="158" data-te="85" data-flex="112" data-score="49.4" data-arch="🚜 RB FACTORY · TIER B">
+          🚜 Hot Chubb Time Machine (49.4)
+        </button>
+        <button class="team-pill" data-team="DraftAddicts" data-qb="82" data-wr="115" data-rb="74" data-te="65" data-flex="80" data-score="37.2" data-arch="📈 PRODUCTIVE STRUGGLE · TIER D">
+          📈 1st Round Pick Addicts (37.2)
+        </button>
+        <button class="team-pill" data-team="WaffleHouse" data-qb="70" data-wr="68" data-rb="85" data-te="55" data-flex="60" data-score="24.8" data-arch="📉 REBUILDING VALLEY · TIER F">
+          🚽 Waffle House Survivor (24.8)
+        </button>
+      </div>
+
+      <!-- Interactive Tab Strip -->
+      <div class="tab-strip">
+        <button class="tab-btn active" data-tab="tab-matrix">⚡ True Power Matrix</button>
+        <button class="tab-btn" data-tab="tab-radar">🎯 Positional Strength Radar</button>
+        <button class="tab-btn" data-tab="tab-madden">🤖 Coach Madden AI War Room</button>
+        <button class="tab-btn" data-tab="tab-scatter">📊 Buy-Low / Sell-High Matrix</button>
+        <button class="tab-btn" data-tab="tab-sim">🎲 10,000-Game Matchup Simulator</button>
+        <button class="tab-btn" data-tab="tab-players">🔍 Player Deep Dive</button>
+        <button class="tab-btn" data-tab="tab-records">🏆 Podium & Sacko Wall</button>
+      </div>
+
+      <!-- TAB 1: POWER MATRIX -->
+      <div class="demo-view-panel active" id="tab-matrix">
+        <div class="app-shot" style="margin-bottom:1.5rem;">
+          <div class="app-shot-bar">
+            <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+            <span class="app-shot-label">12-Team Dynamic Lifecycle Matrix (Live Interactive)</span>
+          </div>
+          <div class="matrix-quadrant-grid" style="aspect-ratio: 16/10; min-height: 250px;">
+            <div class="matrix-axis-x"></div>
+            <div class="matrix-axis-y"></div>
+            <span class="matrix-label-top-left">👑 Dynasty Apex</span>
+            <span class="matrix-label-top-right">🏆 Win-Now</span>
+            <span class="matrix-label-bottom-left">📈 Rebuild Apex</span>
+            <span class="matrix-label-bottom-right">📉 Rebuild Valley</span>
+
+            <div class="matrix-team-node" style="left: 8%; top: 22%; cursor:pointer;" onclick="selectDemoTeam('PukaMatata')">
+              <span class="node-dot" style="background:#a855f7;"></span> Puka Nacua <em class="cu">57.3</em>
+            </div>
+            <div class="matrix-team-node" style="left: 54%; top: 16%; cursor:pointer;" onclick="selectDemoTeam('CeeDeezNutz')">
+              <span class="node-dot" style="background:#22c55e;"></span> CeeDeez Nutz <em class="cu">63.4</em>
+            </div>
+            <div class="matrix-team-node" style="left: 54%; top: 38%; cursor:pointer;" onclick="selectDemoTeam('RunCMC')">
+              <span class="node-dot" style="background:#22c55e;"></span> Run CMC <em class="cu">59.6</em>
+            </div>
+            <div class="matrix-team-node" style="left: 8%; top: 62%; cursor:pointer;" onclick="selectDemoTeam('DraftAddicts')">
+              <span class="node-dot" style="background:#38bdf8;"></span> 1st Rd Addicts <em class="cu">37.2</em>
+            </div>
+            <div class="matrix-team-node" style="left: 54%; top: 68%; cursor:pointer;" onclick="selectDemoTeam('WaffleHouse')">
+              <span class="node-dot" style="background:#ef4444;"></span> Waffle House <em class="cu">24.8</em>
+            </div>
+          </div>
+
+          <div class="radar-stats-grid" style="margin-top:1.5rem;">
+            <div class="radar-stat-box"><span>Selected Team</span><strong id="matrix-active-team" class="accent-theme">CeeDeez Nutz</strong></div>
+            <div class="radar-stat-box"><span>True Power Score</span><strong id="matrix-active-score" class="cu">63.4 / 100</strong></div>
+            <div class="radar-stat-box"><span>Championship Odds</span><strong class="accent-turf">38.4%</strong></div>
+            <div class="radar-stat-box"><span>Active Roster Value</span><strong class="cu">15,883 pts</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: POSITIONAL RADAR -->
+      <div class="demo-view-panel" id="tab-radar">
+        <div class="feature-row">
+          <div>
+            <span class="feature-tag">Positional 100-Index Benchmark</span>
+            <h3 id="radar-team-title">CeeDeez Nutz Roster Strength</h3>
+            <p>
+              Compare this team's positional scoring against the league average (100 Benchmark). Spikes beyond 100 mean matchup-winning strength, while dips below 100 show exact trade targets.
+            </p>
+            <div class="metric-masterclass-card">
+              <div class="metric-masterclass-head">
+                <span>💡 Manager Action for <span id="radar-action-team">CeeDeez Nutz</span></span>
+              </div>
+              <p id="radar-action-text" style="font-size:0.85rem; color:var(--kbd-smoke); margin:0;">
+                Loaded at WR (152) and QB (138), but TE (78) is bleeding points. Package a bench WR2 for an elite top-5 TE upgrade before the deadline.
+              </p>
+            </div>
+          </div>
+
+          <div class="app-shot">
+            <div class="app-shot-bar">
+              <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+              <span class="app-shot-label">Dynamic Radar Canvas</span>
+            </div>
+            <div style="background:#080B09; border-radius:12px; padding:1.25rem; text-align:center;">
+              <svg viewBox="0 0 280 190" style="max-width:100%; margin:0 auto; display:block;" fill="none">
+                <!-- Spiderweb Grid -->
+                <polygon points="140,24 235,74 198,164 82,164 45,74" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+                <polygon points="140,54 200,86 178,142 102,142 80,86" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <!-- Baseline 100 -->
+                <polygon points="140,64 190,92 172,136 108,136 90,92" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <!-- Dynamic Polygon -->
+                <polygon id="radar-poly" points="140,36 215,66 160,149 112,154 68,78" fill="var(--theme-subtle)" stroke="var(--theme-primary)" stroke-width="2.5"/>
+                <!-- Points -->
+                <circle id="radar-qb-pt" cx="140" cy="36" r="4.5" fill="var(--theme-primary)"/>
+                <circle id="radar-wr-pt" cx="215" cy="66" r="4.5" fill="#22C55E"/>
+                <circle id="radar-flex-pt" cx="160" cy="149" r="4.5" fill="#38BDF8"/>
+                <circle id="radar-te-pt" cx="112" cy="154" r="4.5" fill="#EF4444"/>
+                <circle id="radar-rb-pt" cx="68" cy="78" r="4.5" fill="#A855F7"/>
+                <!-- Labels -->
+                <text id="lbl-qb" x="140" y="16" fill="#FFFFFF" font-size="8.5" font-weight="800" text-anchor="middle">QB (138)</text>
+                <text id="lbl-wr" x="245" y="76" fill="#22C55E" font-size="8.5" font-weight="800" text-anchor="middle">WR (152)</text>
+                <text id="lbl-flex" x="175" y="180" fill="#38BDF8" font-size="8.5" font-weight="800" text-anchor="middle">FLEX (94)</text>
+                <text id="lbl-te" x="105" y="180" fill="#EF4444" font-size="8.5" font-weight="800" text-anchor="middle">TE (78)</text>
+                <text id="lbl-rb" x="35" y="76" fill="#A855F7" font-size="8.5" font-weight="800" text-anchor="middle">RB (118)</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: COACH MADDEN AI -->
+      <div class="demo-view-panel" id="tab-madden">
+        <div class="madden-chalkboard">
+          <div class="madden-header">
+            <div class="madden-title">
+              <span>🤖 COACH MADDEN AI WAR ROOM</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <button class="btn btn-turf" id="demo-voice-trigger" style="padding:0.4rem 0.8rem; font-size:0.75rem;">
+                ▶ Speak Coach Madden Debrief
+              </button>
+              <span class="madden-boom-badge" id="madden-grade-badge">BOOM! GRADE A+</span>
+            </div>
+          </div>
+
+          <div class="madden-quote-block" id="madden-quote-text">
+            "BOOM! Now look at CeeDeez Nutz right here! You've got an absolute powerhouse wide receiver room with CeeDee Lamb and Justin Jefferson, but you're leaving points on the field at tight end! If you flip that late 2026 1st round pick for Trey McBride, you lock down this division for the next three seasons!"
+          </div>
+
+          <div class="madden-action-split">
+            <div class="madden-action-card">
+              <h5 class="accent-theme">📋 What You Should Do</h5>
+              <ul id="madden-plan-list">
+                <li>Target buy-low TE before playoffs</li>
+                <li>Keep early 1st round draft picks</li>
+                <li>Start your top-tier WRs with confidence</li>
+              </ul>
+            </div>
+            <div class="madden-action-card">
+              <h5 class="accent-turf">🔍 Scouting Intel</h5>
+              <ul id="madden-scout-list">
+                <li>Justin Jefferson: 31.4% target share on 3rd downs</li>
+                <li>Malik Nabers: 3.18 Yards Per Route Run (WR1 Alpha)</li>
+                <li>Schedule advantage: +14.2 projected point differential</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: SCATTER MATRIX -->
+      <div class="demo-view-panel" id="tab-scatter">
+        <div class="app-shot">
+          <div class="app-shot-bar">
+            <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+            <span class="app-shot-label">Player Trade Arbitrage Matrix</span>
+          </div>
+
+          <div class="cross-matrix-bar">
+            <button type="button" class="cross-pill active" onclick="setDemoScatter('targets')">Age vs. Target Share</button>
+            <button type="button" class="cross-pill" onclick="setDemoScatter('yprr')">Yards Per Route (YPRR) vs. Snap %</button>
+            <button type="button" class="cross-pill" onclick="setDemoScatter('air')">Air Yards Share vs. Touchdown Rate</button>
+          </div>
+
+          <div class="matrix-quadrant-grid" style="aspect-ratio: 16/9; position:relative;">
+            <div class="matrix-axis-x"></div>
+            <div class="matrix-axis-y"></div>
+            <span class="matrix-label-top-left">⚡ Young Alpha Buy-Lows</span>
+            <span class="matrix-label-top-right">👑 Elite Tier 1 Superstars</span>
+            <span class="matrix-label-bottom-left">📉 Low Volume Development</span>
+            <span class="matrix-label-bottom-right">⚠️ Sell-High Aging Veterans</span>
+
+            <div class="scatter-nodes-layer" id="scatter-nodes-container">
+              <div class="matrix-team-node" style="left: 15%; top: 20%;">
+                <span class="node-dot" style="background:#22c55e;"></span> Justin Jefferson (31.4% Targets)
+              </div>
+              <div class="matrix-team-node" style="left: 18%; top: 14%;">
+                <span class="node-dot" style="background:#38bdf8;"></span> Malik Nabers (32.8% Targets)
+              </div>
+              <div class="matrix-team-node" style="left: 65%; top: 32%;">
+                <span class="node-dot" style="background:#eab308;"></span> Davante Adams (27.5% Targets)
+              </div>
+              <div class="matrix-team-node" style="left: 68%; top: 68%;">
+                <span class="node-dot" style="background:#ef4444;"></span> Stefon Diggs (21.0% Targets)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: MATCHUP SIMULATOR -->
+      <div class="demo-view-panel" id="tab-sim">
+        <div class="mc-grid">
+          <div class="app-shot">
+            <div class="app-shot-bar">
+              <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+              <span class="app-shot-label">Head-to-Head 10,000 Game Simulation</span>
+            </div>
+
+            <div style="display:flex; gap:1rem; margin-bottom:1.25rem;">
+              <button class="btn btn-primary" style="padding:0.4rem 0.9rem; font-size:0.75rem;" onclick="runDemoSimulation()">
+                🎲 Run 10,000 Simulations
+              </button>
+            </div>
+
+            <div class="mc-meter-row">
+              <div class="mc-meter-head">
+                <span class="accent-turf" id="sim-team-1-name">CeeDeez Nutz (Loaded Starters)</span>
+                <span class="font-mono" id="sim-team-1-odds">68.4% Win Chance</span>
+              </div>
+              <div class="mc-meter-bar">
+                <div class="mc-meter-fill" id="sim-team-1-bar" style="width:68.4%; background:linear-gradient(90deg, #22c55e, #4ade80);"></div>
+              </div>
+            </div>
+
+            <div class="mc-meter-row">
+              <div class="mc-meter-head">
+                <span class="accent-rose" id="sim-team-2-name">Run CMC & The Hamstrings (Contender)</span>
+                <span class="font-mono" id="sim-team-2-odds">31.6% Win Chance</span>
+              </div>
+              <div class="mc-meter-bar">
+                <div class="mc-meter-fill" id="sim-team-2-bar" style="width:31.6%; background:linear-gradient(90deg, #f43f5e, #fb7185);"></div>
+              </div>
+            </div>
+
+            <div class="radar-stats-grid" style="margin-top:1.5rem;">
+              <div class="radar-stat-box"><span>Most Likely Score</span><strong id="sim-median" class="cu">142.8 pts</strong></div>
+              <div class="radar-stat-box"><span>Ceiling Game (Top 5%)</span><strong id="sim-ceiling" class="cu">184.2 pts</strong></div>
+              <div class="radar-stat-box"><span>Floor Game (Bottom 5%)</span><strong id="sim-floor" class="cu">108.4 pts</strong></div>
+              <div class="radar-stat-box"><span>Boom Odds (>150)</span><strong id="sim-boom" class="cu">41.2%</strong></div>
+            </div>
+          </div>
+
+          <div class="app-shot">
+            <div class="app-shot-bar">
+              <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+              <span class="app-shot-label">Head-to-Head Series History</span>
+            </div>
+            <div style="font-size:0.85rem; color:var(--kbd-smoke); margin-bottom:1rem;">
+              All-time matchup record: <strong class="accent-turf">CeeDeez Nutz leads 5 - 2</strong>
+            </div>
+            <div style="padding:0.75rem; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.3); border-radius:8px; margin-bottom:0.6rem;">
+              <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.82rem;">
+                <span>2024 Championship Game</span>
+                <span class="accent-turf">148.6 - 132.4 (WIN)</span>
+              </div>
+            </div>
+            <div style="padding:0.75rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.82rem;">
+                <span>2024 Week 9 Rivalry Matchup</span>
+                <span class="accent-rose">124.2 - 128.5 (LOSS)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: PLAYERS -->
+      <div class="demo-view-panel" id="tab-players">
+        <div class="app-shot">
+          <div class="app-shot-bar">
+            <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+            <span class="app-shot-label">Qualified Top Performers & Value Curves</span>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--kbd-border); font-size:0.88rem;">
+              <span style="font-weight:800;">🥇 Malik Nabers (WR · NYG · Age 22)</span>
+              <span class="font-mono accent-turf">3.18 YPRR · 32.8% Target Share · Dynasty Value: 99.4</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--kbd-border); font-size:0.88rem;">
+              <span style="font-weight:800;">🥈 Justin Jefferson (WR · MIN · Age 26)</span>
+              <span class="font-mono accent-turf">2.94 YPRR · 31.4% Target Share · Dynasty Value: 98.8</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--kbd-border); font-size:0.88rem;">
+              <span style="font-weight:800;">🥉 Brock Bowers (TE · LV · Age 22)</span>
+              <span class="font-mono accent-cyan">2.42 YPRR · 24.6% Target Share · Dynasty Value: 94.2</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.75rem 0; font-size:0.88rem;">
+              <span style="font-weight:800;">4. Breece Hall (RB · NYJ · Age 24)</span>
+              <span class="font-mono accent-theme">18.4 Touches/G · 58.2% Rushing Success · Dynasty Value: 92.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: RECORDS & SACKO -->
+      <div class="demo-view-panel" id="tab-records">
+        <div class="app-shot">
+          <div class="app-shot-bar">
+            <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+            <span class="app-shot-label">All-Time League Podium & Sacko Wall</span>
+          </div>
+          <div class="podium-grid">
+            <div class="podium-step podium-step-2">
+              <div class="podium-medal">🥈</div>
+              <div class="podium-team">Run CMC & The Hamstrings</div>
+              <div class="podium-score">Runner-Up · 2,980 pts</div>
+              <div class="podium-block">2</div>
+            </div>
+            <div class="podium-step podium-step-1">
+              <div class="podium-medal">🥇</div>
+              <div class="podium-team">CeeDeez Nutz</div>
+              <div class="podium-score">CHAMPION · 3,139 pts</div>
+              <div class="podium-block">1</div>
+            </div>
+            <div class="podium-step podium-step-3">
+              <div class="podium-medal">🥉</div>
+              <div class="podium-team">Puka Nacua Matata</div>
+              <div class="podium-score">3rd Place · 3,219 pts</div>
+              <div class="podium-block">3</div>
+            </div>
+          </div>
+          <div class="sacko-wall">
+            <div class="sacko-text">
+              <h4>🚽 2025 Sacko Loser · Last Place Wall of Shame</h4>
+              <p>24-Hour Waffle House Survivor (1,840 pts) — Punishment: 24-hour Waffle House challenge with zero music allowed.</p>
+            </div>
+            <span style="font-size:1.8rem;">💩</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Conversion Callout -->
+      <div class="updates-banner" style="margin-top:3rem;">
+        <div class="updates-text">
+          <h3>Ready to dominate your own league?</h3>
+          <p>Sync your Sleeper, ESPN, or Yahoo Fantasy leagues in seconds. Start with a 7-day free trial.</p>
+        </div>
+        <div>
+          <a class="btn btn-primary" href="/#pricing">Start 7-Day Free Trial →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="contact">
+    <div class="wrap">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem; font-size:0.88rem;">
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+          <a href="/" style="color:#A1A1AA; text-decoration:none;">Showcase Home</a>
+          <a href="/media-kit.html" style="color:var(--theme-primary); text-decoration:none; font-weight:800;">⚡ Marketing & Media Kit</a>
+          <a href="/#pricing" style="color:#A1A1AA; text-decoration:none;">Pricing Plans</a>
+          <a href="/#download" style="color:#A1A1AA; text-decoration:none;">Mobile App</a>
+        </div>
+        <div>
+          <a href="/#pricing" class="btn btn-primary" style="padding:0.4rem 1rem; font-size:0.8rem;">Unlock Your League →</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Kind of a Big Dill LLC. All rights reserved.</div>
+        <div>Waiver Wiretap · Live Interactive Demo Sandbox</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+  <script>
+    // Demo Interactive State Management
+    const teamData = {
+      CeeDeezNutz: {
+        name: 'CeeDeez Nutz',
+        score: '63.4',
+        arch: '🏆 THE CHAMPIONSHIP GOLIATH · TIER S',
+        qb: 138, wr: 152, rb: 118, te: 78, flex: 94,
+        grade: 'BOOM! GRADE A+',
+        madden: "BOOM! Look at CeeDeez Nutz right here! You've got an absolute powerhouse wide receiver room with CeeDee Lamb and Justin Jefferson, but you're bleeding points at tight end! If you flip that late 2026 1st round pick for Trey McBride, you lock down this division for the next three seasons!",
+        plan: ['Target buy-low TE before playoffs', 'Keep early 1st round draft picks', 'Start top-tier WRs with confidence'],
+        scout: ['Justin Jefferson: 31.4% target share on 3rd downs', 'Malik Nabers: 3.18 Yards Per Route Run (WR1 Alpha)', 'Schedule advantage: +14.2 projected differential'],
+        actionText: 'Loaded at WR (152) and QB (138), but TE (78) is bleeding points. Package a bench WR2 for an elite top-5 TE upgrade before the deadline.'
+      },
+      RunCMC: {
+        name: 'Run CMC & The Hamstrings',
+        score: '59.6',
+        arch: '🏆 WIN-NOW GOLIATH · TIER A',
+        qb: 125, wr: 130, rb: 142, te: 92, flex: 105,
+        grade: 'BOOM! GRADE A',
+        madden: "BOOM! Run CMC & The Hamstrings has a ground attack that crushes opponents! With Derrick Henry and Christian McCaffrey leading the way, your running back room is built to grind out playoff wins. Protect your depth with high-upside backup handoffs before someone pulls a groin!",
+        plan: ['Handcuff starting running backs', 'Stream weekly matchup defenses', 'Hold veteran starters through playoffs'],
+        scout: ['Rushing success rate: 61.4% on 1st down', 'RB room averages 3.2 yards after contact', 'Playoff strength of schedule: #2 easiest in league'],
+        actionText: 'Heavy RB scoring (142) and solid QB (125). Look to acquire backup handoffs to protect your playoff run from injury shock.'
+      },
+      PukaMatata: {
+        name: 'Puka Nacua Matata',
+        score: '57.3',
+        arch: '👑 DYNASTY APEX · TIER A',
+        qb: 145, wr: 148, rb: 110, te: 120, flex: 135,
+        grade: 'BOOM! GRADE A+',
+        madden: "BOOM! Puka Nacua Matata means no worries for the rest of your dynasty days! Young superstars everywhere and all under 25 years old. You don't even have to make a trade — let this roster mature, sit on your yacht, and collect trophies!",
+        plan: ['Stand pat on trade offers', 'Draft best player available with rookie picks', 'Let young breakout WRs command volume'],
+        scout: ['Average roster age: 23.4 years old', 'Hold 3 future 1st round draft picks', 'Top-3 weekly scoring ceiling in league'],
+        actionText: 'Elite youth and top-tier weekly firepower. Do not trade away young breakout assets for aging veterans.'
+      },
+      HotChubb: {
+        name: 'Hot Chubb Time Machine',
+        score: '49.4',
+        arch: '🚜 RB FACTORY · TIER B',
+        qb: 98, wr: 105, rb: 158, te: 85, flex: 112,
+        grade: 'BOOM! GRADE B+',
+        madden: "BOOM! Hot Chubb Time Machine is taking us back to 1985 and running the rock right down everyone's throat! A league-leading 158 RB index! But watch out — if your starting wideouts don't step up on passing downs, you can get game-scripted right out of the playoffs!",
+        plan: ['Sell an RB2 at peak value for young WR', 'Improve passing-game floor', 'Target slot receivers in PPR'],
+        scout: ['RB share of total team points: 52%', 'WR room lacks a top-15 alpha target', 'Average margin of victory: +8.4 pts'],
+        actionText: 'RB surplus (158) with average WRs (105). Liquidate your RB3 to acquire a high-target wideout.'
+      },
+      DraftAddicts: {
+        name: '1st Round Pick Addicts',
+        score: '37.2',
+        arch: '📈 PRODUCTIVE STRUGGLE · TIER D',
+        qb: 82, wr: 115, rb: 74, te: 65, flex: 80,
+        grade: 'BOOM! GRADE C+ (REBUILD)',
+        madden: "BOOM! 1st Round Pick Addicts is in the rebuild lab checking into rehab! You traded away the veterans and stacked up 4 future first-rounders and young receivers. Stay disciplined, don't buy old running backs at 2 AM, and secure the 1.01 pick next spring!",
+        plan: ['Liquidate any remaining players over 27', 'Stockpile 2026/2027 draft capital', 'Lock down the 1.01 draft spot'],
+        scout: ['Holds 4x 1st round draft picks in upcoming class', 'Youngest starting roster in league (22.1 yrs)', 'Current draft lottery leader'],
+        actionText: 'Rebuilding mode. Sell any aging production for future draft picks and target injured young stars.'
+      },
+      WaffleHouse: {
+        name: '24-Hour Waffle House Survivor',
+        score: '24.8',
+        arch: '📉 REBUILDING VALLEY · TIER F',
+        qb: 70, wr: 68, rb: 85, te: 55, flex: 60,
+        grade: 'BOOM! GRADE D (SACKO ALERT)',
+        madden: "BOOM! Sound the alarm! 24-Hour Waffle House Survivor is leaking points at every single position! If you don't make three moves before Tuesday, you're going to be eating waffles for 24 straight hours in the booth while your leaguemates laugh at you!",
+        plan: ['Fire-sale all veteran players today', 'Acquire immediate waiver wire upside', 'Prepare for Sacko punishment'],
+        scout: ['Lowest Max PF in league history (1,840 pts)', 'Zero 1st round draft picks remaining', 'Narrowest loss margin: -48.2 pts'],
+        actionText: 'Immediate intervention needed. Trade any player with name recognition for future draft capital.'
+      }
+    };
+
+    function selectDemoTeam(teamName) {
+      const data = teamData[teamName];
+      if (!data) return;
+
+      // Update pills
+      document.querySelectorAll('#team-selector .team-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.team === teamName);
+      });
+
+      // Update archetype banner
+      document.getElementById('active-team-archetype').textContent = data.arch;
+
+      // Update Matrix tab
+      const displayName = data.name || teamName;
+      document.getElementById('matrix-active-team').textContent = displayName;
+      document.getElementById('matrix-active-score').textContent = `${data.score} / 100`;
+
+      // Update Radar tab
+      document.getElementById('radar-team-title').textContent = `${displayName} Roster Strength`;
+      document.getElementById('radar-action-team').textContent = displayName;
+      document.getElementById('radar-action-text').textContent = data.actionText;
+
+      // Update Radar Labels
+      document.getElementById('lbl-qb').textContent = `QB (${data.qb})`;
+      document.getElementById('lbl-wr').textContent = `WR (${data.wr})`;
+      document.getElementById('lbl-flex').textContent = `FLEX (${data.flex})`;
+      document.getElementById('lbl-te').textContent = `TE (${data.te})`;
+      document.getElementById('lbl-rb').textContent = `RB (${data.rb})`;
+
+      // Calculate Radar SVG Points based on 100 benchmark
+      const qbY = 64 - (data.qb - 100) * 0.7;
+      const wrX = 190 + (data.wr - 100) * 0.5;
+      const flexX = 172 + (data.flex - 100) * 0.3;
+      const teX = 108 - (data.te - 100) * 0.3;
+      const rbX = 90 - (data.rb - 100) * 0.5;
+
+      const polyPoints = `140,${qbY} ${wrX},66 ${flexX},149 ${teX},154 ${rbX},78`;
+      document.getElementById('radar-poly').setAttribute('points', polyPoints);
+      document.getElementById('radar-qb-pt').setAttribute('cy', qbY);
+      document.getElementById('radar-wr-pt').setAttribute('cx', wrX);
+
+      // Update Madden tab
+      document.getElementById('madden-grade-badge').textContent = data.grade;
+      document.getElementById('madden-quote-text').textContent = `"${data.madden}"`;
+
+      const planList = document.getElementById('madden-plan-list');
+      planList.innerHTML = data.plan.map(p => `<li>${p}</li>`).join('');
+
+      const scoutList = document.getElementById('madden-scout-list');
+      scoutList.innerHTML = data.scout.map(s => `<li>${s}</li>`).join('');
+    }
+
+    // Team Pill Click Handlers
+    document.querySelectorAll('#team-selector .team-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectDemoTeam(btn.dataset.team);
+      });
+    });
+
+    // Tab Switcher Handlers
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.demo-view-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const targetPanel = document.getElementById(btn.dataset.tab);
+        if (targetPanel) targetPanel.classList.add('active');
+      });
+    });
+
+    // Voice Synthesis for Coach Madden in Demo
+    document.getElementById('demo-voice-trigger')?.addEventListener('click', () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = document.getElementById('madden-quote-text').textContent;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.1;
+        utterance.pitch = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    });
+
+    // Interactive Scatter Plot presets
+    function setDemoScatter(type) {
+      const container = document.getElementById('scatter-nodes-container');
+      if (!container) return;
+
+      if (type === 'targets') {
+        container.innerHTML = `
+          <div class="matrix-team-node" style="left: 15%; top: 20%;"><span class="node-dot" style="background:#22c55e;"></span> Justin Jefferson (31.4% Targets)</div>
+          <div class="matrix-team-node" style="left: 18%; top: 14%;"><span class="node-dot" style="background:#38bdf8;"></span> Malik Nabers (32.8% Targets)</div>
+          <div class="matrix-team-node" style="left: 65%; top: 32%;"><span class="node-dot" style="background:#eab308;"></span> Davante Adams (27.5% Targets)</div>
+          <div class="matrix-team-node" style="left: 68%; top: 68%;"><span class="node-dot" style="background:#ef4444;"></span> Stefon Diggs (21.0% Targets)</div>
+        `;
+      } else if (type === 'yprr') {
+        container.innerHTML = `
+          <div class="matrix-team-node" style="left: 12%; top: 12%;"><span class="node-dot" style="background:#38bdf8;"></span> Malik Nabers (3.18 YPRR · Elite WR1)</div>
+          <div class="matrix-team-node" style="left: 22%; top: 18%;"><span class="node-dot" style="background:#22c55e;"></span> Justin Jefferson (2.94 YPRR · WR1)</div>
+          <div class="matrix-team-node" style="left: 60%; top: 40%;"><span class="node-dot" style="background:#eab308;"></span> Amari Cooper (1.82 YPRR)</div>
+          <div class="matrix-team-node" style="left: 70%; top: 72%;"><span class="node-dot" style="background:#ef4444;"></span> Allen Lazard (1.10 YPRR · Low Efficiency)</div>
+        `;
+      } else if (type === 'air') {
+        container.innerHTML = `
+          <div class="matrix-team-node" style="left: 20%; top: 18%;"><span class="node-dot" style="background:#22c55e;"></span> Ja'Marr Chase (38.4% Air Yards)</div>
+          <div class="matrix-team-node" style="left: 24%; top: 28%;"><span class="node-dot" style="background:#38bdf8;"></span> Nico Collins (36.2% Air Yards)</div>
+          <div class="matrix-team-node" style="left: 58%; top: 52%;"><span class="node-dot" style="background:#eab308;"></span> DeAndre Hopkins (28.4% Air Yards)</div>
+          <div class="matrix-team-node" style="left: 65%; top: 75%;"><span class="node-dot" style="background:#ef4444;"></span> Tyler Boyd (14.2% Air Yards)</div>
+        `;
+      }
+    }
+
+    // Matchup Simulator Generator
+    function runDemoSimulation() {
+      const odds1 = (55 + Math.random() * 25).toFixed(1);
+      const odds2 = (100 - odds1).toFixed(1);
+      const median = (130 + Math.random() * 20).toFixed(1);
+      const ceiling = (parseFloat(median) + 35 + Math.random() * 15).toFixed(1);
+      const floor = (parseFloat(median) - 30 - Math.random() * 10).toFixed(1);
+      const boom = (30 + Math.random() * 25).toFixed(1);
+
+      document.getElementById('sim-team-1-odds').textContent = `${odds1}% Win Chance`;
+      document.getElementById('sim-team-2-odds').textContent = `${odds2}% Win Chance`;
+      document.getElementById('sim-team-1-bar').style.width = `${odds1}%`;
+      document.getElementById('sim-team-2-bar').style.width = `${odds2}%`;
+
+      document.getElementById('sim-median').textContent = `${median} pts`;
+      document.getElementById('sim-ceiling').textContent = `${ceiling} pts`;
+      document.getElementById('sim-floor').textContent = `${floor} pts`;
+      document.getElementById('sim-boom').textContent = `${boom}%`;
+    }
+  </script>
+</body>
+</html>

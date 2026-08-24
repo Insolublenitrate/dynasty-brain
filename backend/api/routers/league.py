@@ -68,12 +68,13 @@ def link_league(req: LinkLeagueRequest):
             league = session.query(League).filter(League.league_id == league_id).first()
             if not league:
                 return {"error": "Failed to sync Sleeper league. Please verify the League ID."}
+            num_teams = (league.settings.get("num_teams") if isinstance(league.settings, dict) else len(league.rosters)) or len(league.rosters) or 10
             return {
                 "status": "success",
                 "platform": "sleeper",
                 "league_id": league.league_id,
                 "league_name": league.name,
-                "total_teams": league.total_rosters or 10,
+                "total_teams": num_teams,
                 "season": league.season,
                 "message": f"Successfully synced Sleeper league '{league.name}'"
             }

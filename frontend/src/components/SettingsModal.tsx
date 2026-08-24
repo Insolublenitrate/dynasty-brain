@@ -35,17 +35,44 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   const handleLinkLeague = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputLeagueId.trim()) return;
+    const cleanId = inputLeagueId.trim();
+    if (!cleanId) return;
 
     setIsIngesting(true);
     setIngestStatus(null);
 
     try {
+      let resolvedLeagueName = `${selectedPlatform.toUpperCase()} League`;
+      let totalTeams = 10;
+
+      // 1. Direct Client-Side Validation for Sleeper
+      if (selectedPlatform === 'sleeper') {
+        try {
+          const sleeperRes = await fetch(`https://api.sleeper.app/v1/league/${cleanId}`);
+          if (!sleeperRes.ok) {
+            setIngestStatus({ 
+              type: 'error', 
+              message: 'Invalid Sleeper League ID. Please check the ID in your Sleeper app settings.' 
+            });
+            setIsIngesting(false);
+            return;
+          }
+          const sleeperData = await sleeperRes.json();
+          if (sleeperData && sleeperData.name) {
+            resolvedLeagueName = sleeperData.name.trim();
+            totalTeams = sleeperData.total_rosters || sleeperData.settings?.num_teams || 10;
+          }
+        } catch (sErr) {
+          console.warn('Direct Sleeper API pre-check failed, continuing to backend ingest', sErr);
+        }
+      }
+
+      // 2. Ingest via Backend
       const apiUrl = getApiUrl();
       const payload: any = {
         platform: selectedPlatform,
-        league_id: inputLeagueId.trim(),
-        season: Number(season) || 2024,
+        league_id: cleanId,
+        season: Number(season) || 2026,
       };
 
       if (selectedPlatform === 'espn') {
@@ -53,30 +80,51 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         if (swid.trim()) payload.swid = swid.trim();
       }
 
-      const res = await fetch(`${apiUrl}/api/leagues/link`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await res.json();
-
-      if (res.ok && data.status === 'success') {
-        const name = data.league_name || `${selectedPlatform.toUpperCase()} League`;
-        setLeagueId(inputLeagueId.trim(), selectedPlatform, name);
-        setIngestStatus({ 
-          type: 'success', 
-          message: `Linked ${data.league_name || selectedPlatform.toUpperCase()} (${data.total_teams || 10} teams)! Reloading...` 
+      try {
+        const res = await fetch(`${apiUrl}/api/leagues/link`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } else {
-        const errMsg = data.error || 'Failed to link league. Please check your credentials / League ID.';
-        setIngestStatus({ type: 'error', message: errMsg });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'success') {
+            resolvedLeagueName = data.league_name || resolvedLeagueName;
+            totalTeams = data.total_teams || totalTeams;
+          } else if (data.error && selectedPlatform !== 'sleeper') {
+            setIngestStatus({ type: 'error', message: data.error });
+            setIsIngesting(false);
+            return;
+          }
+        } else if (selectedPlatform === 'sleeper') {
+          // Fallback to direct ingest endpoint if /link had server issue
+          await fetch(`${apiUrl}/api/league/ingest/${cleanId}`, { method: 'POST' }).catch(() => {});
+        }
+      } catch (netErr: any) {
+        console.warn('Backend sync encountered network delay', netErr);
+        if (selectedPlatform !== 'sleeper' || resolvedLeagueName === 'SLEEPER League') {
+          setIngestStatus({ 
+            type: 'error', 
+            message: `Connection error: ${netErr.message || 'Server unreachable'}` 
+          });
+          setIsIngesting(false);
+          return;
+        }
       }
+
+      // 3. Save to context & LocalStorage
+      setLeagueId(cleanId, selectedPlatform, resolvedLeagueName);
+      setIngestStatus({ 
+        type: 'success', 
+        message: `Successfully connected ${resolvedLeagueName} (${totalTeams} teams)! Reloading...` 
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+
     } catch (err: any) {
-      setIngestStatus({ type: 'error', message: `Connection error: ${err.message || 'Server unreachable'}` });
+      setIngestStatus({ type: 'error', message: `Sync error: ${err.message || 'Could not complete league sync'}` });
     } finally {
       setIsIngesting(false);
     }

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Record Book & Sacko Podium Promo Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #080C09;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 64px 64px 54px;
+    }
+    .field-bg {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1080px;
+      opacity: 0.32;
+      z-index: 1;
+    }
+    .glow-amber {
+      position: absolute;
+      top: -80px;
+      left: -80px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(234,179,8,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .glow-rose {
+      position: absolute;
+      bottom: -100px;
+      right: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(244,63,94,0.25) 0%, transparent 70%);
+      z-index: 2;
+    }
+    .top-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      background: #0C100D;
+      border: 2px solid #f97316;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px rgba(249,115,22,0.4);
+    }
+    .brand-name {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    .pill-badge {
+      background: rgba(234,179,8,0.15);
+      border: 1px solid #eab308;
+      color: #facc15;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+    }
+    .main-body {
+      position: relative;
+      z-index: 10;
+      margin: 16px 0;
+    }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      color: #eab308;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .headline {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .headline span.gold {
+      color: #facc15;
+    }
+    .headline span.rose {
+      color: #fb7185;
+    }
+    .podium-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .podium-col {
+      background: #060B08;
+      border: 2px solid rgba(234,179,8,0.35);
+      border-radius: 20px;
+      padding: 22px 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    }
+    .podium-col.sacko {
+      border-color: rgba(244,63,94,0.35);
+    }
+    .col-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .gold-text { color: #facc15; }
+    .rose-text { color: #fb7185; }
+
+    .podium-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .podium-team {
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .podium-stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .bottom-footer {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(12,16,13,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px 24px;
+    }
+    .footer-left {
+      font-size: 15px;
+      font-weight: 700;
+      color: #E4E4E7;
+    }
+    .footer-left span {
+      color: #facc15;
+    }
+    .footer-right {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 900;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+
+  <svg class="field-bg" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="200" y1="0" x2="200" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+    <line x1="540" y1="0" x2="540" y2="1080" stroke="#eab308" stroke-width="3" stroke-dasharray="10 6"/>
+    <line x1="880" y1="0" x2="880" y2="1080" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  </svg>
+
+  <div class="glow-amber"></div>
+  <div class="glow-rose"></div>
+
+  <div class="top-header">
+    <div class="brand-group">
+      <div class="brand-logo">
+        <svg viewBox="0 0 100 100" fill="none" style="width: 32px; height: 32px;">
+          <line x1="50" y1="12" x2="50" y2="88" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+          <path d="M 26 68 Q 24 32 50 24 T 76 34" fill="none" stroke="#f97316" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="26" cy="68" r="8" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="76" cy="34" r="9" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="brand-name">WAIVER WIRETAP</div>
+    </div>
+    <div class="pill-badge">RECORD BOOK & SACKO</div>
+  </div>
+
+  <div class="main-body">
+    <div class="eyebrow">🏆 ALL-TIME LEAGUE HISTORY</div>
+    <h1 class="headline">
+      IMMORTALIZE <span class="gold">CHAMPIONS.</span><br/>
+      ROAST THE <span class="rose">SACKO.</span>
+    </h1>
+
+    <div class="podium-grid">
+      <!-- CHAMPIONS -->
+      <div class="podium-col">
+        <div class="col-title gold-text">
+          <span>👑 DYNASTY PODIUM</span>
+          <span>TROPHIES</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">🥇 CeeDeez Nutz</span>
+          <span class="podium-stat gold-text">3 Rings (2023-25)</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">🥈 Run CMC</span>
+          <span class="podium-stat" style="color:#e4e4e7;">1 Ring · 2 Silvers</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">🥉 Puka Nacua Matata</span>
+          <span class="podium-stat" style="color:#38bdf8;">1 Ring (2024)</span>
+        </div>
+      </div>
+
+      <!-- SACKO WALL -->
+      <div class="podium-col sacko">
+        <div class="col-title rose-text">
+          <span>🚽 SACKO WALL OF SHAME</span>
+          <span>PUNISHMENT</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">💩 24-Hr Waffle House</span>
+          <span class="podium-stat rose-text">24 hrs / 12 Waffles</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">🍼 1st Rd Addicts</span>
+          <span class="podium-stat" style="color:#a1a1aa;">0-14 Record (2024)</span>
+        </div>
+        <div class="podium-item">
+          <span class="podium-team">📉 The Rebuild Pit</span>
+          <span class="podium-stat" style="color:#a1a1aa;">-540 Point Differential</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-footer">
+    <div class="footer-left">
+      🔥 Connect Sleeper, ESPN & Yahoo to <span>Auto-Import History</span>
+    </div>
+    <div class="footer-right">
+      waiverwiretap.kindofabigdill.com
+    </div>
+  </div>
+
+</body>
+</html>
