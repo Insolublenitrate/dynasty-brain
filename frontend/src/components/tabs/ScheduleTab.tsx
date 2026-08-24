@@ -23,41 +23,46 @@ export default function ScheduleTab() {
   // Expanded box score modal / drawer
   const [activeBoxScore, setActiveBoxScore] = useState<any>(null);
 
+  const [selectedSeason, setSelectedSeason] = useState<string>('2026');
+
+  const fetchSchedule = async (cleanId: string, s?: string) => {
+    setLoading(true);
+    try {
+      const apiUrl = getApiUrl();
+      const queryParam = s ? `?season=${s}` : '';
+      const res = await fetch(`${apiUrl}/api/quant/schedule/${cleanId}${queryParam}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.status === 'success') {
+          setScheduleData(data);
+          if (data.season) setSelectedSeason(data.season);
+          if (data.current_week) setSelectedWeek(data.current_week);
+          if (data.franchises && data.franchises.length > 0) {
+            setSelectedRosterId(data.franchises[0].roster_id);
+          }
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Direct Sleeper Client Fallback if backend route had delay
+      if (platform === 'sleeper' || !platform) {
+        await loadDirectSleeperSchedule(cleanId);
+      }
+    } catch (err) {
+      console.warn("Backend schedule load error, attempting Sleeper direct fallback...", err);
+      if (platform === 'sleeper' || !platform) {
+        await loadDirectSleeperSchedule(cleanId);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!leagueId) return;
-    const currentLeagueId = leagueId;
-
-    async function loadSchedule() {
-      setLoading(true);
-      try {
-        const apiUrl = getApiUrl();
-        const res = await fetch(`${apiUrl}/api/quant/schedule/${currentLeagueId}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.status === 'success') {
-            setScheduleData(data);
-            if (data.current_week) setSelectedWeek(data.current_week);
-            if (data.franchises && data.franchises.length > 0) {
-              setSelectedRosterId(data.franchises[0].roster_id);
-            }
-            setLoading(false);
-            return;
-          }
-        }
-
-        // Direct Sleeper Client Fallback if backend route had delay
-        if (platform === 'sleeper' || !platform) {
-          await loadDirectSleeperSchedule(currentLeagueId);
-        }
-      } catch (err) {
-        console.warn("Backend schedule load error, attempting Sleeper direct fallback...", err);
-        if (platform === 'sleeper' || !platform) {
-          await loadDirectSleeperSchedule(currentLeagueId);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
+    fetchSchedule(leagueId);
+  }, [leagueId]);
 
     async function loadDirectSleeperSchedule(cleanId: string) {
       try {
@@ -243,9 +248,6 @@ export default function ScheduleTab() {
       }
     }
 
-    loadSchedule();
-  }, [leagueId, platform, leagueName]);
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -294,13 +296,29 @@ export default function ScheduleTab() {
               <CalendarDays size={24} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tight text-white">
                   MATCHUPS & LEAGUE SCHEDULE
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
                   ● SYNCED
                 </span>
+                {scheduleData.available_seasons && scheduleData.available_seasons.length > 1 && (
+                  <div className="flex items-center gap-1 bg-zinc-950 px-2.5 py-1 rounded-xl border border-zinc-700 text-xs font-mono">
+                    <span className="text-zinc-400 text-[10px] uppercase font-bold">Season</span>
+                    <select
+                      value={scheduleData.season || selectedSeason}
+                      onChange={(e) => { if (leagueId) fetchSchedule(leagueId, e.target.value); }}
+                      className="bg-transparent text-orange-400 font-black focus:outline-none cursor-pointer text-xs"
+                    >
+                      {scheduleData.available_seasons.map((s: string) => (
+                        <option key={s} value={s} className="bg-zinc-900 text-white">
+                          {s} {s === '2026' ? '· Upcoming Slate' : '· Complete Season'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
               <p className="text-xs font-mono text-zinc-400 mt-0.5">
                 {scheduleData.league_name} · Season {scheduleData.season} · 18-Week Matchup Slate & Box Scores
@@ -581,7 +599,11 @@ export default function ScheduleTab() {
                 <div>
                   <h3 className="text-lg font-black text-white">{selectedFranchise.team_name}</h3>
                   <p className="text-xs font-mono text-zinc-400">
-                    Record: <span className="text-emerald-400 font-bold">{selectedFranchise.wins}W - {selectedFranchise.losses}L</span> · All-Play: {selectedFranchise.all_play_record} ({selectedFranchise.all_play_win_pct}%)
+                    Record: <span className="text-emerald-400 font-bold">
+                      {selectedFranchise.wins + selectedFranchise.losses + (selectedFranchise.ties || 0) === 0
+                        ? '0-0 (Scheduled)'
+                        : `${selectedFranchise.wins}W - ${selectedFranchise.losses}L${selectedFranchise.ties ? ` - ${selectedFranchise.ties}T` : ''}`}
+                    </span> · All-Play: {selectedFranchise.all_play_record === '0-0' ? '0-0 (Scheduled)' : `${selectedFranchise.all_play_record} (${selectedFranchise.all_play_win_pct}%)`}
                   </p>
                 </div>
               </div>
@@ -598,7 +620,7 @@ export default function ScheduleTab() {
                 >
                   {scheduleData.franchises.map((f: any) => (
                     <option key={f.roster_id} value={f.roster_id}>
-                      {f.team_name} ({f.wins}-{f.losses})
+                      {f.team_name} ({f.wins + f.losses + (f.ties || 0) === 0 ? '0-0' : `${f.wins}-${f.losses}`})
                     </option>
                   ))}
                 </select>

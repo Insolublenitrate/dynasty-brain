@@ -912,7 +912,21 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
         if not rosters:
             return {"error": f"No rosters found for league {league_id}. Please link league first."}
 
-        target_season = season or (league.season if league else "2024")
+        # Determine available seasons for this league
+        avail_seasons_query = session.query(MatchupHistory.season).filter(
+            MatchupHistory.league_id == league_id
+        ).distinct().all()
+        avail_seasons = sorted(list(set([s[0] for s in avail_seasons_query if s[0]])), reverse=True)
+        if not avail_seasons:
+            avail_seasons = [str(league.season if league and league.season else "2026")]
+
+        if season and season in avail_seasons:
+            target_season = season
+        elif league and str(league.season) in avail_seasons:
+            target_season = str(league.season)
+        else:
+            target_season = avail_seasons[0]
+
         sp_cache = get_sleeper_players_cache()
 
         # Build owner, user name, and avatar mappings
@@ -933,9 +947,10 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                 "players": r.players or []
             }
 
-        # Query all MatchupHistory records for this league
+        # Query all MatchupHistory records for this league and target season ONLY
         matchups_query = session.query(MatchupHistory).filter(
-            MatchupHistory.league_id == league_id
+            MatchupHistory.league_id == league_id,
+            MatchupHistory.season == target_season
         ).order_by(MatchupHistory.week.asc()).all()
 
         # Group matchups by week
@@ -1165,6 +1180,7 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
             "league_id": league_id,
             "league_name": league.name if league else "Dynasty League",
             "season": target_season,
+            "available_seasons": avail_seasons,
             "current_week": current_detected_week,
             "total_weeks": 18,
             "weeks": formatted_weeks,
