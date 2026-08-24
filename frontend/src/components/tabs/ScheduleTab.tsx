@@ -371,6 +371,32 @@ export default function ScheduleTab() {
         </div>
       </div>
 
+      {/* ── 2026 PRESEASON QUANT PROJECTIONS BANNER ──────────────────────── */}
+      {scheduleData.is_preseason && (
+        <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-purple-500/15 border border-amber-500/30 rounded-3xl p-5 shadow-xl relative overflow-hidden backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 flex-shrink-0 shadow-md">
+                <Sparkles size={22} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-sm font-black uppercase text-amber-300 tracking-wider">
+                    2026 Preseason Projection Mode Active
+                  </h4>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-200 font-bold uppercase">
+                    Consensus Quant Forecasts
+                  </span>
+                </div>
+                <p className="text-xs font-mono text-zinc-300 mt-1 leading-relaxed">
+                  Weekly starter scores, matchup point spreads, and win probabilities are modeled from 2026 depth chart forecasts and player baseline metrics. Official scoring will take over on Week 1 kickoff!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── VIEW 1: WEEKLY MATCHUP SLATE ─────────────────────────────────── */}
       {viewMode === 'slate' && (
         <div className="space-y-6">
@@ -409,7 +435,9 @@ export default function ScheduleTab() {
                 <Trophy size={18} />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] font-mono text-amber-400/90 uppercase font-bold tracking-wider">🏆 High Roller</span>
+                <span className="text-[10px] font-mono text-amber-400/90 uppercase font-bold tracking-wider">
+                  🏆 {currentWeekData.high_score?.is_projected ? 'High Roller (Proj)' : 'High Roller'}
+                </span>
                 <h4 className="text-sm font-black text-white truncate">
                   {currentWeekData.high_score ? currentWeekData.high_score.team_name : 'TBD'}
                 </h4>
@@ -424,9 +452,11 @@ export default function ScheduleTab() {
                 <TrendingUp size={18} />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] font-mono text-purple-400/90 uppercase font-bold tracking-wider">⚖️ League Median</span>
+                <span className="text-[10px] font-mono text-purple-400/90 uppercase font-bold tracking-wider">
+                  ⚖️ {currentWeekData.is_median_projected ? 'League Median (Proj)' : 'League Median'}
+                </span>
                 <h4 className="text-sm font-black text-white">
-                  {currentWeekData.median_score > 0 ? `${currentWeekData.median_score} pts` : '124.5 pts (Proj)'}
+                  {currentWeekData.median_score > 0 ? `${currentWeekData.median_score} pts` : '124.5 pts'}
                 </h4>
                 <p className="text-xs font-mono text-zinc-400">Top 50% Win Benchmark</p>
               </div>
@@ -437,7 +467,9 @@ export default function ScheduleTab() {
                 <Flame size={18} />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] font-mono text-rose-400/90 uppercase font-bold tracking-wider">💩 Sacko of Week</span>
+                <span className="text-[10px] font-mono text-rose-400/90 uppercase font-bold tracking-wider">
+                  💩 {currentWeekData.low_score?.is_projected ? 'Sacko Floor (Proj)' : 'Sacko of Week'}
+                </span>
                 <h4 className="text-sm font-black text-white truncate">
                   {currentWeekData.low_score ? currentWeekData.low_score.team_name : 'TBD'}
                 </h4>
@@ -453,8 +485,12 @@ export default function ScheduleTab() {
             {currentWeekData.matchups.map((match: any, idx: number) => {
               const teamA = match.team_a;
               const teamB = match.team_b;
-              const isWinnerA = match.winner === 'team_a';
-              const isWinnerB = match.winner === 'team_b';
+              const isPlayed = match.is_played;
+              const isWinnerA = isPlayed ? match.winner === 'team_a' : match.projected_winner === 'team_a';
+              const isWinnerB = isPlayed ? match.winner === 'team_b' : match.projected_winner === 'team_b';
+
+              const scoreA = isPlayed ? teamA?.points : (teamA?.projected_points || teamA?.points || 0);
+              const scoreB = isPlayed ? teamB?.points : (teamB?.projected_points || teamB?.points || 0);
 
               return (
                 <div 
@@ -468,13 +504,14 @@ export default function ScheduleTab() {
                         MATCHUP #{match.matchup_id}
                       </span>
                       <div className="flex items-center gap-2">
-                        {match.is_played ? (
+                        {isPlayed ? (
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                             FINAL · Margin: {match.margin} pts
                           </span>
                         ) : (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400">
-                            UPCOMING
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 flex items-center gap-1">
+                            <Sparkles size={11} />
+                            PROJ SPREAD: {match.projected_margin || match.margin} PTS
                           </span>
                         )}
                       </div>
@@ -502,17 +539,24 @@ export default function ScheduleTab() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <h4 className="text-sm font-bold text-white truncate">{teamA?.team_name || 'Team A'}</h4>
-                              {isWinnerA && <span className="text-xs">🏆</span>}
+                              {isWinnerA && <span className="text-xs">{isPlayed ? '🏆' : '🔮'}</span>}
                             </div>
-                            <p className="text-[10px] font-mono text-zinc-400">Roster #{teamA?.roster_id}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-[10px] font-mono text-zinc-400">Roster #{teamA?.roster_id}</p>
+                              {!isPlayed && match.win_prob_a !== undefined && (
+                                <span className="text-[9px] font-mono text-amber-400/90 font-bold">
+                                  {match.win_prob_a}% Win Prob
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
 
                         <div className="text-right">
                           <span className={`text-lg font-black font-mono ${isWinnerA ? 'text-emerald-400' : 'text-white'}`}>
-                            {teamA ? teamA.points.toFixed(2) : '0.00'}
+                            {scoreA ? scoreA.toFixed(2) : '0.00'}
                           </span>
-                          <p className="text-[10px] font-mono text-zinc-400">PTS</p>
+                          <p className="text-[10px] font-mono text-zinc-400">{isPlayed ? 'PTS' : 'PROJ PTS'}</p>
                         </div>
                       </div>
 
@@ -536,17 +580,24 @@ export default function ScheduleTab() {
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
                                 <h4 className="text-sm font-bold text-white truncate">{teamB?.team_name || 'Team B'}</h4>
-                                {isWinnerB && <span className="text-xs">🏆</span>}
+                                {isWinnerB && <span className="text-xs">{isPlayed ? '🏆' : '🔮'}</span>}
                               </div>
-                              <p className="text-[10px] font-mono text-zinc-400">Roster #{teamB?.roster_id}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-[10px] font-mono text-zinc-400">Roster #{teamB?.roster_id}</p>
+                                {!isPlayed && match.win_prob_b !== undefined && (
+                                  <span className="text-[9px] font-mono text-amber-400/90 font-bold">
+                                    {match.win_prob_b}% Win Prob
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
 
                           <div className="text-right">
                             <span className={`text-lg font-black font-mono ${isWinnerB ? 'text-emerald-400' : 'text-white'}`}>
-                              {teamB ? teamB.points.toFixed(2) : '0.00'}
+                              {scoreB ? scoreB.toFixed(2) : '0.00'}
                             </span>
-                            <p className="text-[10px] font-mono text-zinc-400">PTS</p>
+                            <p className="text-[10px] font-mono text-zinc-400">{isPlayed ? 'PTS' : 'PROJ PTS'}</p>
                           </div>
                         </div>
                       ) : (
@@ -600,10 +651,10 @@ export default function ScheduleTab() {
                   <h3 className="text-lg font-black text-white">{selectedFranchise.team_name}</h3>
                   <p className="text-xs font-mono text-zinc-400">
                     Record: <span className="text-emerald-400 font-bold">
-                      {selectedFranchise.wins + selectedFranchise.losses + (selectedFranchise.ties || 0) === 0
-                        ? '0-0 (Scheduled)'
-                        : `${selectedFranchise.wins}W - ${selectedFranchise.losses}L${selectedFranchise.ties ? ` - ${selectedFranchise.ties}T` : ''}`}
-                    </span> · All-Play: {selectedFranchise.all_play_record === '0-0' ? '0-0 (Scheduled)' : `${selectedFranchise.all_play_record} (${selectedFranchise.all_play_win_pct}%)`}
+                      {selectedFranchise.has_played_games
+                        ? `${selectedFranchise.wins}W - ${selectedFranchise.losses}L${selectedFranchise.ties ? ` - ${selectedFranchise.ties}T` : ''}`
+                        : `0-0 (Scheduled) · Proj: ${selectedFranchise.projected_record || '11-7'}`}
+                    </span> · All-Play: {selectedFranchise.has_played_games ? `${selectedFranchise.all_play_record} (${selectedFranchise.all_play_win_pct}%)` : `0-0 (Proj: ${selectedFranchise.projected_all_play_record || '90-72'})`}
                   </p>
                 </div>
               </div>
@@ -620,7 +671,7 @@ export default function ScheduleTab() {
                 >
                   {scheduleData.franchises.map((f: any) => (
                     <option key={f.roster_id} value={f.roster_id}>
-                      {f.team_name} ({f.wins + f.losses + (f.ties || 0) === 0 ? '0-0' : `${f.wins}-${f.losses}`})
+                      {f.team_name} ({f.has_played_games ? `${f.wins}-${f.losses}` : `0-0 · Proj ${f.projected_record || '11-7'}`})
                     </option>
                   ))}
                 </select>
@@ -631,22 +682,42 @@ export default function ScheduleTab() {
             {/* Franchise Season KPI Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-zinc-800">
               <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase">Points For (PF)</span>
-                <h4 className="text-base font-black font-mono text-white mt-0.5">{selectedFranchise.points_for}</h4>
-              </div>
-              <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase">Points Against (PA)</span>
-                <h4 className="text-base font-black font-mono text-white mt-0.5">{selectedFranchise.points_against}</h4>
-              </div>
-              <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase">Point Differential</span>
-                <h4 className={`text-base font-black font-mono mt-0.5 ${selectedFranchise.point_differential >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {selectedFranchise.point_differential > 0 ? `+${selectedFranchise.point_differential}` : selectedFranchise.point_differential}
+                <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                  {selectedFranchise.has_played_games ? 'Points For (PF)' : 'Projected PF'}
+                </span>
+                <h4 className="text-base font-black font-mono text-white mt-0.5">
+                  {selectedFranchise.has_played_games ? selectedFranchise.points_for : selectedFranchise.projected_points_for}
                 </h4>
               </div>
               <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase">All-Play Win %</span>
-                <h4 className="text-base font-black font-mono text-cyan-400 mt-0.5">{selectedFranchise.all_play_win_pct}%</h4>
+                <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                  {selectedFranchise.has_played_games ? 'Points Against (PA)' : 'Projected PA'}
+                </span>
+                <h4 className="text-base font-black font-mono text-white mt-0.5">
+                  {selectedFranchise.has_played_games ? selectedFranchise.points_against : selectedFranchise.projected_points_against}
+                </h4>
+              </div>
+              <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
+                <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                  {selectedFranchise.has_played_games ? 'Point Differential' : 'Proj Differential'}
+                </span>
+                <h4 className={`text-base font-black font-mono mt-0.5 ${
+                  (selectedFranchise.has_played_games ? selectedFranchise.point_differential : selectedFranchise.projected_point_differential) >= 0 
+                    ? 'text-emerald-400' 
+                    : 'text-rose-400'
+                }`}>
+                  {selectedFranchise.has_played_games
+                    ? (selectedFranchise.point_differential > 0 ? `+${selectedFranchise.point_differential}` : selectedFranchise.point_differential)
+                    : (selectedFranchise.projected_point_differential > 0 ? `+${selectedFranchise.projected_point_differential}` : selectedFranchise.projected_point_differential)}
+                </h4>
+              </div>
+              <div className="bg-zinc-950 p-3 rounded-2xl border border-zinc-800">
+                <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                  {selectedFranchise.has_played_games ? 'All-Play Win %' : 'Proj All-Play Win %'}
+                </span>
+                <h4 className="text-base font-black font-mono text-cyan-400 mt-0.5">
+                  {selectedFranchise.has_played_games ? selectedFranchise.all_play_win_pct : selectedFranchise.projected_all_play_win_pct}%
+                </h4>
               </div>
             </div>
           </div>
@@ -662,9 +733,9 @@ export default function ScheduleTab() {
 
             <div className="divide-y divide-zinc-800/80">
               {selectedFranchise.schedule.map((game: any) => {
-                const isWin = game.result === 'W';
-                const isLoss = game.result === 'L';
-                const isUpcoming = game.result === 'UPCOMING';
+                const isPlayed = game.result !== 'UPCOMING';
+                const isWin = isPlayed ? game.result === 'W' : game.projected_result === 'W';
+                const isLoss = isPlayed ? game.result === 'L' : game.projected_result === 'L';
 
                 return (
                   <div 
@@ -681,7 +752,7 @@ export default function ScheduleTab() {
                           <img 
                             src={`https://sleepercdn.com/avatars/thumbs/${game.opponent_avatar}`} 
                             alt={game.opponent_name}
-                            className="w-8 h-8 rounded-xl object-cover border border-zinc-700"
+                            className="w-8 h-8 rounded-xl object-cover border border-zinc-700" 
                           />
                         ) : (
                           <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 text-[10px] font-bold">
@@ -696,7 +767,7 @@ export default function ScheduleTab() {
                     </div>
 
                     <div className="flex items-center gap-4 justify-between sm:justify-end">
-                      {!isUpcoming ? (
+                      {isPlayed ? (
                         <div className="text-right font-mono">
                           <span className="text-sm font-bold text-white">
                             {game.team_score.toFixed(2)} - {game.opp_score.toFixed(2)}
@@ -706,15 +777,22 @@ export default function ScheduleTab() {
                           </p>
                         </div>
                       ) : (
-                        <span className="text-xs font-mono text-zinc-400">Scheduled</span>
+                        <div className="text-right font-mono">
+                          <span className="text-xs font-bold text-amber-300">
+                            {game.projected_team_score} - {game.projected_opp_score}
+                          </span>
+                          <p className="text-[10px] text-zinc-400">
+                            Spread: {game.margin} pts
+                          </p>
+                        </div>
                       )}
 
-                      <span className={`w-12 text-center py-1 rounded-lg text-xs font-mono font-black ${
+                      <span className={`w-16 text-center py-1 rounded-lg text-xs font-mono font-black ${
                         isWin ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
                         isLoss ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
                         'bg-zinc-800 text-zinc-400'
                       }`}>
-                        {game.result}
+                        {isPlayed ? game.result : `🔮 ${game.projected_result}`}
                       </span>
                     </div>
                   </div>
@@ -735,7 +813,9 @@ export default function ScheduleTab() {
                 All-Play League Standings & Schedule Luck Index
               </h4>
               <p className="text-xs font-mono text-zinc-400">
-                Removes weekly scheduling luck by scoring every franchise against all other 9 teams each week.
+                {scheduleData.is_preseason 
+                  ? '🔮 2026 Preseason Projections: All-Play rankings modeled across all 18 scheduled matchups.' 
+                  : 'Removes weekly scheduling luck by scoring every franchise against all other 9 teams each week.'}
               </p>
             </div>
           </div>
@@ -745,18 +825,20 @@ export default function ScheduleTab() {
               <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800 uppercase text-[10px]">
                 <tr>
                   <th className="px-6 py-3">Rank & Franchise</th>
-                  <th className="px-4 py-3 text-center">Actual Record</th>
-                  <th className="px-4 py-3 text-center">All-Play Record</th>
-                  <th className="px-4 py-3 text-center">All-Play Win %</th>
-                  <th className="px-4 py-3 text-right">Total PF</th>
-                  <th className="px-4 py-3 text-right">Total PA</th>
-                  <th className="px-6 py-3 text-center">Luck Rating</th>
+                  <th className="px-4 py-3 text-center">{scheduleData.is_preseason ? 'Proj Record' : 'Actual Record'}</th>
+                  <th className="px-4 py-3 text-center">{scheduleData.is_preseason ? 'Proj All-Play' : 'All-Play Record'}</th>
+                  <th className="px-4 py-3 text-center">{scheduleData.is_preseason ? 'Proj Win %' : 'All-Play Win %'}</th>
+                  <th className="px-4 py-3 text-right">{scheduleData.is_preseason ? 'Proj PF' : 'Total PF'}</th>
+                  <th className="px-4 py-3 text-right">{scheduleData.is_preseason ? 'Proj PA' : 'Total PA'}</th>
+                  <th className="px-6 py-3 text-center">{scheduleData.is_preseason ? '2026 Status' : 'Luck Rating'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/80">
                 {scheduleData.franchises.map((f: any, idx: number) => {
-                  const actualWinPct = (f.wins / Math.max(1, f.wins + f.losses)) * 100;
-                  const luckDelta = actualWinPct - f.all_play_win_pct;
+                  const isPre = scheduleData.is_preseason;
+                  const winPct = isPre ? f.projected_all_play_win_pct : f.all_play_win_pct;
+                  const actualWinPct = isPre ? (f.projected_wins / 18) * 100 : (f.wins / Math.max(1, f.wins + f.losses)) * 100;
+                  const luckDelta = actualWinPct - winPct;
                   const isLucky = luckDelta > 5;
                   const isUnlucky = luckDelta < -5;
 
@@ -779,33 +861,43 @@ export default function ScheduleTab() {
                       </td>
 
                       <td className="px-4 py-4 text-center font-bold text-white">
-                        {f.wins} - {f.losses}
+                        {isPre ? f.projected_record : `${f.wins} - ${f.losses}`}
                       </td>
 
                       <td className="px-4 py-4 text-center text-cyan-400 font-bold">
-                        {f.all_play_record}
+                        {isPre ? f.projected_all_play_record : f.all_play_record}
                       </td>
 
                       <td className="px-4 py-4 text-center font-bold text-zinc-200">
-                        {f.all_play_win_pct}%
+                        {winPct}%
                       </td>
 
                       <td className="px-4 py-4 text-right font-bold text-white">
-                        {f.points_for}
+                        {isPre ? f.projected_points_for : f.points_for}
                       </td>
 
                       <td className="px-4 py-4 text-right text-zinc-400">
-                        {f.points_against}
+                        {isPre ? f.projected_points_against : f.points_against}
                       </td>
 
                       <td className="px-6 py-4 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          isLucky ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                          isUnlucky ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
-                          'bg-zinc-800 text-zinc-400'
-                        }`}>
-                          {isLucky ? '🍀 Schedule Lucky' : isUnlucky ? '⚡ Tough Schedule' : '⚖️ Balanced'}
-                        </span>
+                        {isPre ? (
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            winPct >= 70 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                            winPct >= 50 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40' :
+                            'bg-purple-500/20 text-purple-400 border border-purple-500/40'
+                          }`}>
+                            {winPct >= 70 ? '🏆 Title Contender' : winPct >= 50 ? '🔥 Playoff Threat' : '🛠️ Retooling'}
+                          </span>
+                        ) : (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            isLucky ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                            isUnlucky ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
+                            'bg-zinc-800 text-zinc-400'
+                          }`}>
+                            {isLucky ? '🍀 Schedule Lucky' : isUnlucky ? '⚡ Tough Schedule' : '⚖️ Balanced'}
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -846,17 +938,25 @@ export default function ScheduleTab() {
               <div>
                 <h4 className="text-sm font-bold text-white">{activeBoxScore.team_a?.team_name}</h4>
                 <p className="text-2xl font-black font-mono text-emerald-400 mt-1">
-                  {activeBoxScore.team_a ? activeBoxScore.team_a.points.toFixed(2) : '0.00'}
+                  {activeBoxScore.is_played 
+                    ? (activeBoxScore.team_a ? activeBoxScore.team_a.points.toFixed(2) : '0.00')
+                    : (activeBoxScore.team_a ? (activeBoxScore.team_a.projected_points?.toFixed(2) || '125.00') : '0.00')}
                 </p>
-                <span className="text-[10px] font-mono text-zinc-400">Total Starter Points</span>
+                <span className="text-[10px] font-mono text-zinc-400">
+                  {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
+                </span>
               </div>
 
               <div className="text-right">
                 <h4 className="text-sm font-bold text-white">{activeBoxScore.team_b?.team_name || 'BYE'}</h4>
                 <p className="text-2xl font-black font-mono text-emerald-400 mt-1">
-                  {activeBoxScore.team_b ? activeBoxScore.team_b.points.toFixed(2) : '0.00'}
+                  {activeBoxScore.is_played 
+                    ? (activeBoxScore.team_b ? activeBoxScore.team_b.points.toFixed(2) : '0.00')
+                    : (activeBoxScore.team_b ? (activeBoxScore.team_b.projected_points?.toFixed(2) || '125.00') : '0.00')}
                 </p>
-                <span className="text-[10px] font-mono text-zinc-400">Total Starter Points</span>
+                <span className="text-[10px] font-mono text-zinc-400">
+                  {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
+                </span>
               </div>
             </div>
 
@@ -869,6 +969,9 @@ export default function ScheduleTab() {
               <div className="space-y-1.5 font-mono text-xs">
                 {(activeBoxScore.team_a?.starters || []).map((pA: any, idx: number) => {
                   const pB = activeBoxScore.team_b?.starters?.[idx];
+                  const scoreA = activeBoxScore.is_played ? pA.points : (pA.projected_points || 12.0);
+                  const scoreB = pB ? (activeBoxScore.is_played ? pB.points : (pB.projected_points || 12.0)) : 0;
+
                   return (
                     <div 
                       key={idx}
@@ -882,9 +985,9 @@ export default function ScheduleTab() {
 
                       {/* Score Comparison */}
                       <div className="col-span-1 text-center bg-zinc-900 py-1 rounded-lg border border-zinc-800">
-                        <span className="text-emerald-400 font-bold">{pA.points}</span>
+                        <span className="text-emerald-400 font-bold">{scoreA}</span>
                         <span className="text-zinc-600 mx-1">|</span>
-                        <span className="text-emerald-400 font-bold">{pB?.points || '0'}</span>
+                        <span className="text-emerald-400 font-bold">{scoreB}</span>
                       </div>
 
                       {/* Team B Player */}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, TrendingUp, Info, Target, Sparkles, ArrowUpRight } from "lucide-react";
+import { AlertTriangle, TrendingUp, Info, Target, Sparkles, ArrowUpRight, Radio, MessageSquare } from "lucide-react";
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
@@ -13,30 +13,45 @@ export default function ActionCenterTab() {
   const router = useRouter();
 
   const [matrixData, setMatrixData] = useState<any[]>([]);
+  const [seasonOutlook, setSeasonOutlook] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!leagueId) return;
-    async function fetchMatrix() {
+    async function fetchData() {
       try {
         const apiUrl = getApiUrl();
-        const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`);
-        if (!res.ok) throw new Error("Failed to fetch");
-        const json = await res.json();
-        if (Array.isArray(json)) setMatrixData(json);
+        const [mRes, oRes] = await Promise.all([
+          fetch(`${apiUrl}/api/quant/matrix?league_id=${leagueId}`).catch(() => null),
+          fetch(`${apiUrl}/api/ai/season-outlook/${leagueId}`).catch(() => null)
+        ]);
+
+        if (mRes?.ok) {
+          const json = await mRes.json();
+          if (Array.isArray(json)) setMatrixData(json);
+        }
+
+        if (oRes?.ok) {
+          const oJson = await oRes.json();
+          if (oJson?.status === 'success') setSeasonOutlook(oJson);
+        }
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
-    fetchMatrix();
+    fetchData();
   }, [leagueId]);
 
   // Attempt to find the current user's roster by name, fallback to first
   const myRoster = matrixData.length > 0 
     ? (matrixData.find(r => r.team_name?.toLowerCase().includes('insolublenitrate')) || matrixData[0]) 
     : null;
+
+  const myOutlook = seasonOutlook?.teams?.find((t: any) => 
+    t.team_name?.toLowerCase().includes('insolublenitrate') || (myRoster && t.roster_id === myRoster.roster_id)
+  ) || seasonOutlook?.teams?.[0];
 
   // Generate dynamic actions based on league data
   const actions = matrixData
@@ -95,9 +110,64 @@ export default function ActionCenterTab() {
           <Target size={28} style={{ color: currentTheme.primary }} /> ACTION CENTER
         </h2>
         <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
-          AI-curated intelligence feed based on market discrepancies and roster lifecycles.
+          AI-curated intelligence feed based on market discrepancies, roster lifecycles, and 2026 preseason forecasts.
         </p>
       </div>
+
+      {/* ── COACH MADDEN 2026 PRESEASON DEBRIEF ──────────────────────────── */}
+      {seasonOutlook && (
+        <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-zinc-900 border border-amber-500/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+            <div className="space-y-3 flex-1">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 font-mono text-xs font-black uppercase flex items-center gap-1.5 shadow-sm">
+                  <Radio size={13} className="animate-pulse text-orange-400" />
+                  COACH MADDEN · 2026 PRESEASON STATE OF THE UNION
+                </span>
+                <span className="text-[10px] font-mono text-zinc-400">
+                  {seasonOutlook.league_name}
+                </span>
+              </div>
+              <p className="text-sm font-mono text-zinc-200 leading-relaxed italic border-l-2 border-orange-500/60 pl-3">
+                &ldquo;{seasonOutlook.state_of_the_league}&rdquo;
+              </p>
+            </div>
+
+            {/* Franchise Custom Scouting Card */}
+            {myOutlook && (
+              <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 lg:w-96 flex-shrink-0 shadow-lg space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold">Your 2026 Outlook</span>
+                  <span className="text-xs font-mono font-bold text-amber-300">
+                    {myOutlook.tier}
+                  </span>
+                </div>
+                <div className="border-t border-zinc-800/80 pt-2 space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Proj Scoring:</span>
+                    <span className="text-emerald-400 font-bold">{myOutlook.weekly_proj_avg} pts/wk</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Camp Breakout:</span>
+                    <span className="text-cyan-400 font-bold truncate max-w-[170px]">{myOutlook.camp_breakout}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Preseason Danger:</span>
+                    <span className="text-rose-400 font-bold truncate max-w-[170px]">{myOutlook.risk_factor}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => router.push('/ask-madden')}
+                  className="w-full mt-2 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-mono text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-md"
+                >
+                  <MessageSquare size={13} />
+                  <span>Ask Coach Madden 🎙️</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">

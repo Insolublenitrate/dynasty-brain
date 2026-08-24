@@ -1005,6 +1005,21 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
         for w in range(1, 19):
             weeks_map[w] = []
 
+        # Build player PPG lookup from PlayerAdvancedStats for 2026 Preseason Modeling
+        pas_rows = session.query(PlayerAdvancedStats).filter(PlayerAdvancedStats.season >= 2023).all()
+        player_ppg = {}
+        for p in pas_rows:
+            if p.games_played and p.games_played >= 4 and p.fantasy_points_ppr:
+                ppg = p.fantasy_points_ppr / p.games_played
+                if p.player_name not in player_ppg or p.season == 2024:
+                    player_ppg[p.player_name] = round(ppg, 2)
+
+        def calc_starter_proj(pid, p_name, pos):
+            if p_name in player_ppg:
+                return player_ppg[p_name]
+            baselines = {"QB": 18.5, "RB": 13.8, "WR": 13.2, "TE": 9.2, "K": 8.0, "DEF": 7.5}
+            return baselines.get(pos, 10.5)
+
         for m in matchups_query:
             # Parse roster_id integer
             r_int = None
@@ -1016,7 +1031,7 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                     pass
 
             if r_int and m.week in weeks_map:
-                # Format starters detail
+                # Format starters detail with both actual points AND 2026 preseason projected points
                 starters_list = []
                 starters_ids = m.starters or []
                 starters_pts = m.starters_points or []
@@ -1027,19 +1042,22 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                     p_pos = p_info.get("position") or "FLEX"
                     p_team = p_info.get("team") or "NFL"
                     score = float(starters_pts[idx]) if idx < len(starters_pts) and starters_pts[idx] is not None else 0.0
+                    proj_score = calc_starter_proj(pid, p_name, p_pos)
                     
                     starters_list.append({
                         "player_id": str(pid),
                         "name": p_name,
                         "position": p_pos,
                         "team": p_team,
-                        "points": round(score, 2)
+                        "points": round(score, 2),
+                        "projected_points": round(proj_score, 2)
                     })
 
-                # Calculate bench points
+                # Calculate bench points and total projected points
                 total_pts = float(m.points or 0.0)
                 starter_pts_sum = sum(s["points"] for s in starters_list) if starters_list else total_pts
                 bench_pts = max(0.0, round(total_pts - starter_pts_sum, 2))
+                total_proj = sum(s["projected_points"] for s in starters_list) if starters_list else 125.0
 
                 weeks_map[m.week].append({
                     "roster_id": r_int,
@@ -1047,6 +1065,7 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                     "team_name": owner_names.get(r_int, f"Team {r_int}"),
                     "avatar": team_avatars.get(r_int),
                     "points": round(total_pts, 2),
+                    "projected_points": round(total_proj, 2),
                     "starters": starters_list,
                     "bench_points": bench_pts
                 })
@@ -1055,12 +1074,14 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
         formatted_weeks = []
         current_detected_week = 1
         all_team_weekly_scores = {r.roster_id: {} for r in rosters}
+        all_team_projected_scores = {r.roster_id: {} for r in rosters}
 
         for w in range(1, 19):
             week_entries = weeks_map.get(w, [])
             # Pair matchups by matchup_id
             by_matchup_id = {}
             scores_in_week = []
+            proj_scores_in_week = []
 
             for entry in week_entries:
                 m_id = entry["matchup_id"]
@@ -1069,7 +1090,9 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                 by_matchup_id[m_id].append(entry)
                 if entry["points"] > 0:
                     scores_in_week.append(entry["points"])
+                proj_scores_in_week.append(entry["projected_points"])
                 all_team_weekly_scores[entry["roster_id"]][w] = entry["points"]
+                all_team_projected_scores[entry["roster_id"]][w] = entry["projected_points"]
 
             paired_matchups = []
             for m_id, teams in by_matchup_id.items():
@@ -1078,21 +1101,37 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                     margin = round(abs(t1["points"] - t2["points"]), 2)
                     winner = "team_a" if t1["points"] > t2["points"] else ("team_b" if t2["points"] > t1["points"] else "tie")
                     
-                    # Status: Final vs Upcoming
+                    # Status: Final vs Preseason Projected
                     is_played = (t1["points"] > 0 or t2["points"] > 0)
                     if is_played and w > current_detected_week:
                         current_detected_week = w
 
+                    # Projected Winner & Spread
+                    proj_a = t1["projected_points"]
+                    proj_b = t2["projected_points"]
+                    proj_margin = round(abs(proj_a - proj_b), 2)
+                    proj_winner = "team_a" if proj_a > proj_b else ("team_b" if proj_b > proj_a else "tie")
+
+                    # Win Probabilities: Logistic Spread Model if unplayed
+                    if is_played:
+                        prob_a = 100.0 if t1["points"] > t2["points"] else (0.0 if t2["points"] > t1["points"] else 50.0)
+                        prob_b = 100.0 - prob_a
+                    else:
+                        prob_a = round(1.0 / (1.0 + 10.0 ** ((proj_b - proj_a) / 35.0)) * 100.0, 1)
+                        prob_b = round(100.0 - prob_a, 1)
+
                     paired_matchups.append({
                         "matchup_id": m_id,
                         "is_played": is_played,
-                        "status": "FINAL" if is_played else "UPCOMING",
+                        "status": "FINAL" if is_played else "UPCOMING (PROJECTED)",
                         "team_a": t1,
                         "team_b": t2,
                         "winner": winner if is_played else None,
-                        "margin": margin,
-                        "win_prob_a": 50.0 if not is_played else (100.0 if winner == "team_a" else 0.0),
-                        "win_prob_b": 50.0 if not is_played else (100.0 if winner == "team_b" else 0.0)
+                        "projected_winner": proj_winner,
+                        "margin": margin if is_played else proj_margin,
+                        "projected_margin": proj_margin,
+                        "win_prob_a": prob_a,
+                        "win_prob_b": prob_b
                     })
                 elif len(teams) == 1:
                     # Bye or single team
@@ -1103,15 +1142,22 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                         "team_a": teams[0],
                         "team_b": None,
                         "winner": "team_a",
+                        "projected_winner": "team_a",
                         "margin": 0.0,
+                        "projected_margin": 0.0,
                         "win_prob_a": 100.0,
                         "win_prob_b": 0.0
                     })
 
-            # Calculate High, Low, Median for week
-            high_scorer = max(week_entries, key=lambda x: x["points"]) if week_entries and max(x["points"] for x in week_entries) > 0 else None
-            low_scorer = min([x for x in week_entries if x["points"] > 0], key=lambda x: x["points"]) if scores_in_week else None
-            median_val = round(float(np.median(scores_in_week)), 2) if scores_in_week else 0.0
+            # Calculate High, Low, Median for week (Actual or Projected)
+            if scores_in_week:
+                high_scorer = max(week_entries, key=lambda x: x["points"])
+                low_scorer = min([x for x in week_entries if x["points"] > 0], key=lambda x: x["points"])
+                median_val = round(float(np.median(scores_in_week)), 2)
+            else:
+                high_scorer = max(week_entries, key=lambda x: x["projected_points"]) if week_entries else None
+                low_scorer = min(week_entries, key=lambda x: x["projected_points"]) if week_entries else None
+                median_val = round(float(np.median(proj_scores_in_week)), 2) if proj_scores_in_week else 125.0
 
             formatted_weeks.append({
                 "week": w,
@@ -1121,16 +1167,19 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                 "matchups": paired_matchups,
                 "high_score": {
                     "team_name": high_scorer["team_name"],
-                    "points": high_scorer["points"]
+                    "points": high_scorer["points"] if scores_in_week else high_scorer["projected_points"],
+                    "is_projected": not bool(scores_in_week)
                 } if high_scorer else None,
                 "low_score": {
                     "team_name": low_scorer["team_name"],
-                    "points": low_scorer["points"]
+                    "points": low_scorer["points"] if scores_in_week else low_scorer["projected_points"],
+                    "is_projected": not bool(scores_in_week)
                 } if low_scorer else None,
-                "median_score": median_val
+                "median_score": median_val,
+                "is_median_projected": not bool(scores_in_week)
             })
 
-        # Build Franchise Season Schedule Timelines
+        # Build Franchise Season Schedule Timelines & 2026 Projected Records
         franchises_schedules = []
         for r in rosters:
             r_id = r.roster_id
@@ -1146,9 +1195,17 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
             all_play_wins = 0
             all_play_losses = 0
 
+            # Preseason Projected Totals
+            proj_pf = 0.0
+            proj_pa = 0.0
+            proj_wins = 0
+            proj_losses = 0
+            proj_ties = 0
+            proj_all_play_wins = 0
+            proj_all_play_losses = 0
+
             for w_data in formatted_weeks:
                 w_num = w_data["week"]
-                # Find matchup for this team in this week
                 found_matchup = None
                 is_team_a = True
 
@@ -1168,6 +1225,8 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                     
                     my_score = my_data["points"] if my_data else 0.0
                     opp_score = opp_data["points"] if opp_data else 0.0
+                    my_proj = my_data["projected_points"] if my_data else 125.0
+                    opp_proj = opp_data["projected_points"] if opp_data else 125.0
                     
                     result = "UPCOMING"
                     if found_matchup["is_played"]:
@@ -1183,13 +1242,29 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                         total_pf += my_score
                         total_pa += opp_score
 
-                        # All-Play calculation against other league scores in that week
                         for other_r_id, other_weeks in all_team_weekly_scores.items():
                             if other_r_id != r_id and w_num in other_weeks and other_weeks[w_num] > 0:
                                 if my_score > other_weeks[w_num]:
                                     all_play_wins += 1
                                 elif my_score < other_weeks[w_num]:
                                     all_play_losses += 1
+                    
+                    # Accumulate Preseason Projections across 18 weeks
+                    proj_pf += my_proj
+                    proj_pa += opp_proj
+                    if my_proj > opp_proj:
+                        proj_wins += 1
+                    elif my_proj < opp_proj:
+                        proj_losses += 1
+                    else:
+                        proj_ties += 1
+
+                    for other_r_id, other_proj_weeks in all_team_projected_scores.items():
+                        if other_r_id != r_id and w_num in other_proj_weeks:
+                            if my_proj > other_proj_weeks[w_num]:
+                                proj_all_play_wins += 1
+                            elif my_proj < other_proj_weeks[w_num]:
+                                proj_all_play_losses += 1
 
                     schedule_games.append({
                         "week": w_num,
@@ -1199,10 +1274,15 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                         "opponent_avatar": opp_data["avatar"] if opp_data else None,
                         "team_score": my_score,
                         "opp_score": opp_score,
+                        "projected_team_score": round(my_proj, 2),
+                        "projected_opp_score": round(opp_proj, 2),
                         "result": result,
-                        "margin": round(abs(my_score - opp_score), 2),
+                        "projected_result": "W" if my_proj > opp_proj else ("L" if my_proj < opp_proj else "T"),
+                        "margin": round(abs(my_score - opp_score), 2) if found_matchup["is_played"] else round(abs(my_proj - opp_proj), 2),
                         "starters_detail": my_data["starters"] if my_data else []
                     })
+
+            has_played_games = (wins_count + losses_count + ties_count) > 0
 
             franchises_schedules.append({
                 "roster_id": r_id,
@@ -1215,12 +1295,28 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
                 "points_against": round(total_pa, 2),
                 "point_differential": round(total_pf - total_pa, 2),
                 "all_play_record": f"{all_play_wins}-{all_play_losses}",
-                "all_play_win_pct": round((all_play_wins / max(1, all_play_wins + all_play_losses)) * 100, 1),
+                "all_play_win_pct": round((all_play_wins / max(1, all_play_wins + all_play_losses)) * 100, 1) if (all_play_wins + all_play_losses) > 0 else 0.0,
+                
+                # Preseason 2026 Projected Metrics
+                "projected_wins": proj_wins,
+                "projected_losses": proj_losses,
+                "projected_ties": proj_ties,
+                "projected_record": f"{proj_wins}-{proj_losses}",
+                "projected_points_for": round(proj_pf, 2),
+                "projected_points_against": round(proj_pa, 2),
+                "projected_point_differential": round(proj_pf - proj_pa, 2),
+                "projected_all_play_record": f"{proj_all_play_wins}-{proj_all_play_losses}",
+                "projected_all_play_win_pct": round((proj_all_play_wins / max(1, proj_all_play_wins + proj_all_play_losses)) * 100, 1),
+                "has_played_games": has_played_games,
                 "schedule": schedule_games
             })
 
-        # Sort franchises by wins then points for
-        franchises_schedules.sort(key=lambda x: (x["wins"], x["points_for"]), reverse=True)
+        # Sort franchises by actual wins then points for (or projected wins if preseason)
+        is_preseason = not any(f["has_played_games"] for f in franchises_schedules)
+        if is_preseason:
+            franchises_schedules.sort(key=lambda x: (x["projected_wins"], x["projected_points_for"]), reverse=True)
+        else:
+            franchises_schedules.sort(key=lambda x: (x["wins"], x["points_for"]), reverse=True)
 
         return {
             "status": "success",
@@ -1228,6 +1324,8 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
             "league_name": league.name if league else "Dynasty League",
             "season": target_season,
             "available_seasons": avail_seasons,
+            "is_preseason": is_preseason,
+            "preseason_note": "🔮 2026 Preseason Mode Active · All weekly spreads, projected scores, and win probabilities are modeled from consensus quant player projections until Week 1 kickoff.",
             "current_week": current_detected_week,
             "total_weeks": 18,
             "weeks": formatted_weeks,
