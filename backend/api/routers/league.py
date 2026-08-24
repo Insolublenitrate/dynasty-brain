@@ -953,6 +953,53 @@ def get_league_schedule(league_id: str, season: Optional[str] = None):
             MatchupHistory.season == target_season
         ).order_by(MatchupHistory.week.asc()).all()
 
+        # If no matchups exist in DB for this season, auto-ingest from Sleeper
+        if not matchups_query:
+            try:
+                import requests
+                target_league_id = league_id
+                # If querying a past season, resolve the past league ID in the dynasty chain
+                if league and str(league.season) != str(target_season):
+                    curr_lid = league_id
+                    while curr_lid:
+                        r = requests.get(f"https://api.sleeper.app/v1/league/{curr_lid}", timeout=4)
+                        if r.status_code == 200:
+                            ld = r.json() or {}
+                            if str(ld.get("season")) == str(target_season):
+                                target_league_id = curr_lid
+                                break
+                            curr_lid = ld.get("previous_league_id")
+                        else:
+                            break
+
+                added = []
+                for w in range(1, 19):
+                    resp = requests.get(f"https://api.sleeper.app/v1/league/{target_league_id}/matchups/{w}", timeout=4)
+                    if resp.status_code == 200:
+                        m_list = resp.json() or []
+                        for m in m_list:
+                            r_id = m.get("roster_id")
+                            if r_id:
+                                entry = MatchupHistory(
+                                    league_id=league_id,
+                                    season=str(target_season),
+                                    week=w,
+                                    roster_id=f"{league_id}_{r_id}",
+                                    matchup_id=m.get("matchup_id"),
+                                    points=float(m.get("points") or 0.0),
+                                    starters=m.get("starters") or [],
+                                    starters_points=m.get("starters_points") or [],
+                                    players=m.get("players") or [],
+                                    players_points=m.get("players_points") or {}
+                                )
+                                session.add(entry)
+                                added.append(entry)
+                if added:
+                    session.commit()
+                    matchups_query = added
+            except Exception as auto_err:
+                print("Auto-ingest matchups exception:", auto_err)
+
         # Group matchups by week
         weeks_map = {}
         for w in range(1, 19):
