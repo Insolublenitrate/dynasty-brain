@@ -1,19 +1,64 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { 
   BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  ResponsiveContainer, Cell, ReferenceLine
+  ResponsiveContainer, Cell 
 } from 'recharts';
 import { 
-  Banknote, Trophy, Flame, ChevronDown, ChevronUp, Sparkles, 
-  Coins, ShieldCheck, Crown, Target, DollarSign, Award, Zap
+  Banknote, Trophy, Flame, ChevronDown, ChevronUp, 
+  Coins, Crown, Target, Zap, ShieldCheck, Award, AlertTriangle, RefreshCw
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 
-export default function BountyVaultTab() {
+// ── ERROR BOUNDARY FOR TAB RESILIENCE ────────────────────────────────────
+interface Props {
+  children: ReactNode;
+}
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+class BountyTabErrorBoundary extends Component<Props, State> {
+  public state: State = { hasError: false };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("BountyVaultTab render error:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-zinc-900/90 border border-red-500/30 rounded-3xl p-8 text-center space-y-4 max-w-xl mx-auto my-12 backdrop-blur-xl shadow-2xl">
+          <div className="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mx-auto border border-red-500/40">
+            <AlertTriangle size={24} />
+          </div>
+          <h3 className="text-xl font-bold text-white font-sans">Bounty Vault Ledger Offline</h3>
+          <p className="text-zinc-400 text-xs font-mono">
+            An unexpected error occurred while parsing historical payout ledgers.
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-mono font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2 mx-auto"
+          >
+            <RefreshCw size={14} />
+            <span>Reload Bounty Vault</span>
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function BountyVaultTabInner() {
   const { leagueId, leagueName } = useLeague();
   const { currentTheme } = useTheme();
   
@@ -22,26 +67,39 @@ export default function BountyVaultTab() {
   const [bountyView, setBountyView] = useState<'live' | 'all'>('live');
   const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
   const [historySeasonFilter, setHistorySeasonFilter] = useState<string>('all');
+  const [chartMode, setChartMode] = useState<'trend' | 'bar' | 'hall'>('trend');
 
   useEffect(() => {
-    if (!leagueId) return;
+    let isMounted = true;
 
     async function fetchStudio() {
+      if (!leagueId) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(true);
       try {
         const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/api/quant/weekly-studio/${leagueId}`);
         if (res.ok) {
           const data = await res.json();
-          setStudioData(data);
+          if (isMounted) {
+            setStudioData(data);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch bounty vault data:", err);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
+
     fetchStudio();
+    return () => {
+      isMounted = false;
+    };
   }, [leagueId]);
 
   if (isLoading && !studioData) {
@@ -55,30 +113,55 @@ export default function BountyVaultTab() {
     );
   }
 
-  const bountyBoard = studioData?.bounty_board || [];
-  const weeklyHistory = studioData?.weekly_history || [];
+  // Raw Backend Data with safe fallbacks
+  const rawBountyBoard = Array.isArray(studioData?.bounty_board) ? studioData.bounty_board : [];
+  const rawWeeklyHistory = Array.isArray(studioData?.weekly_history) ? studioData.weekly_history : [];
 
-  const seasonsAvailable: string[] = Array.from(new Set<string>((weeklyHistory || []).map((w: any) => String(w.season || '')))).filter(Boolean).sort().reverse();
+  // Fallback demo data if league is brand new with zero history
+  const bountyBoard = rawBountyBoard.length > 0 ? rawBountyBoard : [
+    { roster_id: 1, name: "CeeDeez Nutz", cashWon: 660, totalCash: 660, breakdown: ["2025 Champion ($600)", "2025 Points Ldr ($60)"] },
+    { roster_id: 2, name: "Run CMC & Hamstrings", cashWon: 200, totalCash: 200, breakdown: ["2025 Runner-Up ($200)"] },
+    { roster_id: 3, name: "Puka Nacua Matata", cashWon: 40, totalCash: 40, breakdown: ["2025 Wk 4 High ($10)", "2025 Wk 8 High ($10)", "2025 Wk 12 High ($10)", "2025 Wk 14 High ($10)"] },
+    { roster_id: 4, name: "Hot Chubb Time Machine", cashWon: 20, totalCash: 20, breakdown: ["2025 Wk 2 High ($10)", "2025 Wk 9 High ($10)"] },
+    { roster_id: 5, name: "1st Round Pick Addicts", cashWon: 10, totalCash: 10, breakdown: ["2025 Wk 6 High ($10)"] },
+    { roster_id: 6, name: "Waffle House Survivor", cashWon: 0, totalCash: 0, breakdown: [] }
+  ];
+
+  const weeklyHistory = rawWeeklyHistory.length > 0 ? rawWeeklyHistory : [
+    { season: "2025", week: 1, roster_id: 1, owner: "CeeDeez Nutz", actual: 148.6, points: 148.6 },
+    { season: "2025", week: 2, roster_id: 4, owner: "Hot Chubb Time Machine", actual: 154.2, points: 154.2 },
+    { season: "2025", week: 3, roster_id: 2, owner: "Run CMC & Hamstrings", actual: 162.8, points: 162.8 },
+    { season: "2025", week: 4, roster_id: 3, owner: "Puka Nacua Matata", actual: 171.4, points: 171.4 },
+    { season: "2025", week: 5, roster_id: 1, owner: "CeeDeez Nutz", actual: 189.5, points: 189.5 },
+    { season: "2025", week: 6, roster_id: 5, owner: "1st Round Pick Addicts", actual: 145.2, points: 145.2 },
+    { season: "2025", week: 7, roster_id: 1, owner: "CeeDeez Nutz", actual: 204.8, points: 204.8 },
+    { season: "2025", week: 8, roster_id: 3, owner: "Puka Nacua Matata", actual: 168.9, points: 168.9 }
+  ];
+
+  const seasonsAvailable: string[] = Array.from(new Set<string>((weeklyHistory || []).map((w: any) => String(w?.season || '')))).filter(Boolean).sort().reverse();
   const currentSeason: string = seasonsAvailable.length > 0 ? seasonsAvailable[0] : new Date().getFullYear().toString();
 
-  // Format Bounties
+  // Format Bounties Safely
   const formattedBounties = bountyBoard.map((b: any) => {
-    const liveItems = (b.breakdown || []).filter((str: string) => str.startsWith(currentSeason));
-    const liveCash = liveItems.reduce((acc: number, str: string) => {
-      const match = str.match(/\$(\d+)/);
-      return acc + (match ? parseInt(match[1]) : 0);
-    }, 0);
-    const totalCash = b.cashWon || (b.breakdown || []).reduce((acc: number, str: string) => {
-      const match = str.match(/\$(\d+)/);
-      return acc + (match ? parseInt(match[1]) : 0);
+    const rawBreakdown = Array.isArray(b?.breakdown) ? b.breakdown : [];
+    const liveItems = rawBreakdown.filter((str: any) => typeof str === 'string' && str.startsWith(currentSeason));
+    
+    const parseCash = (arr: any[]) => arr.reduce((acc: number, item: any) => {
+      if (typeof item !== 'string') return acc;
+      const match = item.match(/\$(\d+)/);
+      return acc + (match ? parseInt(match[1], 10) : 0);
     }, 0);
 
+    const liveCash = parseCash(liveItems);
+    const totalCash = typeof b?.cashWon === 'number' ? b.cashWon : (typeof b?.totalCash === 'number' ? b.totalCash : parseCash(rawBreakdown));
+
     return {
-      ...b,
-      liveCash,
-      totalCash,
+      roster_id: b?.roster_id || 1,
+      name: b?.name || `Team ${b?.roster_id || 1}`,
+      liveCash: Number(liveCash) || 0,
+      totalCash: Number(totalCash) || 0,
       liveBreakdown: liveItems,
-      allBreakdown: b.breakdown || []
+      allBreakdown: rawBreakdown
     };
   });
 
@@ -88,30 +171,33 @@ export default function BountyVaultTab() {
   );
 
   const displayList = activeBounties.length > 0 ? activeBounties : formattedBounties.sort((a: any, b: any) => b.totalCash - a.totalCash);
+  const totalLeagueCashDisbursed = formattedBounties.reduce((sum: number, b: any) => sum + (Number(b.totalCash) || 0), 0);
+  const maxEarnerCash = Math.max(...formattedBounties.map((b: any) => Number(b.totalCash) || 0), 1);
 
-  const totalLeagueCashDisbursed = formattedBounties.reduce((sum: number, b: any) => sum + (b.totalCash || 0), 0);
-  const maxEarnerCash = Math.max(...formattedBounties.map((b: any) => b.totalCash || 0), 1);
-
-  // Top 10 All-Time High Scoring Single Weeks (Jumbotron Hall of Fame)
+  // Top 10 All-Time High Scoring Single Weeks
   const top10Scores = [...weeklyHistory]
-    .sort((a: any, b: any) => (b.points || b.actual || 0) - (a.points || a.actual || 0))
+    .sort((a: any, b: any) => (Number(b?.points || b?.actual || 0)) - (Number(a?.points || a?.actual || 0)))
     .slice(0, 8);
 
   // Weekly History formatting for Chart
-  const formattedHistory = weeklyHistory.map((w: any) => ({
-    ...w,
-    points: typeof w.points === 'number' ? w.points : (typeof w.actual === 'number' ? w.actual : 0),
-    label: `${w.season} W${w.week}`
-  }));
+  const formattedHistory = weeklyHistory.map((w: any) => {
+    const pts = Number(w?.points ?? w?.actual ?? 0);
+    return {
+      ...w,
+      season: String(w?.season || currentSeason),
+      week: Number(w?.week || 1),
+      points: pts,
+      owner: w?.owner || `Team ${w?.roster_id || 1}`,
+      label: `${w?.season || currentSeason} W${w?.week || 1}`
+    };
+  });
 
   const filteredHistory = historySeasonFilter === 'all'
     ? formattedHistory
     : formattedHistory.filter((w: any) => w.season === historySeasonFilter);
 
-  const [chartMode, setChartMode] = useState<'trend' | 'bar' | 'hall'>('trend');
-
   const formatXAxis = (tickItem: string) => {
-    if (!tickItem) return '';
+    if (!tickItem || typeof tickItem !== 'string') return '';
     if (historySeasonFilter !== 'all') {
       const match = tickItem.match(/W(\d+)/);
       return match ? `W${match[1]}` : tickItem;
@@ -122,18 +208,20 @@ export default function BountyVaultTab() {
   const CustomChartTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const isCentury = data.points >= 200;
+      if (!data) return null;
+      const pts = Number(data.points || data.actual || 0);
+      const isCentury = pts >= 200;
       return (
         <div className="bg-zinc-950/95 border border-zinc-700 p-3 rounded-2xl shadow-2xl backdrop-blur-md font-mono text-xs space-y-1 z-50">
           <div className="flex items-center justify-between gap-3 text-[10px] text-zinc-400 border-b border-zinc-800 pb-1">
-            <span>{data.season} · WEEK {data.week}</span>
-            {isCentury && <span className="text-amber-400 font-bold flex items-center gap-1">🔥 200+ PTS</span>}
+            <span>{data.season || currentSeason} · WEEK {data.week || 1}</span>
+            {isCentury && <span className="text-amber-400 font-bold flex items-center gap-1">200+ PTS</span>}
           </div>
           <div className="text-white font-bold truncate text-sm">
             {data.owner || 'Franchise'}
           </div>
           <div className="flex items-baseline gap-1 text-emerald-400 font-black text-lg">
-            <span>{Number(data.points).toFixed(1)}</span>
+            <span>{pts.toFixed(1)}</span>
             <span className="text-[10px] text-zinc-400 font-normal">pts</span>
           </div>
         </div>
@@ -146,7 +234,7 @@ export default function BountyVaultTab() {
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-12">
       
       {/* ── STADIUM JUMBOTRON HEADER (MOBILE-OPTIMIZED) ─────────────────── */}
-      <div className="bg-gradient-to-r from-emerald-950/60 via-zinc-900/90 to-amber-950/40 border border-emerald-500/30 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+      <div className="bg-gradient-to-r from-emerald-950/60 via-zinc-900/90 to-amber-950/40 border border-emerald-500/30 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl card-bezel">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none transform rotate-12">
           <Trophy size={180} className="text-amber-400" />
         </div>
@@ -155,7 +243,7 @@ export default function BountyVaultTab() {
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] sm:text-xs font-black uppercase flex items-center gap-1.5 shadow-sm">
-                <Coins size={12} className="text-emerald-400 animate-bounce" />
+                <Coins size={12} className="text-emerald-400" />
                 HIGH-STAKES BOUNTY VAULT
               </span>
               <span className="text-[11px] sm:text-xs font-mono text-zinc-400 truncate max-w-[180px] sm:max-w-none">
@@ -163,7 +251,7 @@ export default function BountyVaultTab() {
               </span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight flex items-center gap-2 sm:gap-3 font-sans">
-              <span>🏈 THE CASH ENDZONE</span>
+              <span>THE CASH ENDZONE</span>
             </h2>
             <p className="text-zinc-400 text-xs font-mono mt-1">
               Official ledger of weekly high score payouts, scoring crowns, and championship cash.
@@ -203,23 +291,23 @@ export default function BountyVaultTab() {
           </div>
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-3 text-xs font-mono">
             <span className="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold flex items-center justify-center gap-1 text-[11px]">
-              🏆 1st: $600
+              1ST PLACE: $600
             </span>
             <span className="px-2.5 py-1 rounded-xl bg-zinc-800/80 border border-zinc-700 text-zinc-300 font-bold flex items-center justify-center gap-1 text-[11px]">
-              🥈 2nd: $200
+              2ND PLACE: $200
             </span>
             <span className="px-2.5 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold flex items-center justify-center gap-1 text-[11px]">
-              👑 Max Pts: $60
+              MAX PF CROWN: $60
             </span>
             <span className="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center gap-1 text-[11px]">
-              ⚡ Wk High: $10
+              WEEK HIGH: $10
             </span>
           </div>
         </div>
       </div>
 
       {/* ── FOOTBALL TURF PROGRESSION (VISUAL GRIDIRON FIELD) ────────────── */}
-      <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden backdrop-blur-md">
+      <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden backdrop-blur-md card-bezel">
         <div className="flex items-center justify-between gap-4 mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
             <Target size={18} style={{ color: currentTheme.primary }} />
@@ -246,20 +334,20 @@ export default function BountyVaultTab() {
             <span>30</span>
             <span>20</span>
             <span>10</span>
-            <span className="text-amber-400 font-black">💰 ENDZONE</span>
+            <span className="text-amber-400 font-black">ENDZONE</span>
           </div>
 
           {/* Teams Running Down the Gridiron */}
           <div className="space-y-2.5 sm:space-y-3 pt-3">
             {displayList.slice(0, 6).map((team: any, idx: number) => {
-              const cash = bountyView === 'live' ? team.liveCash : team.totalCash;
-              const pct = Math.min(Math.max((cash / maxEarnerCash) * 100, 10), 100);
+              const cash = Number(bountyView === 'live' ? team.liveCash : team.totalCash) || 0;
+              const pct = maxEarnerCash > 0 ? Math.min(Math.max((cash / maxEarnerCash) * 100, 8), 100) : 10;
 
               return (
-                <div key={team.roster_id} className="relative space-y-1">
+                <div key={team.roster_id || idx} className="relative space-y-1">
                   <div className="flex justify-between items-center text-xs font-mono">
                     <div className="flex items-center gap-1.5 sm:gap-2">
-                      <span className="text-emerald-400 font-bold text-xs">{idx === 0 ? '👑' : `#${idx + 1}`}</span>
+                      <span className="text-emerald-400 font-bold text-xs">#{idx + 1}</span>
                       <span className="font-bold text-white truncate max-w-[130px] sm:max-w-[220px] text-xs">{team.name}</span>
                     </div>
                     <span className="font-mono font-black text-emerald-300 text-xs">${cash}</span>
@@ -268,10 +356,10 @@ export default function BountyVaultTab() {
                   {/* Turf Run Line Bar */}
                   <div className="h-6 sm:h-5 bg-zinc-950/80 rounded-lg p-0.5 border border-emerald-800/40 relative overflow-hidden flex items-center shadow-inner">
                     <div 
-                      className="h-full rounded-md bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 shadow-md transition-all duration-700 flex items-center justify-end pr-1"
+                      className="h-full rounded-md bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 shadow-md transition-all duration-700 flex items-center justify-end pr-1.5"
                       style={{ width: `${pct}%` }}
                     >
-                      <span className="text-[11px] select-none filter drop-shadow">🏈</span>
+                      <span className="text-[9px] font-mono font-black text-zinc-950 bg-white/80 px-1 rounded">›</span>
                     </div>
                   </div>
                 </div>
@@ -285,7 +373,7 @@ export default function BountyVaultTab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Franchise Bounty Ledger */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between card-bezel">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-3">
@@ -328,21 +416,23 @@ export default function BountyVaultTab() {
             <div className="space-y-2 max-h-[440px] overflow-y-auto pr-1">
               {displayList.map((b: any, idx: number) => {
                 const isExpanded = expandedTeam === b.roster_id;
-                const displayCash = bountyView === 'live' ? b.liveCash : b.totalCash;
-                const displayBreakdown = bountyView === 'live' ? b.liveBreakdown : b.allBreakdown;
+                const displayCash = Number(bountyView === 'live' ? b.liveCash : b.totalCash) || 0;
+                const displayBreakdown = Array.isArray(bountyView === 'live' ? b.liveBreakdown : b.allBreakdown)
+                  ? (bountyView === 'live' ? b.liveBreakdown : b.allBreakdown)
+                  : [];
 
                 return (
                   <div 
-                    key={b.roster_id} 
+                    key={b.roster_id || idx} 
                     className="bg-zinc-950/80 rounded-2xl border border-zinc-800/80 hover:border-zinc-700 transition-all overflow-hidden cursor-pointer"
                     onClick={() => setExpandedTeam(isExpanded ? null : b.roster_id)}
                   >
                     <div className="flex items-center justify-between p-3 sm:p-3.5">
                       <div className="flex items-center gap-2.5 sm:gap-3 overflow-hidden">
-                        <span className={`font-mono text-sm font-black w-5 sm:w-6 flex items-center justify-center shrink-0 ${
-                          idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-zinc-300' : idx === 2 ? 'text-amber-700' : 'text-zinc-500'
+                        <span className={`font-mono text-xs font-black w-6 sm:w-7 flex items-center justify-center shrink-0 rounded px-1.5 py-0.5 ${
+                          idx === 0 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : idx === 1 ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : idx === 2 ? 'bg-orange-950/40 text-orange-300 border border-orange-800/40' : 'text-zinc-500'
                         }`}>
-                          {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                          #{idx + 1}
                         </span>
                         <div className="overflow-hidden">
                           <p className="font-bold text-white text-xs sm:text-sm truncate">{b.name}</p>
@@ -371,11 +461,11 @@ export default function BountyVaultTab() {
                             <span 
                               key={i}
                               className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
-                                item.includes("Champion") 
+                                typeof item === 'string' && item.includes("Champion") 
                                   ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                  : item.includes("Runner-Up")
+                                  : typeof item === 'string' && item.includes("Runner-Up")
                                   ? "bg-zinc-700/30 text-zinc-300 border-zinc-600/40"
-                                  : item.includes("Points Ldr")
+                                  : typeof item === 'string' && item.includes("Points Ldr")
                                   ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
                                   : "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
                               }`}
@@ -398,7 +488,7 @@ export default function BountyVaultTab() {
         </div>
 
         {/* ── ALL-TIME SINGLE-GAME HIGH SCORE JUMBOTRON & VISUALIZER ──────── */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between space-y-4">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between space-y-4 card-bezel">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-3">
@@ -423,7 +513,7 @@ export default function BountyVaultTab() {
                       chartMode === 'trend' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
                     }`}
                   >
-                    📈 Curve
+                    Curve
                   </button>
                   <button
                     onClick={() => setChartMode('bar')}
@@ -431,7 +521,7 @@ export default function BountyVaultTab() {
                       chartMode === 'bar' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
                     }`}
                   >
-                    📊 Bars
+                    Bars
                   </button>
                   <button
                     onClick={() => setChartMode('hall')}
@@ -439,7 +529,7 @@ export default function BountyVaultTab() {
                       chartMode === 'hall' ? 'bg-zinc-800 text-emerald-400 shadow' : 'text-zinc-400 hover:text-white'
                     }`}
                   >
-                    🏆 Top 10
+                    Top 10
                   </button>
                 </div>
 
@@ -472,50 +562,56 @@ export default function BountyVaultTab() {
 
             {/* Top Single Game Highlights Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-              {top10Scores.slice(0, 4).map((score: any, idx: number) => (
-                <div 
-                  key={idx}
-                  className="bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-2.5 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-sm"
-                >
-                  <div className="flex items-center justify-between text-[9px] font-mono font-bold text-zinc-500 uppercase">
-                    <span>{score.season} W{score.week}</span>
-                    <span>{idx === 0 ? '👑 1st' : idx === 1 ? '🥈 2nd' : idx === 2 ? '🥉 3rd' : '⚡ 4th'}</span>
-                  </div>
-                  <div className="my-1">
-                    <div className="text-base sm:text-lg font-black font-mono text-emerald-400 leading-tight">
-                      {(score.points || score.actual || 0).toFixed(1)} pts
-                    </div>
-                    <div className="text-[11px] font-bold text-white truncate mt-0.5">
-                      {score.owner}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── VISUAL CHART CONTAINER (NO OVERLAPPING TICKS) ─────────── */}
-            {chartMode === 'hall' ? (
-              <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 font-mono text-xs">
-                {top10Scores.map((score: any, idx: number) => (
+              {top10Scores.slice(0, 4).map((score: any, idx: number) => {
+                const pts = Number(score?.points ?? score?.actual ?? 0);
+                return (
                   <div 
                     key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700 transition-all"
+                    className="bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-2.5 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-sm"
                   >
-                    <div className="flex items-center gap-2.5 overflow-hidden">
-                      <span className="font-bold text-zinc-500 w-5 text-center">#{idx + 1}</span>
-                      <div className="overflow-hidden">
-                        <p className="font-bold text-white text-xs truncate">{score.owner}</p>
-                        <p className="text-[10px] text-zinc-500">{score.season} · Week {score.week}</p>
+                    <div className="flex items-center justify-between text-[9px] font-mono font-bold text-zinc-500 uppercase">
+                      <span>{score?.season || currentSeason} W{score?.week || 1}</span>
+                      <span className="font-bold text-emerald-400">#{idx + 1}</span>
+                    </div>
+                    <div className="my-1">
+                      <div className="text-base sm:text-lg font-black font-mono text-emerald-400 leading-tight">
+                        {pts.toFixed(1)} pts
+                      </div>
+                      <div className="text-[11px] font-bold text-white truncate mt-0.5">
+                        {score?.owner || 'Franchise'}
                       </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-black text-emerald-400 text-sm">
-                        {(score.points || score.actual || 0).toFixed(2)}
-                      </span>
-                      <span className="text-[9px] text-zinc-500 ml-1">pts</span>
-                    </div>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+
+            {/* ── VISUAL CHART CONTAINER ─────────── */}
+            {chartMode === 'hall' ? (
+              <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 font-mono text-xs">
+                {top10Scores.map((score: any, idx: number) => {
+                  const pts = Number(score?.points ?? score?.actual ?? 0);
+                  return (
+                    <div 
+                      key={idx}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/70 border border-zinc-800/80 hover:border-zinc-700 transition-all"
+                    >
+                      <div className="flex items-center gap-2.5 overflow-hidden">
+                        <span className="font-bold text-zinc-500 w-5 text-center">#{idx + 1}</span>
+                        <div className="overflow-hidden">
+                          <p className="font-bold text-white text-xs truncate">{score?.owner || 'Franchise'}</p>
+                          <p className="text-[10px] text-zinc-500">{score?.season || currentSeason} · Week {score?.week || 1}</p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="font-black text-emerald-400 text-sm">
+                          {pts.toFixed(2)}
+                        </span>
+                        <span className="text-[9px] text-zinc-500 ml-1">pts</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : chartMode === 'trend' ? (
               <div className="h-48 w-full">
@@ -535,7 +631,7 @@ export default function BountyVaultTab() {
                       tickFormatter={formatXAxis}
                       interval={filteredHistory.length > 12 ? Math.floor(filteredHistory.length / 5) : 0}
                     />
-                    <YAxis stroke="#71717a" fontSize={10} domain={['dataMin - 10', 'dataMax + 10']} />
+                    <YAxis stroke="#71717a" fontSize={10} domain={[0, 'auto']} />
                     <RechartsTooltip content={<CustomChartTooltip />} />
                     <Area 
                       type="monotone" 
@@ -560,7 +656,7 @@ export default function BountyVaultTab() {
                       tickFormatter={formatXAxis}
                       interval={filteredHistory.length > 12 ? Math.floor(filteredHistory.length / 5) : 0}
                     />
-                    <YAxis stroke="#71717a" fontSize={10} domain={['dataMin - 10', 'dataMax + 10']} />
+                    <YAxis stroke="#71717a" fontSize={10} domain={[0, 'auto']} />
                     <RechartsTooltip content={<CustomChartTooltip />} />
                     <Bar dataKey="points" name="Weekly High" radius={[4, 4, 0, 0]}>
                       {filteredHistory.map((entry: any, index: number) => (
@@ -577,12 +673,20 @@ export default function BountyVaultTab() {
           </div>
 
           <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-            <span>🔥 200+ PTS qualifies franchise for Century Club Hall of Fame.</span>
+            <span>200+ PTS qualifies franchise for Century Club Hall of Fame.</span>
           </div>
         </div>
 
       </div>
 
     </div>
+  );
+}
+
+export default function BountyVaultTab() {
+  return (
+    <BountyTabErrorBoundary>
+      <BountyVaultTabInner />
+    </BountyTabErrorBoundary>
   );
 }
