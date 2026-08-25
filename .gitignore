@@ -27,4 +27,8 @@ Data Dumps/
 .vscode/
 .idea/
 
+# Binaries & APKs
+*.apk
+
 .vercel
+

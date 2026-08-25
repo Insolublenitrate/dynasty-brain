@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
-  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins
+  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins, TrendingUp
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -16,6 +16,7 @@ import BountyVaultTab from '@/components/tabs/BountyVaultTab';
 import MatrixTab from '@/components/tabs/MatrixTab';
 import TradeArchitectTab from '@/components/tabs/TradeArchitectTab';
 import AutopsyTab from '@/components/tabs/AutopsyTab';
+import TradedPlayersTab from '@/components/tabs/TradedPlayersTab';
 import RivalriesTab from '@/components/tabs/RivalriesTab';
 import RecordBookTab from '@/components/tabs/RecordBookTab';
 import PowerRankingsTab from '@/components/tabs/PowerRankingsTab';
@@ -29,12 +30,13 @@ function DynastyRoomContent() {
 
   // Primary Arena (command, matchups, power, trade)
   const arenaParam = searchParams.get('arena') || 'command';
+  const subParam = searchParams.get('sub');
   const [activeArena, setActiveArena] = useState(arenaParam);
 
   // Sub-tab selectors for multi-module arenas
   const [commandSub, setCommandSub] = useState<'action' | 'studio' | 'bounties'>('action');
   const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
-  const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy'>('architect');
+  const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy' | 'trends'>((subParam as any) || 'architect');
 
   useEffect(() => {
     if (arenaParam && arenaParam !== activeArena) {
@@ -209,7 +211,7 @@ function DynastyRoomContent() {
           )}
 
           {activeArena === 'trade' && (
-            <div className="grid grid-cols-3 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="grid grid-cols-4 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
               <button
                 onClick={() => setTradeSub('architect')}
                 className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
@@ -240,6 +242,16 @@ function DynastyRoomContent() {
               >
                 <ArrowRightLeft size={13} className="shrink-0" />
                 <span className="truncate">Autopsy</span>
+              </button>
+              <button
+                onClick={() => setTradeSub('trends')}
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                  tradeSub === 'trends' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={tradeSub === 'trends' ? { color: currentTheme.primary } : {}}
+              >
+                <TrendingUp size={13} className="shrink-0" />
+                <span className="truncate">Trends</span>
               </button>
             </div>
           )}
@@ -278,6 +290,7 @@ function DynastyRoomContent() {
             {tradeSub === 'architect' && <TradeArchitectTab />}
             {tradeSub === 'team' && <TeamAnalyzerTab />}
             {tradeSub === 'autopsy' && <AutopsyTab />}
+            {tradeSub === 'trends' && <TradedPlayersTab />}
           </div>
         )}
       </div>
