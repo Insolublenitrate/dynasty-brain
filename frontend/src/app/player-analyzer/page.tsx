@@ -386,7 +386,7 @@ export default function PlayerAnalyzer() {
 
       {/* Selected Player Dossier Modal */}
       {selectedPlayer && (
-        <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 sm:p-8 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-zinc-950/85 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-8 animate-in fade-in duration-300">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-4xl relative max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
             
             {/* Header */}

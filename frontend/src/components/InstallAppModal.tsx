@@ -59,7 +59,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div className="bg-zinc-900 border-2 border-zinc-700 rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl space-y-6">
         
         {/* Close Button */}

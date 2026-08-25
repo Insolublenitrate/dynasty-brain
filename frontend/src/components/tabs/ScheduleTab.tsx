@@ -909,33 +909,40 @@ export default function ScheduleTab() {
         </div>
       )}
 
-      {/* ── 4. BOX SCORE & STARTERS MODAL (MOBILE-FIRST REDESIGN) ──────────── */}
+      {/* ── 4. BOX SCORE & STARTERS MODAL (MOBILE-OPTIMIZED HIGH-Z OVERLAY) ──────────── */}
       {activeBoxScore && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex flex-col justify-end sm:justify-center items-center p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => setActiveBoxScore(null)}
+        >
           <div 
-            className="bg-zinc-900 border-2 border-zinc-700 rounded-3xl max-w-2xl w-full p-4 sm:p-6 relative shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto"
+            className="bg-zinc-900 border-t-2 sm:border-2 border-zinc-700 rounded-t-[32px] sm:rounded-3xl max-w-2xl w-full p-4 sm:p-6 relative shadow-2xl space-y-4 sm:space-y-5 max-h-[88vh] sm:max-h-[90vh] overflow-y-auto flex flex-col pb-8 sm:pb-6"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Mobile Drag Handle */}
+            <div className="w-12 h-1.5 bg-zinc-700/80 rounded-full mx-auto sm:hidden -mt-1 mb-1 shrink-0" />
+
             {/* Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-800">
+            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-800 shrink-0">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] font-mono uppercase text-orange-400 font-black">
                     Week {selectedWeek} · Matchup #{activeBoxScore.matchup_id}
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
-                    {activeBoxScore.is_played ? 'Official Box Score' : '🔮 Preseason Forecast'}
+                  <span className="text-[9.5px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 font-bold uppercase">
+                    {activeBoxScore.is_played ? 'Official Box Score' : 'Preseason Forecast'}
                   </span>
                 </div>
-                <h3 className="text-lg sm:text-2xl font-black uppercase text-white tracking-tight mt-0.5">
+                <h3 className="text-base sm:text-2xl font-black uppercase text-white tracking-tight mt-1">
                   Tale of the Tape: Starter vs Starter
                 </h3>
               </div>
               <button 
                 onClick={() => setActiveBoxScore(null)}
-                className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition-colors font-mono text-xs font-bold border border-zinc-800"
+                className="text-zinc-300 hover:text-white bg-zinc-800/90 hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition-all font-mono text-xs font-bold border border-zinc-700 flex items-center gap-1 shrink-0 shadow-sm"
               >
-                ✕ Close
+                <span>✕</span>
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
 
@@ -950,7 +957,7 @@ export default function ScheduleTab() {
                       <img 
                         src={`https://sleepercdn.com/avatars/thumbs/${activeBoxScore.team_a.avatar}`} 
                         alt="" 
-                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700" 
+                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700 shrink-0" 
                       />
                     ) : null}
                     <h4 className="text-xs sm:text-sm font-black text-white truncate max-w-[130px] sm:max-w-[180px]">
@@ -959,8 +966,8 @@ export default function ScheduleTab() {
                   </div>
                   <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
                     {activeBoxScore.is_played 
-                      ? (activeBoxScore.team_a ? activeBoxScore.team_a.points.toFixed(2) : '0.00')
-                      : (activeBoxScore.team_a ? (activeBoxScore.team_a.projected_points?.toFixed(2) || '125.00') : '0.00')}
+                      ? (activeBoxScore.team_a ? Number(activeBoxScore.team_a.points || 0).toFixed(2) : '0.00')
+                      : (activeBoxScore.team_a ? Number(activeBoxScore.team_a.projected_points || 125.0).toFixed(2) : '0.00')}
                   </div>
                   <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase block">
                     {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
@@ -977,14 +984,14 @@ export default function ScheduleTab() {
                       <img 
                         src={`https://sleepercdn.com/avatars/thumbs/${activeBoxScore.team_b.avatar}`} 
                         alt="" 
-                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700" 
+                        className="w-6 h-6 rounded-lg object-cover border border-zinc-700 shrink-0" 
                       />
                     ) : null}
                   </div>
                   <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
                     {activeBoxScore.is_played 
-                      ? (activeBoxScore.team_b ? activeBoxScore.team_b.points.toFixed(2) : '0.00')
-                      : (activeBoxScore.team_b ? (activeBoxScore.team_b.projected_points?.toFixed(2) || '125.00') : '0.00')}
+                      ? (activeBoxScore.team_b ? Number(activeBoxScore.team_b.points || 0).toFixed(2) : '0.00')
+                      : (activeBoxScore.team_b ? Number(activeBoxScore.team_b.projected_points || 125.0).toFixed(2) : '0.00')}
                   </div>
                   <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase block">
                     {activeBoxScore.is_played ? 'Total Starter Points' : 'Projected Starter Points'}
@@ -1008,8 +1015,8 @@ export default function ScheduleTab() {
               <div className="space-y-2.5">
                 {(activeBoxScore.team_a?.starters || []).map((pA: any, idx: number) => {
                   const pB = activeBoxScore.team_b?.starters?.[idx];
-                  const scoreA = typeof pA.points === 'number' && activeBoxScore.is_played ? pA.points : (pA.projected_points || 12.0);
-                  const scoreB = pB ? (typeof pB.points === 'number' && activeBoxScore.is_played ? pB.points : (pB.projected_points || 12.0)) : 0;
+                  const scoreA = Number(typeof pA.points === 'number' && activeBoxScore.is_played ? pA.points : (pA.projected_points || 12.0));
+                  const scoreB = pB ? Number(typeof pB.points === 'number' && activeBoxScore.is_played ? pB.points : (pB.projected_points || 12.0)) : 0;
                   const diff = scoreA - scoreB;
                   const posName = pA.position || (idx === 0 ? 'QB' : idx < 3 ? 'RB' : idx < 5 ? 'WR' : idx === 5 ? 'TE' : 'FLEX');
 

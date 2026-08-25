@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       {playbookEnabled && <PlaybookBackground />}
       
       <TopNav />
-      <main className="flex-1 flex flex-col min-w-0 pb-20 md:pb-8 relative z-10">
+      <main className="flex-1 flex flex-col min-w-0 pb-20 md:pb-8 relative">
         <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 flex-1 flex flex-col">
           {children}
         </div>
