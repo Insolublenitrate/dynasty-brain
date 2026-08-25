@@ -321,12 +321,12 @@ export default function LandingPage() {
                 <span>Apple iOS (iPhone / iPad)</span>
               </div>
               <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold uppercase">
-                Film Room 🏈
+                Film Room
               </span>
             </div>
             <p className="text-zinc-400 text-[11px] font-sans">
               <strong>Native App on Practice Squad</strong> (App Store soon).<br />
-              <strong>Audible play:</strong> Open Safari & tap <strong>Share (⎋)</strong> &rarr; <strong>"Add to Home Screen" (➕)</strong> for full-screen mode today!
+              <strong>Audible play:</strong> Open Safari & tap <strong>Share</strong> &rarr; <strong>"Add to Home Screen"</strong> for full-screen mode today!
             </p>
           </div>
 
@@ -338,7 +338,7 @@ export default function LandingPage() {
             </div>
             <p className="text-zinc-400 text-[11px] font-sans">
               1. Open Chrome/Brave on Android<br />
-              2. Tap <strong>"Get App 📱"</strong> or the <strong>3-dots menu (⋮)</strong><br />
+              2. Tap <strong>"Get App"</strong> or the <strong>3-dots menu (⋮)</strong><br />
               3. Tap <strong>"Install app"</strong> for instant full-screen app
             </p>
           </div>

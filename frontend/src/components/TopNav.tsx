@@ -30,7 +30,7 @@ function TopNavInner() {
     { id: "matchups", href: "/dynasty-room?arena=matchups", label: "Matchups", icon: CalendarDays, isDynasty: true },
     { id: "power", href: "/dynasty-room?arena=power", label: "Power", icon: Crown, isDynasty: true },
     { id: "trade", href: "/dynasty-room?arena=trade", label: "Trade", icon: Briefcase, isDynasty: true },
-    { id: "madden", href: "/ask-madden", label: "Ask Madden 🎙️", icon: Sparkles, isDynasty: false },
+    { id: "madden", href: "/ask-madden", label: "Ask Madden", icon: Sparkles, isDynasty: false },
   ];
 
   const secondaryTools = [

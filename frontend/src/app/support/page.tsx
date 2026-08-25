@@ -18,11 +18,11 @@ const FAQS = [
     questions: [
       {
         q: "How do I link an ESPN Fantasy Football league?",
-        a: "1. Open your ESPN Fantasy Football league on espn.com.\n2. Copy the League ID from your browser's URL (e.g. fantasy.espn.com/football/league?leagueId=123456789).\n3. In Waiver Wiretap, open Settings > Tap the '🔴 ESPN' tab > Enter your League ID and Season.\n4. If your ESPN league is Public, tap 'Connect & Sync'. If it is Private, enter your 'espn_s2' and 'SWID' cookies in the optional fields."
+        a: "1. Open your ESPN Fantasy Football league on espn.com.\n2. Copy the League ID from your browser's URL (e.g. fantasy.espn.com/football/league?leagueId=123456789).\n3. In Waiver Wiretap, open Settings > Tap the 'ESPN' tab > Enter your League ID and Season.\n4. If your ESPN league is Public, tap 'Connect & Sync'. If it is Private, enter your 'espn_s2' and 'SWID' cookies in the optional fields."
       },
       {
         q: "How do I link a Yahoo Fantasy Football league?",
-        a: "1. Open your Yahoo Fantasy league on football.fantasysports.yahoo.com.\n2. Copy your Yahoo League ID / Key (e.g. 123456 or 449.l.123456).\n3. In Waiver Wiretap, open Settings > Tap the '🟣 Yahoo' tab > Enter your League ID and tap 'Connect & Sync'."
+        a: "1. Open your Yahoo Fantasy league on football.fantasysports.yahoo.com.\n2. Copy your Yahoo League ID / Key (e.g. 123456 or 449.l.123456).\n3. In Waiver Wiretap, open Settings > Tap the 'Yahoo' tab > Enter your League ID and tap 'Connect & Sync'."
       },
       {
         q: "How does Waiver Wiretap sync with Sleeper dynasty leagues?",
@@ -73,11 +73,11 @@ const FAQS = [
     questions: [
       {
         q: "How do I install Waiver Wiretap on Apple iPhone or iPad?",
-        a: "1. Open Safari on your iPhone and visit waiverwiretap.kindofabigdill.com.\n2. Tap the Share button (⎋ box with upward arrow) at the bottom toolbar.\n3. Scroll down and tap 'Add to Home Screen' (➕).\n4. Tap 'Add' in the top-right. The app will launch in full-screen standalone mode with no browser bars!"
+        a: "1. Open Safari on your iPhone and visit waiverwiretap.kindofabigdill.com.\n2. Tap the Share button at the bottom toolbar.\n3. Scroll down and tap 'Add to Home Screen'.\n4. Tap 'Add' in the top-right. The app will launch in full-screen standalone mode with no browser bars!"
       },
       {
         q: "How do I install Waiver Wiretap on Android?",
-        a: "1. Open Chrome or Brave on your Android phone.\n2. Tap the 'Get App 📱' button in the top navigation bar (or tap the 3 vertical dots ⋮ menu).\n3. Tap 'Install app' or 'Add to Home screen' to generate a standalone Android WebAPK."
+        a: "1. Open Chrome or Brave on your Android phone.\n2. Tap the 'Get App' button in the top navigation bar (or tap the 3 vertical dots ⋮ menu).\n3. Tap 'Install app' or 'Add to Home screen' to generate a standalone Android WebAPK."
       }
     ]
   }

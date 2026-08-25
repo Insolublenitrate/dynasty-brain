@@ -148,7 +148,7 @@ export default function AskMaddenPage() {
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-zinc-900 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_35px_rgba(251,191,36,0.25)] group-hover:scale-105 transition-transform">
             <Mic size={36} className="text-amber-400" />
           </div>
-          <span className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-amber-500 text-zinc-950 font-black text-[10px] tracking-wider uppercase shadow-lg border border-amber-300 font-mono">
+          <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-amber-500 text-zinc-950 font-coach text-xs tracking-wider uppercase shadow-lg border border-amber-300">
             BOOM!
           </span>
         </div>
@@ -235,7 +235,7 @@ export default function AskMaddenPage() {
             className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
           >
             <Flame size={14} className="text-amber-400" />
-            <span>I'm Feeling Tough (BOOM!)</span>
+            <span className="font-coach tracking-wide text-amber-300">BOOM! Direct Call</span>
           </button>
         </div>
 
@@ -265,7 +265,7 @@ export default function AskMaddenPage() {
       {result && (
         <div className="max-w-3xl mx-auto space-y-4 animate-in fade-in duration-300">
           
-          <div className="bg-zinc-900/90 backdrop-blur-md border-2 border-amber-400/60 rounded-3xl p-5 sm:p-8 shadow-[0_0_40px_rgba(251,191,36,0.15)] relative overflow-hidden space-y-6">
+          <div className="bg-zinc-900/90 backdrop-blur-md border-2 border-amber-400/60 rounded-3xl p-5 sm:p-8 shadow-[0_0_40px_rgba(251,191,36,0.15)] relative overflow-hidden space-y-6 playbook-chalk-grid">
             
             {/* Telestrator Chalkboard Header */}
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
@@ -274,10 +274,11 @@ export default function AskMaddenPage() {
                   JM
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white italic tracking-tight">
+                  <h3 className="text-lg font-black text-white italic tracking-tight font-coach">
                     COACH MADDEN'S VERDICT
                   </h3>
-                  <p className="text-[10px] font-mono text-amber-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-mono text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     Live Broadcast • Telestrator Breakdown
                   </p>
                 </div>
@@ -306,12 +307,17 @@ export default function AskMaddenPage() {
               </button>
             </div>
 
-            {/* Telestrator Callout Box */}
+            {/* Telestrator Callout Box (Coach Whiteboard Marker) */}
             <div className="bg-zinc-950/90 border border-amber-400/30 rounded-2xl p-4 font-mono text-xs text-amber-300 leading-relaxed shadow-inner">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-500 block mb-1">
-                TELESTRATOR CHALK BREAKDOWN:
-              </span>
-              {result.telestrator || "[TELESTRATOR: Big yellow circle around the trenches]"}
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-amber-500 font-mono">
+                  TELESTRATOR CHALK BREAKDOWN:
+                </span>
+                <span className="font-coach text-xs text-amber-400 tracking-wider">X & O SCHEME</span>
+              </div>
+              <div className="font-coach text-sm text-amber-200 leading-snug">
+                {result.telestrator || "[TELESTRATOR: Big yellow circle around the trenches]"}
+              </div>
             </div>
 
             {/* Main Response Body */}
@@ -322,7 +328,7 @@ export default function AskMaddenPage() {
             {/* Tactical Takeaways Checklist */}
             {result.suggested_actions && result.suggested_actions.length > 0 && (
               <div className="bg-zinc-950/80 rounded-2xl p-4 border border-zinc-800 space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block font-coach text-amber-400">
                   Madden Playbook Takeaways:
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-xs">
@@ -339,7 +345,7 @@ export default function AskMaddenPage() {
             {/* Iconic John Madden Footer Quote */}
             {result.quote && (
               <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span className="italic">"{result.quote}"</span>
+                <span className="font-coach text-sm text-amber-300 tracking-wide">"{result.quote}"</span>
                 <span className="text-amber-400 font-bold font-sans uppercase text-[10px] tracking-wider">— John Madden</span>
               </div>
             )}

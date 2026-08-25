@@ -451,7 +451,7 @@ export default function CrossReference() {
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> TE</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> QB</span>
           </div>
-          <span className="text-[11px] text-zinc-500">💡 Tap any player dot to highlight</span>
+          <span className="text-[11px] text-zinc-500">Tap any player dot to highlight</span>
         </div>
 
       </div>

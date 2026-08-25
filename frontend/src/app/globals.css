@@ -4,6 +4,7 @@
   --font-display: var(--font-display), "Outfit", system-ui, sans-serif;
   --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", monospace;
+  --font-coach: var(--font-coach), "Permanent Marker", cursive;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -73,6 +74,28 @@ body {
 
 .font-sans {
   font-family: var(--font-sans);
+}
+
+.font-coach {
+  font-family: var(--font-coach);
+  letter-spacing: 0.03em;
+}
+
+/* Authentic Coach Whiteboard & Dry-Erase Callout Stamp */
+.coach-stamp {
+  font-family: var(--font-coach);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.04em;
+  transform: rotate(-1.5deg);
+  text-shadow: 0 0 12px currentColor;
+}
+
+/* Playbook X's & O's Field Motif */
+.playbook-chalk-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 /* Tactical Double-Bezel Card Architecture */

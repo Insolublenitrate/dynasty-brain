@@ -161,7 +161,7 @@ export default function ActionCenterTab() {
                   className="w-full mt-2 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-mono text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-md"
                 >
                   <MessageSquare size={13} />
-                  <span>Ask Coach Madden 🎙️</span>
+                  <span>Ask Coach Madden</span>
                 </button>
               </div>
             )}

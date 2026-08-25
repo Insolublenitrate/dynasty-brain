@@ -209,7 +209,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 selectedQuadrant === 'juggernaut' ? 'bg-purple-500/30 border border-purple-500/60 text-purple-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> 👑 Juggernaut ({quadrantTeams.topRight.length})
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Juggernaut ({quadrantTeams.topRight.length})
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'rebuild' ? null : 'rebuild')}
@@ -217,7 +217,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 selectedQuadrant === 'rebuild' ? 'bg-emerald-500/30 border border-emerald-500/60 text-emerald-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ⚡ Rebuilding ({quadrantTeams.topLeft.length})
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Rebuilding ({quadrantTeams.topLeft.length})
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'contender' ? null : 'contender')}
@@ -225,7 +225,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 selectedQuadrant === 'contender' ? 'bg-amber-500/30 border border-amber-500/60 text-amber-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 🏆 Contender ({quadrantTeams.bottomRight.length})
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Contender ({quadrantTeams.bottomRight.length})
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'purgatory' ? null : 'purgatory')}
@@ -233,7 +233,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 selectedQuadrant === 'purgatory' ? 'bg-red-500/30 border border-red-500/60 text-red-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> 💀 Purgatory ({quadrantTeams.bottomLeft.length})
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> Purgatory ({quadrantTeams.bottomLeft.length})
             </button>
           </div>
         </div>
@@ -464,7 +464,7 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
 
         {/* Mobile tap hint */}
         <p className="text-[11px] text-zinc-500 font-mono text-center mt-3 block sm:hidden">
-          💡 Tap any dot or quadrant card to filter teams below
+          Tap any dot or quadrant card to filter teams below
         </p>
       </div>
 

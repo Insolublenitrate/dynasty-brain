@@ -185,7 +185,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <span>⚡ Sleeper</span>
+                <span>Sleeper</span>
               </button>
 
               <button
@@ -197,7 +197,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <span>🔴 ESPN</span>
+                <span>ESPN</span>
               </button>
 
               <button
@@ -209,7 +209,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <span>🟣 Yahoo</span>
+                <span>Yahoo</span>
               </button>
             </div>
 
@@ -258,7 +258,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     onClick={() => setShowEspnHelp(!showEspnHelp)}
                     className="text-[11px] text-amber-400 hover:text-amber-300 font-bold flex items-center justify-between w-full"
                   >
-                    <span>🔒 Is your ESPN League Private? (Optional Cookies)</span>
+                    <span>Is your ESPN League Private? (Optional Cookies)</span>
                     {showEspnHelp ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </button>
 

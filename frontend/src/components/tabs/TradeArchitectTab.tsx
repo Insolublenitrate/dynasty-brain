@@ -323,13 +323,13 @@ export default function TradeArchitectTab() {
                 <Scale size={20} style={{ color: currentTheme.primary }} />
               </div>
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-zinc-400">Trade Verdict</div>
-                <div className="text-sm font-black text-white">
+                <div className="text-xs font-bold uppercase tracking-widest text-zinc-400 font-mono">Trade Verdict</div>
+                <div className="text-sm font-black text-white font-coach tracking-wide">
                   {Math.abs(diff) < 2 
-                    ? "⚖️ Highly Balanced Fair Trade" 
+                    ? "BALANCED FAIR TRADE" 
                     : diff > 0 
-                      ? `🏆 Team A Favored (+${diff.toFixed(1)} PPG Value)` 
-                      : `🏆 Team B Favored (+${Math.abs(diff).toFixed(1)} PPG Value)`
+                      ? `TEAM A FAVORED (+${diff.toFixed(1)} PPG VALUE)` 
+                      : `TEAM B FAVORED (+${Math.abs(diff).toFixed(1)} PPG VALUE)`
                   }
                 </div>
               </div>

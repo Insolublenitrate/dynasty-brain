@@ -4,7 +4,7 @@
    Carbon Weave, Turf Geometry & 6 Dynamic Theme Accents
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=Outfit:wght@400;500;600;700;800;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap');
 
 :root {
   /* Dynamic Active Theme (Default: Orange & Carbon) */
@@ -108,6 +108,27 @@ body {
 h1, h2, h3, h4, h5, h6, .font-display, .hero-title, .section-title, .card-title, .nav-brand {
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: -0.02em;
+}
+
+/* Authentic Coach Whiteboard & Dry-Erase Handwriting */
+.font-coach, .coach-handwriting, .whiteboard-font {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.coach-stamp {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.04em;
+  transform: rotate(-2deg);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.playbook-chalk-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 /* Carbon Weave Texture Layer */
@@ -1032,81 +1053,105 @@ section:nth-of-type(even) {
 .madden-chalkboard {
   background: #060B08;
   border: 2px solid #16A34A;
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 0 35px rgba(22, 163, 74, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 0 45px rgba(22, 163, 74, 0.25);
   position: relative;
+  background-image: 
+    radial-gradient(rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 24px 24px, 100% 48px;
 }
 
 .madden-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px dashed rgba(34, 197, 94, 0.3);
-  margin-bottom: 1.1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed rgba(34, 197, 94, 0.35);
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .madden-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 900;
-  font-size: 1.05rem;
+  gap: 0.6rem;
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  font-size: 1.2rem;
   color: #4ADE80;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
 }
 
 .madden-boom-badge {
   background: #F97316;
   color: #000000;
-  font-weight: 900;
-  font-size: 0.72rem;
-  padding: 3px 8px;
-  border-radius: 4px;
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  font-size: 0.82rem;
+  padding: 4px 12px;
+  border-radius: 6px;
   letter-spacing: 0.05em;
-  transform: rotate(-2deg);
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+  transform: rotate(-2.5deg);
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .madden-quote-block {
-  background: rgba(34, 197, 94, 0.06);
-  border-left: 3px solid #22C55E;
-  padding: 1rem;
-  border-radius: 0 8px 8px 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: #E2E8F0;
-  margin-bottom: 1.2rem;
+  background: rgba(34, 197, 94, 0.08);
+  border-left: 4px solid #22C55E;
+  padding: 1.25rem;
+  border-radius: 0 12px 12px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #F1F5F9;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.madden-quote-block::before {
+  content: "X & O PLAYBOOK";
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  font-size: 0.68rem;
+  color: #4ADE80;
+  background: #060B08;
+  padding: 1px 8px;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 999px;
+  letter-spacing: 0.05em;
 }
 
 .madden-action-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .madden-action-card {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--kbd-border);
-  padding: 0.9rem;
-  border-radius: 8px;
+  padding: 1.1rem;
+  border-radius: 12px;
 }
 .madden-action-card h5 {
-  margin: 0 0 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  letter-spacing: 0.03em;
 }
 .madden-action-card ul {
   margin: 0;
-  padding-left: 1.1rem;
-  font-size: 0.8rem;
-  color: var(--kbd-smoke);
-  line-height: 1.5;
+  padding-left: 1.2rem;
+  font-size: 0.84rem;
+  color: #CBD5E1;
+  line-height: 1.6;
 }
 
 /* ── Deep Dive 4: Cross-Reference Matrix ──────────────── */
@@ -1776,20 +1821,22 @@ footer {
   }
 
   .hero { padding: 3.5rem 1rem 3rem; }
-  .hero-actions { flex-direction: column; width: 100%; }
-  .hero-actions .btn { width: 100%; }
+  .hero-title { font-size: clamp(2.1rem, 7.5vw, 3.4rem); line-height: 1.1; }
+  .hero-actions { flex-direction: column; width: 100%; gap: 0.75rem; }
+  .hero-actions .btn { width: 100%; min-height: 48px; justify-content: center; }
 
   .faq-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
   .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
   .updates-form { flex-direction: column; }
-  .updates-input { width: 100%; }
+  .updates-input { width: 100%; min-height: 48px; }
+  .updates-form button { min-height: 48px; }
   .madden-action-split { grid-template-columns: 1fr; }
   .sleeper-steps-grid { grid-template-columns: 1fr; }
   
   .podium-grid { gap: 0.4rem; }
   .podium-step { width: 95px; }
-  .podium-medal { font-size: 1.4rem; }
+  .podium-medal { font-size: 0.9rem; }
   .podium-team { font-size: 0.72rem; }
   .podium-score { font-size: 0.6rem; }
   
@@ -1801,12 +1848,24 @@ footer {
   }
   .theme-hud-label { display: none; }
   .theme-dot { width: 18px; height: 18px; }
+
+  .cross-matrix-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .cross-matrix-bar::-webkit-scrollbar { display: none; }
+  .cross-pill { flex-shrink: 0; }
 }
 
 @media (max-width: 480px) {
   .radar-stats-grid { grid-template-columns: 1fr; }
   .matrix-quadrant-grid { aspect-ratio: 4/3; }
   .matrix-team-node { padding: 2px 5px; font-size: 0.62rem; }
-  .cross-pill { width: 100%; text-align: center; justify-content: center; }
+  .cross-pill { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
   .platform-switch { grid-template-columns: 1fr; }
+  .download-cta-bar { flex-direction: column; }
+  .download-cta-bar .btn { width: 100%; min-height: 48px; }
 }

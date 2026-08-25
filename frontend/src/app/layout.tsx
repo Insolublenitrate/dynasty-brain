@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/layout/AppLayout";
 import { LeagueProvider } from "@/context/LeagueContext";
@@ -20,6 +20,13 @@ const fontSans = Plus_Jakarta_Sans({
 const fontMono = JetBrains_Mono({ 
   subsets: ["latin"], 
   variable: "--font-mono",
+  display: "swap"
+});
+
+const fontCoach = Permanent_Marker({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-coach",
   display: "swap"
 });
 
@@ -58,7 +65,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} font-sans bg-zinc-950 text-zinc-100 antialiased`}>
+      <body className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} ${fontCoach.variable} font-sans bg-zinc-950 text-zinc-100 antialiased`}>
         <ThemeProvider>
           <LeagueProvider>
             <AppLayout>

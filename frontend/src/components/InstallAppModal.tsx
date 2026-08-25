@@ -111,7 +111,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
             <span className="flex items-center gap-1.5">
               <span>Apple iOS</span>
               <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                Film Room 🏈
+                Film Room
               </span>
             </span>
           </button>
@@ -148,11 +148,11 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
 
             <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-2.5 font-mono text-xs text-zinc-300">
               <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
-                📋 Manual 2-Step Android Install:
+                Manual 2-Step Android Install:
               </span>
               <div className="flex items-start gap-2.5">
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
-                <span>Tap the browser menu <strong>(⋮ 3 vertical dots)</strong> in Chrome / Brave.</span>
+                <span>Tap the browser menu <strong>(3 vertical dots)</strong> in Chrome / Brave.</span>
               </div>
               <div className="flex items-start gap-2.5">
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
@@ -174,7 +174,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-black uppercase tracking-widest block text-amber-400">
-                    🏈 IN THE FILM ROOM • PRACTICE SQUAD
+                    IN THE FILM ROOM • PRACTICE SQUAD
                   </span>
                   <h4 className="text-sm font-black text-white italic tracking-tight">
                     OFFICIAL REVIEW: iOS APP STORE LAUNCH
@@ -191,7 +191,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
             <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-3 font-mono text-xs text-zinc-300">
               <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                  <Flame size={12} /> 📣 CALL AN AUDIBLE: Run Safari Home Screen Play
+                  <Flame size={12} /> CALL AN AUDIBLE: Run Safari Home Screen Play
                 </span>
                 <span className="text-[9px] text-zinc-500 uppercase">Available Today</span>
               </div>
@@ -200,7 +200,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
                 <div>
                   <p className="font-bold text-white font-sans text-xs">Snap the Ball in Safari</p>
-                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap the <strong>Share button (⎋ box with upward arrow)</strong> at the bottom toolbar.</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap the <strong>Share button</strong> at the bottom toolbar.</p>
                 </div>
               </div>
 
@@ -208,14 +208,14 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
                 <div>
                   <p className="font-bold text-white font-sans text-xs">Hit the Open Receiver</p>
-                  <p className="text-zinc-400 text-[11px] mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen" (➕)</strong>.</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong>.</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">3</span>
                 <div>
-                  <p className="font-bold text-white font-sans text-xs">Touchdown! 🏈</p>
+                  <p className="font-bold text-white font-sans text-xs">Touchdown!</p>
                   <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top right. Waiver Wiretap launches in full-screen on your iPhone!</p>
                 </div>
               </div>

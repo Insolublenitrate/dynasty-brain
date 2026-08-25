@@ -174,7 +174,7 @@
     deferredInstallPrompt = e;
     const pwaBtn = document.getElementById('btn-pwa-install');
     if (pwaBtn) {
-      pwaBtn.textContent = '📲 Install App on This Device';
+      pwaBtn.textContent = 'Install App on This Device';
     }
   });
 
@@ -185,7 +185,7 @@
         deferredInstallPrompt.prompt();
         const { outcome } = await deferredInstallPrompt.userChoice;
         if (outcome === 'accepted') {
-          pwaInstallBtn.textContent = '✅ App Installed!';
+          pwaInstallBtn.textContent = 'App Installed Successfully!';
         }
         deferredInstallPrompt = null;
       } else {
@@ -286,9 +286,9 @@
         utterance.rate = 1.1;
         window.speechSynthesis.speak(utterance);
         
-        maddenAudioBtn.textContent = '🔊 Coach Madden Speaking...';
+        maddenAudioBtn.textContent = 'Coach Madden Audio Playing...';
         utterance.onend = function () {
-          maddenAudioBtn.textContent = '▶ Hear Coach Madden Voice Breakdown';
+          maddenAudioBtn.textContent = 'Play Coach Madden Voice Breakdown';
         };
       } else {
         alert("Coach Madden says: BOOM! You're robbing this guy blind on draft capital!");

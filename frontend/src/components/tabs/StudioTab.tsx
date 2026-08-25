@@ -92,7 +92,7 @@ export default function StudioTab({ studioData: initialData }: { studioData?: an
           onClick={() => router.push('/dynasty-room?arena=command')}
           className="px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all text-xs font-mono font-bold flex items-center gap-2 self-start sm:self-auto shadow-md"
         >
-          <span>View Cash Bounty Vault 💰</span>
+          <span>View Cash Bounty Vault</span>
           <ArrowRight size={13} />
         </button>
       </div>

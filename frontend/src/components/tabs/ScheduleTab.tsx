@@ -419,8 +419,8 @@ export default function ScheduleTab() {
                   >
                     <span>WEEK {w.week}</span>
                     {w.is_playoffs && (
-                      <span className={`text-[9px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-zinc-950/20 text-zinc-950' : 'bg-purple-500/20 text-purple-300'}`}>
-                        🏆
+                      <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isSelected ? 'bg-zinc-950/20 text-zinc-950' : 'bg-purple-500/20 text-purple-300'}`}>
+                        PLAYOFFS
                       </span>
                     )}
                   </button>
@@ -437,7 +437,7 @@ export default function ScheduleTab() {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] font-mono text-amber-400/90 uppercase font-bold tracking-wider">
-                  🏆 {currentWeekData.high_score?.is_projected ? 'High Roller (Proj)' : 'High Roller'}
+                  {currentWeekData.high_score?.is_projected ? 'High Roller (Proj)' : 'High Roller'}
                 </span>
                 <h4 className="text-sm font-black text-white truncate">
                   {currentWeekData.high_score ? currentWeekData.high_score.team_name : 'TBD'}
@@ -454,7 +454,7 @@ export default function ScheduleTab() {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] font-mono text-purple-400/90 uppercase font-bold tracking-wider">
-                  ⚖️ {currentWeekData.is_median_projected ? 'League Median (Proj)' : 'League Median'}
+                  {currentWeekData.is_median_projected ? 'League Median (Proj)' : 'League Median'}
                 </span>
                 <h4 className="text-sm font-black text-white">
                   {currentWeekData.median_score > 0 ? `${currentWeekData.median_score} pts` : '124.5 pts'}
@@ -469,7 +469,7 @@ export default function ScheduleTab() {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] font-mono text-rose-400/90 uppercase font-bold tracking-wider">
-                  💩 {currentWeekData.low_score?.is_projected ? 'Sacko Floor (Proj)' : 'Sacko of Week'}
+                  {currentWeekData.low_score?.is_projected ? 'Sacko Floor (Proj)' : 'Sacko of Week'}
                 </span>
                 <h4 className="text-sm font-black text-white truncate">
                   {currentWeekData.low_score ? currentWeekData.low_score.team_name : 'TBD'}
@@ -540,7 +540,7 @@ export default function ScheduleTab() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <h4 className="text-sm font-bold text-white truncate">{teamA?.team_name || 'Team A'}</h4>
-                              {isWinnerA && <span className="text-xs">{isPlayed ? '🏆' : '🔮'}</span>}
+                              {isWinnerA && <span className="text-[10px] font-mono text-emerald-400 font-bold px-1 rounded bg-emerald-500/10 border border-emerald-500/30">WIN</span>}
                             </div>
                             <div className="flex items-center gap-2">
                               <p className="text-[10px] font-mono text-zinc-400">Roster #{teamA?.roster_id}</p>
@@ -581,7 +581,7 @@ export default function ScheduleTab() {
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
                                 <h4 className="text-sm font-bold text-white truncate">{teamB?.team_name || 'Team B'}</h4>
-                                {isWinnerB && <span className="text-xs">{isPlayed ? '🏆' : '🔮'}</span>}
+                                {isWinnerB && <span className="text-[10px] font-mono text-emerald-400 font-bold px-1 rounded bg-emerald-500/10 border border-emerald-500/30">WIN</span>}
                               </div>
                               <div className="flex items-center gap-2">
                                 <p className="text-[10px] font-mono text-zinc-400">Roster #{teamB?.roster_id}</p>
@@ -616,7 +616,7 @@ export default function ScheduleTab() {
                       onClick={() => setActiveBoxScore(match)}
                       className="w-full py-2.5 px-3 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-zinc-200 hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 border border-zinc-800"
                     >
-                      <span>🔍 Tale of the Tape & Starters Box Score</span>
+                      <span>Tale of the Tape & Starters Box Score</span>
                       <ArrowRight size={14} className="text-orange-400" />
                     </button>
                   </div>
@@ -793,7 +793,7 @@ export default function ScheduleTab() {
                         isLoss ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
                         'bg-zinc-800 text-zinc-400'
                       }`}>
-                        {isPlayed ? game.result : `🔮 ${game.projected_result}`}
+                        {isPlayed ? game.result : `PROJ ${game.projected_result}`}
                       </span>
                     </div>
                   </div>
@@ -815,7 +815,7 @@ export default function ScheduleTab() {
               </h4>
               <p className="text-xs font-mono text-zinc-400">
                 {scheduleData.is_preseason 
-                  ? '🔮 2026 Preseason Projections: All-Play rankings modeled across all 18 scheduled matchups.' 
+                  ? '2026 Preseason Projections: All-Play rankings modeled across all 18 scheduled matchups.' 
                   : 'Removes weekly scheduling luck by scoring every franchise against all other 9 teams each week.'}
               </p>
             </div>
@@ -888,7 +888,7 @@ export default function ScheduleTab() {
                             winPct >= 50 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40' :
                             'bg-purple-500/20 text-purple-400 border border-purple-500/40'
                           }`}>
-                            {winPct >= 70 ? '🏆 Title Contender' : winPct >= 50 ? '🔥 Playoff Threat' : '🛠️ Retooling'}
+                            {winPct >= 70 ? 'Title Contender' : winPct >= 50 ? 'Playoff Threat' : 'Retooling'}
                           </span>
                         ) : (
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -896,7 +896,7 @@ export default function ScheduleTab() {
                             isUnlucky ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
                             'bg-zinc-800 text-zinc-400'
                           }`}>
-                            {isLucky ? '🍀 Schedule Lucky' : isUnlucky ? '⚡ Tough Schedule' : '⚖️ Balanced'}
+                            {isLucky ? 'Schedule Lucky' : isUnlucky ? 'Tough Schedule' : 'Balanced'}
                           </span>
                         )}
                       </td>
