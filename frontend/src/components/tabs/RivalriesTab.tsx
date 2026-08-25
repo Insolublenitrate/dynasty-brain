@@ -351,7 +351,7 @@ export default function RivalriesTab() {
                       </div>
                       <div>
                         <span className="text-[9px] text-zinc-500 font-sans block">Points</span>
-                        <span className="text-[11px] text-zinc-300 font-bold">{item.pts_for} vs {item.pts_against}</span>
+                        <span className="text-[11px] text-zinc-300 font-bold">{Number(item.pts_for || 0).toFixed(1)} vs {Number(item.pts_against || 0).toFixed(1)}</span>
                       </div>
                     </div>
                   </div>

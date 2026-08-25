@@ -183,26 +183,39 @@ def ingest_data(league_id: str):
                         players_points=m.get("players_points", {})
                     ))
                     
-        # Ingest Transactions
-        print("Ingesting Transactions...")
-        for week, transactions in transactions_data.items():
-            for t in transactions:
-                t_id = t.get("transaction_id")
-                # Only add if it doesn't exist
-                if not db.query(SleeperTransaction).filter_by(id=t_id).first():
-                    db.add(SleeperTransaction(
-                        id=t_id,
-                        league_id=league_id,
-                        season=str(current_season),
-                        week=week,
-                        type=t.get("type"),
-                        status=t.get("status"),
-                        adds=t.get("adds"),
-                        drops=t.get("drops"),
-                        draft_picks=t.get("draft_picks"),
-                        creator_roster_id=t.get("creator")[0] if isinstance(t.get("creator"), list) else None,
-                        consenter_roster_ids=t.get("consenter_roster_ids")
-                    ))
+        # Ingest Transactions Across Dynasty History
+        print("Ingesting Transactions across dynasty history...")
+        curr_lg_id = league_id
+        while curr_lg_id:
+            try:
+                r = requests.get(f"https://api.sleeper.app/v1/league/{curr_lg_id}", timeout=5)
+                if r.status_code != 200: break
+                lg_meta = r.json() or {}
+                lg_season = str(lg_meta.get("season", current_season))
+                
+                for week in range(1, 19):
+                    t_resp = requests.get(f"https://api.sleeper.app/v1/league/{curr_lg_id}/transactions/{week}", timeout=5)
+                    if t_resp.status_code == 200:
+                        for t in (t_resp.json() or []):
+                            t_id = t.get("transaction_id")
+                            if t_id and not db.query(SleeperTransaction).filter_by(id=t_id).first():
+                                db.add(SleeperTransaction(
+                                    id=t_id,
+                                    league_id=league_id,
+                                    season=lg_season,
+                                    week=week,
+                                    type=t.get("type"),
+                                    status=t.get("status"),
+                                    adds=t.get("adds"),
+                                    drops=t.get("drops"),
+                                    draft_picks=t.get("draft_picks"),
+                                    creator_roster_id=t.get("creator")[0] if isinstance(t.get("creator"), list) else None,
+                                    consenter_roster_ids=t.get("consenter_roster_ids") or t.get("roster_ids")
+                                ))
+                curr_lg_id = lg_meta.get("previous_league_id")
+            except Exception as e:
+                print(f"Error fetching historical transactions for {curr_lg_id}: {e}")
+                break
 
         db.commit()
         print("Data successfully ingested!")

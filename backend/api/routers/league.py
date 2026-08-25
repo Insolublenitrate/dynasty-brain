@@ -291,9 +291,12 @@ def get_league_rivalries(league_id: str):
         owner_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
         avatar_map = {r.roster_id: (r.user.avatar if r.user and r.user.avatar else None) for r in rosters}
         
-        matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%"), MatchupHistory.points > 0).all()
+        matchups = session.query(MatchupHistory).filter(MatchupHistory.league_id == league_id, MatchupHistory.points > 0).all()
+        if not matchups:
+            # Fallback filter by roster_id prefix
+            matchups = session.query(MatchupHistory).filter(MatchupHistory.roster_id.like(f"{league_id}_%"), MatchupHistory.points > 0).all()
         
-        # 1. H2H Matrix
+        # 1. H2H Matrix & Actual Wins/Losses via Matchup Pairing
         h2h_matrix = {}
         for r1 in rosters:
             h2h_matrix[r1.roster_id] = {}
@@ -302,28 +305,62 @@ def get_league_rivalries(league_id: str):
                     h2h_matrix[r1.roster_id][r2.roster_id] = {
                         "wins": 0, "losses": 0, "ties": 0,
                         "pts_for": 0.0, "pts_against": 0.0,
-                        "win_pct": 0.0, "lead_str": "Tied 0-0"
+                        "win_pct": 0.0, "lead_str": "Tied (0-0)"
                     }
 
+        all_play = {r.roster_id: {'ap_w': 0, 'ap_l': 0, 'ap_t': 0, 'act_w': 0, 'act_l': 0, 'act_t': 0, 'points': 0.0} for r in rosters}
+
+        # Pair head-to-head opponents using (season, week, matchup_id)
+        week_matchup_dict = {}
         for m in matchups:
-            if not m.opponent_roster_id: continue
-            try:
-                r1 = int(m.roster_id.split('_')[1])
-                r2 = int(m.opponent_roster_id.split('_')[1])
-            except (IndexError, ValueError):
-                continue
-                
-            if r1 in h2h_matrix and r2 in h2h_matrix[r1]:
-                if m.is_win == 1: h2h_matrix[r1][r2]["wins"] += 1
-                elif m.is_win == 0: h2h_matrix[r1][r2]["losses"] += 1
-                else: h2h_matrix[r1][r2]["ties"] += 1
-                h2h_matrix[r1][r2]["pts_for"] += round(m.points or 0.0, 1)
-                h2h_matrix[r1][r2]["pts_against"] += round(m.opponent_points or 0.0, 1)
+            if not m.matchup_id: continue
+            key = (m.season, m.week, m.matchup_id)
+            if key not in week_matchup_dict:
+                week_matchup_dict[key] = []
+            week_matchup_dict[key].append(m)
+
+        for (season, week, m_id), pair in week_matchup_dict.items():
+            if len(pair) == 2:
+                m1, m2 = pair[0], pair[1]
+                try:
+                    r1 = int(m1.roster_id.split('_')[1])
+                    r2 = int(m2.roster_id.split('_')[1])
+                except (IndexError, ValueError):
+                    continue
+                    
+                if r1 not in h2h_matrix or r2 not in h2h_matrix:
+                    continue
+
+                p1 = round(float(m1.points or 0.0), 1)
+                p2 = round(float(m2.points or 0.0), 1)
+
+                h2h_matrix[r1][r2]["pts_for"] = round(h2h_matrix[r1][r2]["pts_for"] + p1, 1)
+                h2h_matrix[r1][r2]["pts_against"] = round(h2h_matrix[r1][r2]["pts_against"] + p2, 1)
+                h2h_matrix[r2][r1]["pts_for"] = round(h2h_matrix[r2][r1]["pts_for"] + p2, 1)
+                h2h_matrix[r2][r1]["pts_against"] = round(h2h_matrix[r2][r1]["pts_against"] + p1, 1)
+
+                if p1 > p2:
+                    h2h_matrix[r1][r2]["wins"] += 1
+                    h2h_matrix[r2][r1]["losses"] += 1
+                    all_play[r1]['act_w'] += 1
+                    all_play[r2]['act_l'] += 1
+                elif p2 > p1:
+                    h2h_matrix[r2][r1]["wins"] += 1
+                    h2h_matrix[r1][r2]["losses"] += 1
+                    all_play[r2]['act_w'] += 1
+                    all_play[r1]['act_l'] += 1
+                else:
+                    h2h_matrix[r1][r2]["ties"] += 1
+                    h2h_matrix[r2][r1]["ties"] += 1
+                    all_play[r1]['act_t'] += 1
+                    all_play[r2]['act_t'] += 1
 
         for r1_id, opps in h2h_matrix.items():
             for r2_id, data in opps.items():
                 total_games = data["wins"] + data["losses"] + data["ties"]
                 data["win_pct"] = round((data["wins"] / total_games) * 100, 1) if total_games > 0 else 0.0
+                data["pts_for"] = round(data["pts_for"], 1)
+                data["pts_against"] = round(data["pts_against"], 1)
                 if data["wins"] > data["losses"]:
                     data["lead_str"] = f"+{data['wins'] - data['losses']} ({data['wins']}-{data['losses']})"
                 elif data["losses"] > data["wins"]:
@@ -334,14 +371,12 @@ def get_league_rivalries(league_id: str):
         # 2. All-Play Standings & Luck Index
         weeks_dict = {}
         for m in matchups:
-            key = f"{m.season}_{m.week}"
+            key = (m.season, m.week)
             if key not in weeks_dict:
                 weeks_dict[key] = []
             weeks_dict[key].append(m)
 
-        all_play = {r.roster_id: {'wins': 0, 'losses': 0, 'ties': 0, 'actual_w': 0, 'actual_l': 0, 'points': 0.0} for r in rosters}
-
-        for key, m_list in weeks_dict.items():
+        for (season, week), m_list in weeks_dict.items():
             if len(m_list) < 2: continue
             for i, m1 in enumerate(m_list):
                 try:
@@ -349,9 +384,7 @@ def get_league_rivalries(league_id: str):
                 except (IndexError, ValueError):
                     continue
                 if r1 not in all_play: continue
-                all_play[r1]['points'] += (m1.points or 0)
-                if m1.is_win == 1: all_play[r1]['actual_w'] += 1
-                elif m1.is_win == 0: all_play[r1]['actual_l'] += 1
+                all_play[r1]['points'] += float(m1.points or 0.0)
                 
                 for j, m2 in enumerate(m_list):
                     if i == j: continue
@@ -359,19 +392,21 @@ def get_league_rivalries(league_id: str):
                         r2 = int(m2.roster_id.split('_')[1])
                     except (IndexError, ValueError):
                         continue
-                    if (m1.points or 0) > (m2.points or 0):
-                        all_play[r1]['wins'] += 1
-                    elif (m1.points or 0) < (m2.points or 0):
-                        all_play[r1]['losses'] += 1
+                    p1 = float(m1.points or 0.0)
+                    p2 = float(m2.points or 0.0)
+                    if p1 > p2:
+                        all_play[r1]['ap_w'] += 1
+                    elif p1 < p2:
+                        all_play[r1]['ap_l'] += 1
                     else:
-                        all_play[r1]['ties'] += 1
+                        all_play[r1]['ap_t'] += 1
 
         all_play_standings = []
         for r_id, stats in all_play.items():
-            total_ap = stats['wins'] + stats['losses'] + stats['ties']
-            ap_pct = round((stats['wins'] / total_ap) * 100, 1) if total_ap > 0 else 0.0
-            total_act = stats['actual_w'] + stats['actual_l']
-            act_pct = round((stats['actual_w'] / total_act) * 100, 1) if total_act > 0 else 0.0
+            total_ap = stats['ap_w'] + stats['ap_l'] + stats['ap_t']
+            ap_pct = round((stats['ap_w'] / total_ap) * 100, 1) if total_ap > 0 else 0.0
+            total_act = stats['act_w'] + stats['act_l'] + stats['act_t']
+            act_pct = round((stats['act_w'] / total_act) * 100, 1) if total_act > 0 else 0.0
             luck_delta = round(act_pct - ap_pct, 1)
             
             if luck_delta >= 6.0:
@@ -389,12 +424,13 @@ def get_league_rivalries(league_id: str):
                 "roster_id": r_id,
                 "name": owner_map.get(r_id, f"Team {r_id}"),
                 "avatar": avatar_map.get(r_id),
-                "wins": stats['wins'],
-                "losses": stats['losses'],
-                "ties": stats['ties'],
+                "wins": stats['ap_w'],
+                "losses": stats['ap_l'],
+                "ties": stats['ap_t'],
                 "all_play_pct": ap_pct,
-                "actual_wins": stats['actual_w'],
-                "actual_losses": stats['actual_l'],
+                "actual_wins": stats['act_w'],
+                "actual_losses": stats['act_l'],
+                "actual_ties": stats['act_t'],
                 "actual_pct": act_pct,
                 "luck_delta": luck_delta,
                 "luck_rating": luck_rating,
@@ -555,23 +591,40 @@ def get_league_record_book(league_id: str):
         worst_l_streak = max(streak_dict.items(), key=lambda x: x[1]["max_l"]) if streak_dict else (1, {"max_l": 0})
 
         # Fleece Leaderboard from Trades
-        trades = session.query(SleeperTransaction).filter(SleeperTransaction.league_id == league_id, SleeperTransaction.type == 'trade').all()
+        trades = session.query(SleeperTransaction).filter(
+            SleeperTransaction.league_id == league_id, 
+            SleeperTransaction.type == 'trade'
+        ).all()
+        
         fleece_scores = {r.roster_id: {"trades": 0, "fleece_score": 0.0} for r in rosters}
         for t in trades:
-            consenters = t.consenter_roster_ids or []
-            for c in consenters:
-                if c in fleece_scores:
-                    fleece_scores[c]["trades"] += 1
-                    # Heuristic fleece rating based on asset movement
-                    fleece_scores[c]["fleece_score"] += 14.5
+            participants = set()
+            if t.consenter_roster_ids:
+                participants.update(t.consenter_roster_ids)
+            if t.adds:
+                participants.update(int(v) for v in t.adds.values() if str(v).isdigit())
+            if t.drops:
+                participants.update(int(v) for v in t.drops.values() if str(v).isdigit())
+            if t.draft_picks:
+                for dp in t.draft_picks:
+                    if dp.get("owner_id"): participants.add(int(dp["owner_id"]))
+                    if dp.get("previous_owner_id"): participants.add(int(dp["previous_owner_id"]))
+            if t.creator_roster_id:
+                participants.add(int(t.creator_roster_id))
+
+            for p in participants:
+                if p in fleece_scores:
+                    fleece_scores[p]["trades"] += 1
+                    fleece_scores[p]["fleece_score"] += 12.5
 
         fleece_leaderboard = []
         for r_id, f_data in fleece_scores.items():
-            badge = "Dynasty Shark 🦈" if f_data["trades"] >= 5 else "Active Trader 💼" if f_data["trades"] >= 2 else "HODLer 🔒"
+            trade_cnt = f_data["trades"]
+            badge = "Dynasty Shark 🦈" if trade_cnt >= 10 else "Active Trader 💼" if trade_cnt >= 3 else "HODLer 🔒"
             fleece_leaderboard.append({
                 "roster_id": r_id,
                 "name": owner_map.get(r_id, f"Team {r_id}"),
-                "trades_completed": f_data["trades"],
+                "trades_completed": trade_cnt,
                 "total_fleece_score": round(f_data["fleece_score"], 1),
                 "badge": badge
             })

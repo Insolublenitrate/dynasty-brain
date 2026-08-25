@@ -184,7 +184,8 @@ function DynastyRoomContent() {
                 }`}
                 style={powerSub === 'rivalries' ? { color: currentTheme.primary } : {}}
               >
-                Rivalries
+                <span className="sm:hidden">Rivals</span>
+                <span className="hidden sm:inline">Rivalries</span>
               </button>
               <button
                 onClick={() => setPowerSub('records')}
