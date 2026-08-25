@@ -9,7 +9,7 @@ import { getApiUrl } from '@/config/api';
 
 export const METRIC_CATEGORIES = [
   {
-    category: "⚡ Fantasy Value & Output",
+    category: "Fantasy Value & Output",
     metrics: [
       { id: 'ppg', label: 'Points Per Game (PPG)', format: 'float' },
       { id: 'fantasy_points_ppr', label: 'Total Fantasy Points (PPR)', format: 'float' },
@@ -19,7 +19,7 @@ export const METRIC_CATEGORIES = [
     ]
   },
   {
-    category: "🎯 Receiving & Target Quality",
+    category: "Receiving & Target Quality",
     metrics: [
       { id: 'targets', label: 'Total Targets', format: 'int' },
       { id: 'receptions', label: 'Total Receptions', format: 'int' },
@@ -34,7 +34,7 @@ export const METRIC_CATEGORIES = [
     ]
   },
   {
-    category: "🏃 Rushing & Ground Efficiency",
+    category: "Rushing & Ground Efficiency",
     metrics: [
       { id: 'rush_attempts', label: 'Rushing Attempts (Carries)', format: 'int' },
       { id: 'rushing_yards', label: 'Rushing Yards', format: 'int' },
@@ -44,7 +44,7 @@ export const METRIC_CATEGORIES = [
     ]
   },
   {
-    category: "🏈 Quarterback & Passing Precision",
+    category: "Quarterback & Passing Precision",
     metrics: [
       { id: 'pass_epa_per_play', label: 'Passing EPA / Play (Dropback EPA)', format: 'float' },
       { id: 'cpoe', label: 'Completion % Over Expected (CPOE)', format: 'pct' },
@@ -52,7 +52,7 @@ export const METRIC_CATEGORIES = [
     ]
   },
   {
-    category: "⏱️ Snap Volume & Playing Time",
+    category: "Snap Volume & Playing Time",
     metrics: [
       { id: 'offense_pct', label: 'Offense Snap Share %', format: 'pct' },
       { id: 'offense_snaps', label: 'Total Offensive Snaps', format: 'int' },

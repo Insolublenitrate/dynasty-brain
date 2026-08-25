@@ -1,11 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/layout/AppLayout";
 import { LeagueProvider } from "@/context/LeagueContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const fontDisplay = Outfit({ 
+  subsets: ["latin"], 
+  variable: "--font-display",
+  display: "swap"
+});
+
+const fontSans = Plus_Jakarta_Sans({ 
+  subsets: ["latin"], 
+  variable: "--font-sans",
+  display: "swap"
+});
+
+const fontMono = JetBrains_Mono({ 
+  subsets: ["latin"], 
+  variable: "--font-mono",
+  display: "swap"
+});
 
 export const viewport: Viewport = {
   themeColor: "#09090b",
@@ -42,7 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans bg-zinc-950 text-zinc-100 antialiased`}>
+      <body className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} font-sans bg-zinc-950 text-zinc-100 antialiased`}>
         <ThemeProvider>
           <LeagueProvider>
             <AppLayout>

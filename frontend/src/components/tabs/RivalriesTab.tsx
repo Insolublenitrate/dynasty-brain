@@ -9,6 +9,8 @@ import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 
+import { LuckRatingBadge } from '@/components/ui/TacticalVisualAids';
+
 export default function RivalriesTab() {
   const { leagueId } = useLeague();
   const { currentTheme } = useTheme();
@@ -74,10 +76,10 @@ export default function RivalriesTab() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
+          <h2 className="text-2xl md:text-3xl font-display font-black text-white tracking-tight flex items-center gap-2.5">
             <Swords size={28} style={{ color: currentTheme.primary }} /> RIVALRIES & ALL-PLAY MATRIX
           </h2>
-          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
+          <p className="text-zinc-400 text-xs font-mono tracking-wider uppercase mt-1">
             Lifetime Head-to-Head Records, True-Skill All-Play Standings & Revenge Game Alerts
           </p>
         </div>
@@ -85,10 +87,10 @@ export default function RivalriesTab() {
 
       {/* Traitor / Revenge Game Alert Banner */}
       {revenge_games.length > 0 && (
-        <div className="bg-zinc-900/90 border border-orange-500/30 rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden">
+        <div className="card-bezel rounded-2xl p-4 sm:p-5 border-orange-500/30 relative overflow-hidden">
           <div className="flex items-center gap-2.5 mb-3">
             <Flame size={20} className="text-orange-500 flex-shrink-0" />
-            <h4 className="text-sm font-black text-white uppercase tracking-wider">
+            <h4 className="text-sm font-display font-black text-white uppercase tracking-wider">
               Revenge Game / Former Asset Watch
             </h4>
             <span className="px-2 py-0.5 rounded bg-orange-950/60 border border-orange-800/60 text-[10px] font-mono text-orange-400 font-bold ml-auto">
@@ -101,7 +103,7 @@ export default function RivalriesTab() {
               <div key={idx} className="bg-zinc-950/80 p-3.5 rounded-xl border border-zinc-800/80 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-black text-white truncate">{rg.player_name}</span>
+                    <span className="text-xs font-display font-bold text-white truncate">{rg.player_name}</span>
                     <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-400">{rg.position}</span>
                   </div>
                   <p className="text-[11px] text-zinc-400">
@@ -119,12 +121,12 @@ export default function RivalriesTab() {
       )}
 
       {/* All-Play "True Skill" vs Actual Standings */}
-      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div className="card-bezel rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <Trophy size={22} style={{ color: currentTheme.primary }} />
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white">All-Play "True Skill" Standings & Luck Index</h3>
+              <h3 className="text-base sm:text-lg font-display font-bold text-white">All-Play "True Skill" Standings & Luck Index</h3>
               <p className="text-xs text-zinc-400">Performance if every team played all 9 opponents every single week</p>
             </div>
           </div>
@@ -137,8 +139,6 @@ export default function RivalriesTab() {
         <div className="grid grid-cols-1 gap-2.5 sm:hidden">
           {all_play_standings.map((team: any) => {
             const isLucky = team.luck_delta > 0;
-            const isSeverelyUnlucky = team.luck_delta <= -5.0;
-            const isPaperTiger = team.luck_delta >= 5.0;
 
             return (
               <div key={team.roster_id} className="bg-zinc-950/90 border border-zinc-800 p-3.5 rounded-xl space-y-2">
@@ -152,17 +152,10 @@ export default function RivalriesTab() {
                         {team.name?.slice(0, 2).toUpperCase()}
                       </div>
                     )}
-                    <span className="font-bold text-white text-xs truncate">{team.name}</span>
+                    <span className="font-display font-bold text-white text-xs truncate">{team.name}</span>
                   </div>
 
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    isPaperTiger ? 'bg-amber-950/60 text-amber-400 border border-amber-800/50' :
-                    isSeverelyUnlucky ? 'bg-red-950/60 text-red-400 border border-red-800/50' :
-                    isLucky ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50' :
-                    'bg-zinc-800 text-zinc-400'
-                  }`}>
-                    {team.luck_rating}
-                  </span>
+                  <LuckRatingBadge rating={team.luck_rating} delta={team.luck_delta} />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-900 text-center font-mono text-xs">
@@ -178,7 +171,7 @@ export default function RivalriesTab() {
                   </div>
                   <div className="bg-zinc-900/60 p-1.5 rounded-lg">
                     <span className="text-[9px] text-zinc-500 font-sans block">Luck Delta</span>
-                    <span className={`font-bold ${isLucky ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <span className={`font-bold ${isLucky ? 'text-emerald-400' : 'text-rose-400'}`}>
                       {team.luck_delta > 0 ? `+${team.luck_delta}%` : `${team.luck_delta}%`}
                     </span>
                   </div>
@@ -206,13 +199,11 @@ export default function RivalriesTab() {
             <tbody className="divide-y divide-zinc-800/60 font-mono">
               {all_play_standings.map((team: any) => {
                 const isLucky = team.luck_delta > 0;
-                const isSeverelyUnlucky = team.luck_delta <= -5.0;
-                const isPaperTiger = team.luck_delta >= 5.0;
 
                 return (
                   <tr key={team.roster_id} className="hover:bg-zinc-800/40 transition-colors">
                     <td className="py-3 px-3 font-bold text-zinc-400">#{team.rank}</td>
-                    <td className="py-3 px-3 font-sans font-bold text-white flex items-center gap-2">
+                    <td className="py-3 px-3 font-display font-bold text-white flex items-center gap-2">
                       {team.avatar ? (
                         <img src={`https://sleepercdn.com/avatars/${team.avatar}`} className="w-6 h-6 rounded-full border border-zinc-700 object-cover" alt="avatar" />
                       ) : (
@@ -227,19 +218,12 @@ export default function RivalriesTab() {
                     <td className="py-3 px-3 text-center text-zinc-400">{team.actual_wins}-{team.actual_losses}</td>
                     <td className="py-3 px-3 text-center text-zinc-400">{team.actual_pct}%</td>
                     <td className="py-3 px-3 text-center font-bold">
-                      <span className={isLucky ? 'text-emerald-400' : 'text-red-400'}>
+                      <span className={isLucky ? 'text-emerald-400' : 'text-rose-400'}>
                         {team.luck_delta > 0 ? `+${team.luck_delta}%` : `${team.luck_delta}%`}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-right font-sans">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block ${
-                        isPaperTiger ? 'bg-amber-950/60 text-amber-400 border border-amber-800/50' :
-                        isSeverelyUnlucky ? 'bg-red-950/60 text-red-400 border border-red-800/50' :
-                        isLucky ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50' :
-                        'bg-zinc-800 text-zinc-400'
-                      }`}>
-                        {team.luck_rating}
-                      </span>
+                    <td className="py-3 px-3 text-right">
+                      <LuckRatingBadge rating={team.luck_rating} delta={team.luck_delta} />
                     </td>
                   </tr>
                 );

@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
-  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3
+  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -48,13 +48,13 @@ function DynastyRoomContent() {
   };
 
   const TICKER_MESSAGES = [
-    "🚨 INJURY ALERT: Monitor player practice reports before weekly lineup lock.",
-    "💸 CASH CHASE: The Bounty Board leader extends their Max PF lead in the division.",
-    "📉 PURGATORY WARNING: Teams in the lower-left quadrant should initiate a strategic retooling.",
-    "🔥 QUANT TAKE: Draft pick depreciation accelerates by 18% post-draft. Trade picks during the rookie hype apex.",
-    "⚡ TRADE ARBITRAGE: Multiple buy-low candidates identified in the Action Center.",
-    "⚔️ RIVALRY ALERT: Check the 10x10 Head-to-Head series records in the Rivalries tab.",
-    "🎲 TALE OF THE TAPE: Run 10,000 Monte Carlo simulations on any two rosters in the Matchup Simulator."
+    "[INJURY INTEL] Monitor player practice reports before weekly lineup lock.",
+    "[BOUNTY LEDGER] The Bounty Board leader extends their Max PF lead in the division.",
+    "[PURGATORY WARNING] Teams in the lower-left quadrant should initiate a strategic retooling.",
+    "[QUANT TAKE] Draft pick depreciation accelerates post-draft. Trade picks during rookie hype apex.",
+    "[ARBITRAGE ALERT] Multiple buy-low candidates identified in the Action Center.",
+    "[RIVALRY INTEL] Check the 10x10 Head-to-Head series records in the Rivals tab.",
+    "[SIMULATION LAB] Run 10,000 Monte Carlo simulations on any two rosters in the Matchup Simulator."
   ];
 
   return (
@@ -150,7 +150,7 @@ function DynastyRoomContent() {
                   commandSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md' : 'text-emerald-400 hover:text-emerald-300'
                 }`}
               >
-                <span className="text-xs">💰</span>
+                <Coins size={13} className="shrink-0 text-emerald-400" />
                 <span className="truncate">Bounties</span>
                 <span className="hidden sm:inline">& Cash</span>
               </button>

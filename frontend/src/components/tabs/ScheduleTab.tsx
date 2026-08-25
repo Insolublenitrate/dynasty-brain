@@ -9,6 +9,7 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import { PositionPill } from '@/components/ui/TacticalVisualAids';
 
 export default function ScheduleTab() {
   const { leagueId, leagueName, platform } = useLeague();
@@ -1019,8 +1020,9 @@ export default function ScheduleTab() {
                     >
                       {/* Top Slot Header */}
                       <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold uppercase">
-                          🏈 Slot #{idx + 1} · {posName}
+                        <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold uppercase flex items-center gap-1.5">
+                          <PositionPill pos={posName} />
+                          <span>Slot #{idx + 1}</span>
                         </span>
                         
                         <span className={`font-bold px-2 py-0.5 rounded text-[9.5px] border ${

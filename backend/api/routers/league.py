@@ -410,15 +410,15 @@ def get_league_rivalries(league_id: str):
             luck_delta = round(act_pct - ap_pct, 1)
             
             if luck_delta >= 6.0:
-                luck_rating = "Paper Tiger 🍀"
+                luck_rating = "Schedule Beneficiary"
             elif luck_delta >= 2.0:
-                luck_rating = "Favorable Schedule 👍"
+                luck_rating = "Favorable Run"
             elif luck_delta <= -6.0:
-                luck_rating = "Hard-Luck Cursed ⚡"
+                luck_rating = "High Adversity"
             elif luck_delta <= -2.0:
-                luck_rating = "Unlucky Matchups 💔"
+                luck_rating = "Unlucky Draw"
             else:
-                luck_rating = "True to Skill ⚖️"
+                luck_rating = "Skill Parity"
                 
             all_play_standings.append({
                 "roster_id": r_id,
@@ -620,7 +620,7 @@ def get_league_record_book(league_id: str):
         fleece_leaderboard = []
         for r_id, f_data in fleece_scores.items():
             trade_cnt = f_data["trades"]
-            badge = "Dynasty Shark 🦈" if trade_cnt >= 10 else "Active Trader 💼" if trade_cnt >= 3 else "HODLer 🔒"
+            badge = "Shark Volume" if trade_cnt >= 10 else "Active Trader" if trade_cnt >= 3 else "HODLer"
             fleece_leaderboard.append({
                 "roster_id": r_id,
                 "name": owner_map.get(r_id, f"Team {r_id}"),

@@ -5,11 +5,12 @@ import Link from "next/link";
 import { 
   Crown, Sparkles, Search, Radar, Trophy, Flame, Smartphone, Apple, 
   ArrowRight, CheckCircle2, ChevronRight, Shield, Download, Zap, Activity,
-  Layers, BarChart3, HelpCircle, ExternalLink, Play, Volume2
+  Layers, BarChart3, HelpCircle, ExternalLink, Play, Volume2, Swords
 } from "lucide-react";
 import PlaybookLogo from "@/components/PlaybookLogo";
 import InstallAppModal from "@/components/InstallAppModal";
 import { useTheme } from "@/context/ThemeContext";
+import { TacticalTierBadge } from "@/components/ui/TacticalVisualAids";
 
 const FEATURES = [
   {
@@ -73,25 +74,25 @@ const FEATURES = [
     stats: ["Position Ribbon Filters", "Air Yards / Target", "YPRR Leaders"]
   },
   {
-    id: "war-room",
-    icon: Flame,
-    badge: "TRADE AUTOPSY",
-    title: "Trade Autopsy & Simulator",
+    id: "rivalry-matrix",
+    icon: Swords,
+    badge: "WAR ROOM",
+    title: "Rivalry Matrix & Monte Carlo Simulator",
     description: "Historical trade grading engine and 10,000-iteration Monte Carlo head-to-head matchup simulator with rivalry tracking and all-time franchise record books.",
     color: "from-rose-500/20 to-red-500/20",
     border: "border-rose-500/40",
     iconColor: "text-rose-400",
-    href: "/war-room",
+    href: "/dynasty-room?arena=power",
     stats: ["Monte Carlo Simulator", "Trade Value Ledger", "Franchise Record Books"]
   }
 ];
 
 const LEAGUE_PREVIEWS = [
-  { name: "SilkySmooov", rank: "#1", score: "63.4", pf: "3,139.6", cap: "15,883", archetype: "The Championship Goliath", badge: "🏆 WIN-NOW", tier: "Tier S" },
-  { name: "JacobFry", rank: "#2", score: "59.6", pf: "3,010.8", cap: "15,883", archetype: "The Championship Goliath", badge: "🏆 WIN-NOW", tier: "Tier A" },
-  { name: "Gilliam34", rank: "#3", score: "57.3", pf: "3,219.0", cap: "12,204", archetype: "The Dynasty Juggernaut", badge: "👑 DYNASTY APEX", tier: "Tier A" },
-  { name: "BucksTD", rank: "#6", score: "49.4", pf: "2,834.8", cap: "13,635", archetype: "The Ground & Pound", badge: "🚜 RB FACTORY", tier: "Tier B" },
-  { name: "InsolubleNitrate", rank: "#10", score: "37.2", pf: "2,045.1", cap: "18,349", archetype: "The Productive Struggle", badge: "📈 REBUILD APEX", tier: "Tier D" },
+  { name: "SilkySmooov", rank: "#1", score: "63.4", pf: "3,139.6", cap: "15,883", archetype: "The Championship Goliath", badge: "WIN-NOW", tier: "Tier S" },
+  { name: "JacobFry", rank: "#2", score: "59.6", pf: "3,010.8", cap: "15,883", archetype: "The Championship Goliath", badge: "WIN-NOW", tier: "Tier A" },
+  { name: "Gilliam34", rank: "#3", score: "57.3", pf: "3,219.0", cap: "12,204", archetype: "The Dynasty Juggernaut", badge: "DYNASTY APEX", tier: "Tier A" },
+  { name: "BucksTD", rank: "#6", score: "49.4", pf: "2,834.8", cap: "13,635", archetype: "The Ground & Pound", badge: "RB FACTORY", tier: "Tier B" },
+  { name: "InsolubleNitrate", rank: "#10", score: "37.2", pf: "2,045.1", cap: "18,349", archetype: "The Productive Struggle", badge: "REBUILD APEX", tier: "Tier D" },
 ];
 
 export default function LandingPage() {
@@ -110,7 +111,7 @@ export default function LandingPage() {
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-700 shadow-xl backdrop-blur-md">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="text-[11px] font-mono font-black text-zinc-300 tracking-wider uppercase">
-            ⚡ NEXT-GEN DYNASTY QUANT ENGINE & AI WAR ROOM
+            NEXT-GEN DYNASTY QUANT ENGINE & AI WAR ROOM
           </span>
         </div>
 
@@ -121,10 +122,10 @@ export default function LandingPage() {
 
         {/* Main Headline */}
         <div className="space-y-2">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white italic tracking-tight font-sans leading-none">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white italic tracking-tight leading-none">
             WAIVER <span style={{ color: currentTheme.primary, textShadow: `0 0 30px ${currentTheme.glow}` }}>WIRETAP</span>
           </h1>
-          <p className="text-xl sm:text-2xl font-bold text-zinc-200 tracking-tight font-sans">
+          <p className="text-xl sm:text-2xl font-display font-bold text-zinc-200 tracking-tight">
             The Unfair Advantage in Dynasty Fantasy Football
           </p>
         </div>
@@ -282,11 +283,9 @@ export default function LandingPage() {
                   <td className="py-3.5 text-zinc-300">{team.pf}</td>
                   <td className="py-3.5 text-emerald-400">{team.cap}</td>
                   <td className="py-3.5">
-                    <span className="px-2 py-0.5 rounded-md bg-zinc-950 text-[10px] text-zinc-300 border border-zinc-800">
-                      {team.archetype}
-                    </span>
+                    <TacticalTierBadge tier={team.tier} archetype={team.archetype} />
                   </td>
-                  <td className="py-3.5 text-right font-bold text-purple-400">{team.tier}</td>
+                  <td className="py-3.5 text-right font-bold text-purple-400 font-mono">{team.tier}</td>
                 </tr>
               ))}
             </tbody>

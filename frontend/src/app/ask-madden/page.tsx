@@ -7,12 +7,12 @@ import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 
 const QUICK_PROMPTS = [
-  { label: "🔄 Trade Evaluation", query: "Should I trade away a veteran wide receiver for two future 1st-round draft picks?" },
-  { label: "🏈 Lineup & Start/Sit", query: "Who should I start in my Flex spot this week: the high-volume running back or boom/bust deep-threat WR?" },
-  { label: "🏆 Championship Window", query: "Break down my dynasty roster construction and tell me if my championship window is wide open or closed." },
-  { label: "⚔️ Beat My Rival", query: "How do I exploit my biggest rival's roster weaknesses and dominate our head-to-head matchup?" },
-  { label: "🍗 Madden Football Philosophy", query: "Explain why benching your studs and leaving points on the pine is un-American." },
-  { label: "🌪️ Rebuild vs Contend", query: "My team is 3-4. Should I sell my aging stars to rebuild or make a push for the playoffs?" },
+  { label: "Trade Evaluation", query: "Should I trade away a veteran wide receiver for two future 1st-round draft picks?" },
+  { label: "Lineup & Start/Sit", query: "Who should I start in my Flex spot this week: the high-volume running back or boom/bust deep-threat WR?" },
+  { label: "Championship Window", query: "Break down my dynasty roster construction and tell me if my championship window is wide open or closed." },
+  { label: "Rivalry Game Plan", query: "How do I exploit my biggest rival's roster weaknesses and dominate our head-to-head matchup?" },
+  { label: "Madden Philosophy", query: "Explain why benching your studs and leaving points on the pine is un-American." },
+  { label: "Rebuild vs Contend", query: "My team is 3-4. Should I sell my aging stars to rebuild or make a push for the playoffs?" },
 ];
 
 export default function AskMaddenPage() {
@@ -146,16 +146,16 @@ export default function AskMaddenPage() {
         {/* Legendary Madden Badge & Logo */}
         <div className="relative group cursor-pointer" onClick={handleBoomFeelingLucky}>
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-zinc-900 border-2 border-amber-400/80 flex items-center justify-center shadow-[0_0_35px_rgba(251,191,36,0.25)] group-hover:scale-105 transition-transform">
-            <span className="text-4xl sm:text-5xl">🎙️</span>
+            <Mic size={36} className="text-amber-400" />
           </div>
-          <span className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-amber-500 text-zinc-950 font-black text-[10px] tracking-wider uppercase shadow-lg border border-amber-300">
+          <span className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-amber-500 text-zinc-950 font-black text-[10px] tracking-wider uppercase shadow-lg border border-amber-300 font-mono">
             BOOM!
           </span>
         </div>
 
         {/* Title */}
         <div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white italic tracking-tight font-sans">
+          <h1 className="text-3xl sm:text-5xl font-display font-black text-white italic tracking-tight">
             ASK <span className="text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">MADDEN</span>
           </h1>
           <p className="text-zinc-400 text-xs sm:text-sm font-mono mt-1 max-w-lg">
@@ -300,7 +300,7 @@ export default function AskMaddenPage() {
                 ) : (
                   <>
                     <Volume2 size={15} />
-                    <span>Listen to Madden 🎙️</span>
+                    <span>Listen to Madden</span>
                   </>
                 )}
               </button>
@@ -309,7 +309,7 @@ export default function AskMaddenPage() {
             {/* Telestrator Callout Box */}
             <div className="bg-zinc-950/90 border border-amber-400/30 rounded-2xl p-4 font-mono text-xs text-amber-300 leading-relaxed shadow-inner">
               <span className="text-[10px] font-black uppercase tracking-widest text-amber-500 block mb-1">
-                🖍️ Telestrator Chalk Breakdown:
+                TELESTRATOR CHALK BREAKDOWN:
               </span>
               {result.telestrator || "[TELESTRATOR: Big yellow circle around the trenches]"}
             </div>
@@ -323,7 +323,7 @@ export default function AskMaddenPage() {
             {result.suggested_actions && result.suggested_actions.length > 0 && (
               <div className="bg-zinc-950/80 rounded-2xl p-4 border border-zinc-800 space-y-2">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
-                  🏈 Madden Playbook Takeaways:
+                  Madden Playbook Takeaways:
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-xs">
                   {result.suggested_actions.map((act: string, idx: number) => (
