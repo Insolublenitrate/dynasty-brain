@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRightLeft, Activity, ShieldAlert, Trophy } from 'lucide-react';
+import { 
+  ArrowRightLeft, Activity, ShieldAlert, Trophy, Award, 
+  TrendingUp, TrendingDown, CheckCircle2, Ticket, Sparkles 
+} from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
@@ -77,129 +80,265 @@ export default function AutopsyTab({
 
   if (isLoading && !autopsyData) {
     return (
-      <div className="flex justify-center items-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: currentTheme.primary }}></div>
+      <div className="flex flex-col justify-center items-center py-20 space-y-3">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: currentTheme.primary }} />
+        <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">
+          Calculating Post-Trade Value Extraction...
+        </p>
       </div>
     );
   }
 
   if (!autopsyData) {
     return (
-      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-12 text-center shadow-xl animate-in fade-in duration-500">
-        <ArrowRightLeft className="mx-auto mb-4 opacity-50 text-zinc-500" size={48} />
-        <h3 className="text-2xl font-black text-white italic mb-2 tracking-widest uppercase">No Trades Detected</h3>
-        <p className="text-zinc-400 font-semibold text-sm">There are no completed trades recorded in this league yet.</p>
+      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-8 text-center shadow-xl card-bezel animate-in fade-in duration-300">
+        <ArrowRightLeft className="mx-auto mb-3 opacity-40 text-zinc-500" size={36} />
+        <h3 className="text-xl font-black text-white italic mb-1 uppercase tracking-tight">No Trades Detected</h3>
+        <p className="text-zinc-400 font-mono text-xs">There are no completed trades recorded in this league yet.</p>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
-        
-        {/* Header and Trade Selector */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <ArrowRightLeft size={30} style={{ color: currentTheme.primary }} />
-              <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tight uppercase">
-                Trade Autopsy
-              </h3>
-            </div>
-            <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase">
-              Analyzing transaction fallout based on actual points scored since execution.
-            </p>
-          </div>
+  const teamATotal = Number(autopsyData.teamA_total || 0);
+  const teamBTotal = Number(autopsyData.teamB_total || 0);
+  const teamAWins = teamATotal >= teamBTotal;
+  const teamBWins = teamBTotal > teamATotal;
+  const netDiff = Number(autopsyData.net_diff_num ?? Math.abs(teamATotal - teamBTotal)).toFixed(1);
 
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <select 
-              value={selectedTrade}
-              onChange={(e) => onTradeChange(e.target.value)}
-              className="bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all max-w-xs"
-            >
-              <option value="">-- Most Recent Trade --</option>
-              {tradesList.map(t => (
-                <option key={t.transaction_id} value={t.transaction_id}>
-                  {t.date}: {t.teams.join(' / ')}
-                </option>
-              ))}
-            </select>
-            <div className="px-3.5 py-2 bg-zinc-950 rounded-xl border border-zinc-800 text-xs font-bold tracking-widest text-zinc-400 flex items-center gap-2 shadow-inner">
-              <Activity size={14} className="animate-pulse text-emerald-400" /> LIVE TRACKING
-            </div>
+  return (
+    <div className="space-y-4 animate-in fade-in duration-300">
+      
+      {/* ── TOP CONTROL & SELECTOR STRIP ──────────────────────────────── */}
+      <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-md backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400">
+            <ArrowRightLeft size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5 font-sans">
+              Trade Autopsy
+              <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-[10px] font-mono text-zinc-400 border border-zinc-700 font-normal">
+                {autopsyData.date || "Completed Trade"}
+              </span>
+            </h3>
+            <p className="text-[11px] font-mono text-zinc-400">
+              Actual fantasy points produced by all assets since trade execution date.
+            </p>
           </div>
         </div>
 
-        {/* Autopsy Card */}
-        <div className="bg-zinc-950/90 border border-zinc-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent to-transparent shadow-lg"
-            style={{ backgroundImage: `linear-gradient(to right, transparent, ${currentTheme.primary}, transparent)` }}
-          />
-          
-          <div className="text-center mb-8 mt-2">
-            <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase mb-2.5">
-              Executed: {autopsyData.date}
-            </p>
-            <div className="inline-flex items-center gap-2 bg-purple-950/40 text-purple-400 px-6 py-2 rounded-full text-xs font-black tracking-widest border border-purple-800/50 shadow-md">
-              <ShieldAlert size={15} /> FLEECE ALERT
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative">
-            <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-[1px] bg-zinc-800 -translate-y-1/2 z-0"></div>
-
-            {/* Team A */}
-            <div className="w-full md:w-[45%] bg-zinc-900/90 p-6 rounded-2xl border border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.05)] relative z-10">
-              <div className="text-center mb-6 pb-4 border-b border-zinc-800">
-                <h4 className="text-white font-bold text-lg">{autopsyData.teamA}</h4>
-                <p className="text-emerald-400 text-xs font-mono uppercase tracking-widest mt-1">Received</p>
-              </div>
-              <div className="space-y-3">
-                {(autopsyData.assetsA || []).map((asset: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800/60 hover:border-emerald-500/40 transition-colors">
-                    <span className="text-zinc-200 font-semibold text-sm">{asset.name}</span>
-                    <span className="text-emerald-400 font-mono font-bold text-sm">+{asset.pointsSince} pts</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* VS Badge */}
-            <div className="flex-shrink-0 flex items-center justify-center relative z-10 py-2 md:py-0">
-              <div className="w-12 h-12 bg-zinc-950 rounded-full border border-zinc-700 flex items-center justify-center shadow-xl">
-                <span className="text-zinc-500 font-black italic text-sm">VS</span>
-              </div>
-            </div>
-
-            {/* Team B */}
-            <div className="w-full md:w-[45%] bg-zinc-900/90 p-6 rounded-2xl border border-rose-500/30 shadow-[0_0_30px_rgba(244,63,94,0.05)] relative z-10">
-              <div className="text-center mb-6 pb-4 border-b border-zinc-800">
-                <h4 className="text-white font-bold text-lg">{autopsyData.teamB}</h4>
-                <p className="text-rose-400 text-xs font-mono uppercase tracking-widest mt-1">Received</p>
-              </div>
-              <div className="space-y-3">
-                {(autopsyData.assetsB || []).map((asset: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800/60 hover:border-rose-500/40 transition-colors">
-                    <span className="text-zinc-200 font-semibold text-sm">{asset.name}</span>
-                    <span className="text-rose-400 font-mono font-bold text-sm">+{asset.pointsSince} pts</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 text-center bg-zinc-900/70 p-6 rounded-2xl border border-zinc-800">
-            <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest mb-2">Net Point Differential</p>
-            <p className="text-4xl md:text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] tracking-tighter">
-              {autopsyData.netDifference}
-            </p>
-            <p className="text-zinc-400 text-sm mt-3 italic max-w-xl mx-auto">
-              "{autopsyData.winner_name} didn't just win this trade, they expanded their competitive championship window."
-            </p>
-          </div>
+        {/* Trade Selector Dropdown */}
+        <div className="flex items-center gap-2">
+          <select 
+            value={selectedTrade}
+            onChange={(e) => onTradeChange(e.target.value)}
+            className="w-full sm:w-auto bg-zinc-950 border border-zinc-700 text-white rounded-xl px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:border-teal-500 transition-all shadow-inner truncate max-w-full sm:max-w-xs"
+          >
+            <option value="">-- Most Recent Trade --</option>
+            {tradesList.map(t => (
+              <option key={t.transaction_id} value={t.transaction_id}>
+                {t.date}: {t.teams.join(' / ')}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+      {/* ── SCOREBOARD BANNER (WHO WON) ───────────────────────────────── */}
+      <div className="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 card-bezel">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shrink-0">
+            <Trophy size={20} />
+          </div>
+          <div className="overflow-hidden">
+            <span className="text-[9px] font-mono uppercase text-emerald-400 block font-bold tracking-wider">
+              Trade Verdict · Surplus Leader
+            </span>
+            <h4 className="text-sm sm:text-base font-black text-white truncate">
+              {autopsyData.winner_name} captured <span className="text-emerald-400 font-mono">+{netDiff} pts</span> net advantage
+            </h4>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 bg-zinc-950/80 px-3 py-1.5 rounded-xl border border-zinc-800 shrink-0 text-xs font-mono">
+          <span className="text-zinc-500">Differential:</span>
+          <span className="font-black text-emerald-400">+{netDiff} PTS</span>
+        </div>
+      </div>
+
+      {/* ── DUAL TEAM COMPARISON CARDS (COMPACT SIDE-BY-SIDE ON TABLET+) ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        
+        {/* TEAM A CARD */}
+        <div className={`bg-zinc-900/90 rounded-2xl p-4 border transition-all card-bezel flex flex-col justify-between space-y-3 ${
+          teamAWins 
+            ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.08)] bg-gradient-to-b from-emerald-950/20 to-zinc-900/90' 
+            : 'border-zinc-800/90'
+        }`}>
+          <div>
+            {/* Header: Team Name, Received Badge, Total Points */}
+            <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-zinc-800">
+              <div className="overflow-hidden">
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-sm sm:text-base font-black text-white truncate font-sans">
+                    {autopsyData.teamA}
+                  </h4>
+                  {teamAWins && (
+                    <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-black uppercase border border-emerald-500/40 shrink-0">
+                      WINNER
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-mono text-zinc-400 block mt-0.5">
+                  Acquired Assets
+                </span>
+              </div>
+
+              <div className="text-right shrink-0">
+                <div className={`text-base sm:text-lg font-black font-mono leading-tight ${teamAWins ? 'text-emerald-400' : 'text-zinc-200'}`}>
+                  {teamATotal.toFixed(1)}
+                </div>
+                <span className="text-[8.5px] font-mono uppercase text-zinc-500 block">Total PTS</span>
+              </div>
+            </div>
+
+            {/* Asset List */}
+            <div className="space-y-1.5 mt-3">
+              {(autopsyData.assetsA || []).map((asset: any, idx: number) => {
+                const isPick = asset.type === 'pick' || asset.name?.toLowerCase().includes('round');
+                return (
+                  <div 
+                    key={idx} 
+                    className="flex items-center justify-between bg-zinc-950/80 px-3 py-2 rounded-xl border border-zinc-800/80 text-xs font-mono"
+                  >
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      {isPick ? (
+                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[9px] font-bold border border-indigo-500/30 shrink-0">
+                          PICK
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[9px] font-bold border border-teal-500/30 shrink-0">
+                          {asset.position || "PLAYER"}
+                        </span>
+                      )}
+                      <span className="text-zinc-200 font-bold truncate">{asset.name}</span>
+                    </div>
+
+                    <div className="shrink-0 pl-2">
+                      {isPick ? (
+                        <span className="text-[10px] text-indigo-300 font-bold bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-800/40">
+                          Future Capital
+                        </span>
+                      ) : (
+                        <span className="text-emerald-400 font-black">
+                          +{Number(asset.pointsSince || 0).toFixed(1)} pts
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <span>Production Share:</span>
+            <span className="font-bold text-zinc-300">
+              {((teamATotal / Math.max(teamATotal + teamBTotal, 1)) * 100).toFixed(0)}% of Trade Output
+            </span>
+          </div>
+        </div>
+
+        {/* TEAM B CARD */}
+        <div className={`bg-zinc-900/90 rounded-2xl p-4 border transition-all card-bezel flex flex-col justify-between space-y-3 ${
+          teamBWins 
+            ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.08)] bg-gradient-to-b from-emerald-950/20 to-zinc-900/90' 
+            : 'border-zinc-800/90'
+        }`}>
+          <div>
+            {/* Header: Team Name, Received Badge, Total Points */}
+            <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-zinc-800">
+              <div className="overflow-hidden">
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-sm sm:text-base font-black text-white truncate font-sans">
+                    {autopsyData.teamB}
+                  </h4>
+                  {teamBWins && (
+                    <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-black uppercase border border-emerald-500/40 shrink-0">
+                      WINNER
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-mono text-zinc-400 block mt-0.5">
+                  Acquired Assets
+                </span>
+              </div>
+
+              <div className="text-right shrink-0">
+                <div className={`text-base sm:text-lg font-black font-mono leading-tight ${teamBWins ? 'text-emerald-400' : 'text-zinc-200'}`}>
+                  {teamBTotal.toFixed(1)}
+                </div>
+                <span className="text-[8.5px] font-mono uppercase text-zinc-500 block">Total PTS</span>
+              </div>
+            </div>
+
+            {/* Asset List */}
+            <div className="space-y-1.5 mt-3">
+              {(autopsyData.assetsB || []).map((asset: any, idx: number) => {
+                const isPick = asset.type === 'pick' || asset.name?.toLowerCase().includes('round');
+                return (
+                  <div 
+                    key={idx} 
+                    className="flex items-center justify-between bg-zinc-950/80 px-3 py-2 rounded-xl border border-zinc-800/80 text-xs font-mono"
+                  >
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      {isPick ? (
+                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[9px] font-bold border border-indigo-500/30 shrink-0">
+                          PICK
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[9px] font-bold border border-teal-500/30 shrink-0">
+                          {asset.position || "PLAYER"}
+                        </span>
+                      )}
+                      <span className="text-zinc-200 font-bold truncate">{asset.name}</span>
+                    </div>
+
+                    <div className="shrink-0 pl-2">
+                      {isPick ? (
+                        <span className="text-[10px] text-indigo-300 font-bold bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-800/40">
+                          Future Capital
+                        </span>
+                      ) : (
+                        <span className="text-emerald-400 font-black">
+                          +{Number(asset.pointsSince || 0).toFixed(1)} pts
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <span>Production Share:</span>
+            <span className="font-bold text-zinc-300">
+              {((teamBTotal / Math.max(teamATotal + teamBTotal, 1)) * 100).toFixed(0)}% of Trade Output
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── QUANT AUTOPSY DEBRIEF ─────────────────────────────────────── */}
+      <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 text-xs font-mono text-zinc-400 flex items-start gap-2.5">
+        <Sparkles size={16} className="text-teal-400 shrink-0 mt-0.5" />
+        <p className="leading-relaxed">
+          <strong className="text-white font-sans">{autopsyData.winner_name}</strong> captured <span className="text-emerald-400 font-bold">+{netDiff} net points</span> above their trade partner since execution date. Unplayed draft picks are tracked as active dynasty capital.
+        </p>
+      </div>
+
     </div>
   );
 }

@@ -121,7 +121,16 @@ def get_trade_autopsy(league_id: str, transaction_id: str = None):
         if trade.adds:
             for player_id, receiving_roster_id in trade.adds.items():
                 pts = calc_pts_since(receiving_roster_id, player_id, trade.season, trade.week or 0)
-                asset_obj = {"name": get_name(player_id), "pointsSince": pts}
+                p = sp_cache.get(str(player_id), {})
+                pos = p.get('position', 'FLEX')
+                nfl_team = p.get('team', '')
+                asset_obj = {
+                    "name": get_name(player_id), 
+                    "pointsSince": pts,
+                    "type": "player",
+                    "position": pos,
+                    "nfl_team": nfl_team
+                }
                 
                 if receiving_roster_id == team_a_id:
                     team_a_assets.append(asset_obj)
@@ -133,23 +142,39 @@ def get_trade_autopsy(league_id: str, transaction_id: str = None):
         if trade.draft_picks:
             for dp in trade.draft_picks:
                 receiving_roster_id = dp.get("owner_id")
-                asset_obj = {"name": f"{dp.get('season')} Round {dp.get('round')}", "pointsSince": 0.0}
+                asset_obj = {
+                    "name": f"{dp.get('season')} Round {dp.get('round')}", 
+                    "pointsSince": 0.0,
+                    "type": "pick",
+                    "position": "PICK",
+                    "nfl_team": "DRAFT"
+                }
                 if receiving_roster_id == team_a_id:
                     team_a_assets.append(asset_obj)
                 elif receiving_roster_id == team_b_id:
                     team_b_assets.append(asset_obj)
 
+        team_a_total = round(team_a_total, 1)
+        team_b_total = round(team_b_total, 1)
         net_diff = round(abs(team_a_total - team_b_total), 1)
-        winner = team_a_id if team_a_total > team_b_total else team_b_id
+        team_a_wins = team_a_total >= team_b_total
+        winner = team_a_id if team_a_wins else team_b_id
         winner_name = owner_name_map.get(winner, "Unknown")
         
         return {
             "date": f"Week {trade.week}, {trade.season}",
             "teamA": owner_name_map.get(team_a_id, "Unknown"),
             "teamB": owner_name_map.get(team_b_id, "Unknown"),
+            "teamA_id": team_a_id,
+            "teamB_id": team_b_id,
+            "teamA_total": team_a_total,
+            "teamB_total": team_b_total,
+            "teamA_wins": team_a_wins,
+            "teamB_wins": not team_a_wins,
             "assetsA": team_a_assets,
             "assetsB": team_b_assets,
-            "netDifference": f"+{net_diff} Points",
+            "netDifference": f"+{net_diff} pts",
+            "net_diff_num": net_diff,
             "winner_name": winner_name
         }
     finally:
