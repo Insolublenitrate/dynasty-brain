@@ -213,17 +213,21 @@ export default function TeamAnalyzerTab() {
 
         {/* Positional Breakdown Radar */}
         <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-4 sm:p-6 shadow-md flex flex-col items-center justify-center">
-          <h4 className="text-white font-bold text-base sm:text-lg w-full text-left mb-1">Positional Breakdown</h4>
-          <p className="text-zinc-500 text-xs w-full text-left mb-3">Relative strength across core positions (100 = League Baseline).</p>
-          <div className="h-60 sm:h-72 w-full">
+          <div className="flex items-center justify-between w-full mb-1">
+            <h4 className="text-white font-bold text-base sm:text-lg">Positional Breakdown</h4>
+            <span className="text-[10px] font-mono text-zinc-500">100 = Baseline</span>
+          </div>
+          <p className="text-zinc-500 text-xs w-full text-left mb-2">Relative strength across core positions.</p>
+          
+          <div className="h-56 sm:h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="50%" data={posGradesOrder.map(pos => {
+              <RadarChart cx="50%" cy="48%" outerRadius="42%" margin={{ top: 12, right: 20, bottom: 12, left: 20 }} data={posGradesOrder.map(pos => {
                 const grade = position_grades[pos] || 'B';
                 const teamScore = grade === 'A+' ? 152 : grade === 'A' ? 138 : grade === 'A-' ? 125 :
                                   grade === 'B+' ? 118 : grade === 'B' ? 105 : grade === 'B-' ? 95 :
                                   grade === 'C+' ? 88 : grade === 'C' ? 78 : grade === 'D' ? 62 : 45;
                 const ratingTag = teamScore >= 140 ? 'Loaded' : teamScore >= 125 ? 'Elite' : teamScore >= 110 ? 'Strong' : teamScore >= 90 ? 'Solid' : 'Weak';
-                const subjectLabel = `${pos} (${teamScore})`;
+                const subjectLabel = pos === 'FLEX' ? 'FLX' : pos;
                 return {
                   subject: subjectLabel,
                   fullLabel: `${pos} (${teamScore} · ${ratingTag})`,
@@ -239,7 +243,7 @@ export default function TeamAnalyzerTab() {
                   tick={(props: any) => {
                     const { payload, x = 0, y = 0, cx = 0, cy = 0 } = props || {};
                     const value = payload?.value || '';
-                    const pos = value.split(' ')[0].toUpperCase();
+                    const pos = value === 'FLX' ? 'FLEX' : value.split(' ')[0].toUpperCase();
                     const colorMap: Record<string, string> = {
                       QB: '#F59E0B',
                       RB: '#C084FC',
@@ -248,11 +252,11 @@ export default function TeamAnalyzerTab() {
                       FLEX: '#38BDF8'
                     };
                     const color = colorMap[pos] || '#E2E8F0';
-                    const isLeft = x < cx - 8;
-                    const isRight = x > cx + 8;
+                    const isLeft = x < cx - 6;
+                    const isRight = x > cx + 6;
                     const isTop = y < cy;
                     const textAnchor = isRight ? 'start' : isLeft ? 'end' : 'middle';
-                    const yOffset = isTop ? -8 : 12;
+                    const yOffset = isTop ? -6 : 10;
 
                     return (
                       <text
@@ -260,7 +264,7 @@ export default function TeamAnalyzerTab() {
                         y={y + yOffset}
                         fill={color}
                         fontSize={11}
-                        fontWeight={800}
+                        fontWeight={900}
                         fontFamily="'JetBrains Mono', monospace"
                         textAnchor={textAnchor}
                       >
@@ -280,7 +284,8 @@ export default function TeamAnalyzerTab() {
                   fillOpacity={0.25} 
                   dot={(props: any) => {
                     const { cx, cy, payload } = props;
-                    const pos = payload?.rawPos || payload?.subject?.split(' ')[0]?.toUpperCase() || 'QB';
+                    const raw = payload?.rawPos || payload?.subject;
+                    const pos = raw === 'FLX' ? 'FLEX' : raw?.toUpperCase() || 'QB';
                     const colorMap: Record<string, string> = {
                       QB: '#F97316',
                       RB: '#A855F7',
@@ -294,7 +299,7 @@ export default function TeamAnalyzerTab() {
                         key={`${cx}-${cy}`}
                         cx={cx}
                         cy={cy}
-                        r={5.5}
+                        r={5}
                         fill={dotColor}
                         stroke="#09090b"
                         strokeWidth={1.5}
@@ -302,14 +307,38 @@ export default function TeamAnalyzerTab() {
                     );
                   }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', marginTop: '12px', fontFamily: "'JetBrains Mono', monospace" }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', marginTop: '6px', fontFamily: "'JetBrains Mono', monospace" }} />
                 <RechartsTooltip 
                   contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px', fontFamily: "'JetBrains Mono', monospace" }}
-                  itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                  itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                 />
               </RadarChart>
             </ResponsiveContainer>
           </div>
+
+          {/* ── POSITIONAL SCORE TELEMETRY RIBBON ───────────────────────── */}
+          <div className="grid grid-cols-5 gap-1.5 w-full pt-3 mt-1 border-t border-zinc-800/80 text-center font-mono">
+            {posGradesOrder.map(pos => {
+              const grade = position_grades[pos] || 'B';
+              const teamScore = grade === 'A+' ? 152 : grade === 'A' ? 138 : grade === 'A-' ? 125 :
+                                grade === 'B+' ? 118 : grade === 'B' ? 105 : grade === 'B-' ? 95 :
+                                grade === 'C+' ? 88 : grade === 'C' ? 78 : grade === 'D' ? 62 : 45;
+              const ratingTag = teamScore >= 140 ? 'Loaded' : teamScore >= 125 ? 'Elite' : teamScore >= 110 ? 'Strong' : teamScore >= 90 ? 'Solid' : 'Weak';
+              const colorClass = pos === 'QB' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' :
+                                 pos === 'RB' ? 'text-purple-400 border-purple-500/30 bg-purple-500/10' :
+                                 pos === 'WR' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
+                                 pos === 'TE' ? 'text-rose-400 border-rose-500/30 bg-rose-500/10' :
+                                 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10';
+              return (
+                <div key={pos} className={`p-1.5 rounded-lg border ${colorClass} flex flex-col justify-center items-center`}>
+                  <span className="text-[9px] uppercase font-bold block">{pos}</span>
+                  <span className="text-xs font-black block mt-0.5">{teamScore}</span>
+                  <span className="text-[8px] opacity-70 uppercase block mt-0.5 font-sans font-semibold">{ratingTag}</span>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       </div>
 
