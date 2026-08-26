@@ -219,9 +219,9 @@ export default function TeamAnalyzerTab() {
           </div>
           <p className="text-zinc-500 text-xs w-full text-left mb-2">Relative strength across core positions.</p>
           
-          <div className="h-56 sm:h-64 w-full">
+          <div className="h-72 sm:h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="48%" outerRadius="42%" margin={{ top: 12, right: 20, bottom: 12, left: 20 }} data={posGradesOrder.map(pos => {
+              <RadarChart cx="50%" cy="50%" outerRadius="68%" margin={{ top: 18, right: 30, bottom: 16, left: 30 }} data={posGradesOrder.map(pos => {
                 const grade = position_grades[pos] || 'B';
                 const teamScore = grade === 'A+' ? 152 : grade === 'A' ? 138 : grade === 'A-' ? 125 :
                                   grade === 'B+' ? 118 : grade === 'B' ? 105 : grade === 'B-' ? 95 :
@@ -237,7 +237,7 @@ export default function TeamAnalyzerTab() {
                   fullMark: 160
                 };
               })}>
-                <PolarGrid stroke="#27272a" />
+                <PolarGrid stroke="#27272a" strokeWidth={1} />
                 <PolarAngleAxis 
                   dataKey="subject" 
                   tick={(props: any) => {
@@ -252,18 +252,20 @@ export default function TeamAnalyzerTab() {
                       FLEX: '#38BDF8'
                     };
                     const color = colorMap[pos] || '#E2E8F0';
-                    const isLeft = x < cx - 6;
-                    const isRight = x > cx + 6;
-                    const isTop = y < cy;
+                    const isLeft = x < cx - 8;
+                    const isRight = x > cx + 8;
+                    const isTop = y < cy - 8;
+                    const isBottom = y > cy + 8;
                     const textAnchor = isRight ? 'start' : isLeft ? 'end' : 'middle';
-                    const yOffset = isTop ? -6 : 10;
+                    const xOffset = isRight ? 4 : isLeft ? -4 : 0;
+                    const yOffset = isTop ? -8 : isBottom ? 12 : 2;
 
                     return (
                       <text
-                        x={x}
+                        x={x + xOffset}
                         y={y + yOffset}
                         fill={color}
-                        fontSize={11}
+                        fontSize={12}
                         fontWeight={900}
                         fontFamily="'JetBrains Mono', monospace"
                         textAnchor={textAnchor}
@@ -274,14 +276,14 @@ export default function TeamAnalyzerTab() {
                   }} 
                 />
                 <PolarRadiusAxis angle={30} domain={[0, 160]} tick={false} axisLine={false} />
-                <Radar name="League Avg (100)" dataKey="league_avg" stroke="#71717a" strokeDasharray="3 3" fill="#71717a" fillOpacity={0.1} />
+                <Radar name="League Avg (100)" dataKey="league_avg" stroke="#71717a" strokeDasharray="3 3" fill="#71717a" fillOpacity={0.12} />
                 <Radar 
                   name="Your Strength" 
                   dataKey="A" 
                   stroke="#f97316" 
-                  strokeWidth={2.5}
+                  strokeWidth={3}
                   fill="#f97316" 
-                  fillOpacity={0.25} 
+                  fillOpacity={0.28} 
                   dot={(props: any) => {
                     const { cx, cy, payload } = props;
                     const raw = payload?.rawPos || payload?.subject;
@@ -299,18 +301,32 @@ export default function TeamAnalyzerTab() {
                         key={`${cx}-${cy}`}
                         cx={cx}
                         cy={cy}
-                        r={5}
+                        r={5.5}
                         fill={dotColor}
                         stroke="#09090b"
-                        strokeWidth={1.5}
+                        strokeWidth={2}
                       />
                     );
                   }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', marginTop: '6px', fontFamily: "'JetBrains Mono', monospace" }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', marginTop: '8px', fontFamily: "'JetBrains Mono', monospace" }} />
                 <RechartsTooltip 
-                  contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px', fontFamily: "'JetBrains Mono', monospace" }}
-                  itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
+                  content={({ active, payload }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-zinc-950/95 border border-zinc-700/80 px-2.5 py-1.5 rounded-lg shadow-2xl font-mono text-[11px] pointer-events-none">
+                        <div className="font-bold text-white flex items-center justify-between gap-3">
+                          <span className="text-zinc-300">{data.rawPos} Strength:</span>
+                          <span className="text-amber-400 font-black">{data.A}</span>
+                        </div>
+                        <div className="text-[10px] text-zinc-400 flex items-center justify-between gap-3">
+                          <span>League Avg:</span>
+                          <span>100</span>
+                        </div>
+                      </div>
+                    );
+                  }}
                 />
               </RadarChart>
             </ResponsiveContainer>
