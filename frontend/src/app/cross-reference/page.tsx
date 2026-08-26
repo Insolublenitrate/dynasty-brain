@@ -63,11 +63,12 @@ export const METRIC_CATEGORIES = [
 const ALL_METRICS = METRIC_CATEGORIES.flatMap(c => c.metrics);
 
 const POSITION_COLORS: Record<string, string> = {
-  'WR': '#a855f7', // Purple
-  'RB': '#3b82f6', // Blue
-  'TE': '#10b981', // Emerald
-  'QB': '#f59e0b', // Amber
-  'DEF': '#ef4444',
+  'WR': '#22c55e', // Emerald Green (Loaded)
+  'RB': '#a855f7', // Royal Purple (Strong)
+  'TE': '#eab308', // Gold / Amber (Weak)
+  'QB': '#f97316', // Orange / Amber (Elite)
+  'FLEX': '#38bdf8', // Sky Blue / Cyan
+  'DEF': '#64748b', // Slate
 };
 
 const REPLACEMENT_LEVELS: Record<string, number> = {
@@ -446,10 +447,11 @@ export default function CrossReference() {
         <div className="flex items-center justify-between flex-wrap gap-3 pt-2 text-xs font-mono text-zinc-400">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="text-zinc-500 font-sans uppercase font-bold text-[10px]">Position Legend:</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> WR</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> RB</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> TE</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> QB</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> WR</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> RB</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span> TE</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span> QB</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> FLEX</span>
           </div>
           <span className="text-[11px] text-zinc-500">Tap any player dot to highlight</span>
         </div>

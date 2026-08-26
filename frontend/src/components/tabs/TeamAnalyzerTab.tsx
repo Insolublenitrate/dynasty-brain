@@ -214,29 +214,101 @@ export default function TeamAnalyzerTab() {
         {/* Positional Breakdown Radar */}
         <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
           <h4 className="text-white font-bold text-lg w-full text-left mb-2">Positional Breakdown</h4>
-          <p className="text-zinc-500 text-xs w-full text-left mb-4">Relative strength across core positions.</p>
-          <div className="h-48 md:h-64 w-full">
+          <p className="text-zinc-500 text-xs w-full text-left mb-4">Relative strength across core positions (100 = League Average Baseline).</p>
+          <div className="h-56 md:h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={posGradesOrder.map(pos => {
-                const teamScore = position_grades[pos] === 'A+' ? 100 : position_grades[pos] === 'A' ? 95 : position_grades[pos] === 'A-' ? 90 :
-                                  position_grades[pos] === 'B+' ? 85 : position_grades[pos] === 'B' ? 80 : position_grades[pos] === 'B-' ? 75 :
-                                  position_grades[pos] === 'C+' ? 70 : position_grades[pos] === 'C' ? 65 : position_grades[pos] === 'D' ? 50 : 40;
+              <RadarChart cx="50%" cy="50%" outerRadius="68%" data={posGradesOrder.map(pos => {
+                const grade = position_grades[pos] || 'B';
+                const teamScore = grade === 'A+' ? 152 : grade === 'A' ? 138 : grade === 'A-' ? 125 :
+                                  grade === 'B+' ? 118 : grade === 'B' ? 105 : grade === 'B-' ? 95 :
+                                  grade === 'C+' ? 88 : grade === 'C' ? 78 : grade === 'D' ? 62 : 45;
+                const ratingTag = teamScore >= 140 ? 'Loaded' : teamScore >= 125 ? 'Elite' : teamScore >= 110 ? 'Strong' : teamScore >= 90 ? 'Solid' : 'Weak';
+                const subjectLabel = pos === 'FLEX' ? `FLEX (${teamScore})` : `${pos} (${teamScore} – ${ratingTag})`;
                 return {
-                  subject: pos, 
+                  subject: subjectLabel,
+                  rawPos: pos,
                   A: teamScore,
-                  league_avg: 75, // B- baseline for league average mapping
-                  fullMark: 100
+                  league_avg: 100, // 100 benchmark baseline
+                  fullMark: 160
                 };
               })}>
                 <PolarGrid stroke="#27272a" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#71717a', fontSize: 12 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="League Avg" dataKey="league_avg" stroke="#71717a" fill="#71717a" fillOpacity={0.2} />
-                <Radar name="Your Strength" dataKey="A" stroke="#f97316" fill="#f97316" fillOpacity={0.6} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', marginTop: '10px' }} />
+                <PolarAngleAxis 
+                  dataKey="subject" 
+                  tick={(props: any) => {
+                    const { payload, x = 0, y = 0, cx = 0, cy = 0 } = props || {};
+                    const value = payload?.value || '';
+                    const pos = value.split(' ')[0].toUpperCase();
+                    const colorMap: Record<string, { color: string; dot: string }> = {
+                      QB: { color: '#FFFFFF', dot: '#F97316' },
+                      RB: { color: '#C084FC', dot: '#A855F7' },
+                      WR: { color: '#22C55E', dot: '#22C55E' },
+                      TE: { color: '#EF4444', dot: '#EAB308' },
+                      FLEX: { color: '#38BDF8', dot: '#38BDF8' }
+                    };
+                    const cfg = colorMap[pos] || { color: '#E2E8F0', dot: '#F97316' };
+                    const isLeft = x < cx - 10;
+                    const isRight = x > cx + 10;
+                    const isTop = y < cy;
+                    const textAnchor = isRight ? 'start' : isLeft ? 'end' : 'middle';
+                    const dotX = isRight ? x - 6 : isLeft ? x + 6 : x;
+                    const dotY = isTop ? y - 10 : y + 14;
+
+                    return (
+                      <g>
+                        <circle cx={dotX} cy={dotY} r={3.5} fill={cfg.dot} stroke="#09090b" strokeWidth={1} />
+                        <text
+                          x={x}
+                          y={y + (isTop ? -4 : 10)}
+                          fill={cfg.color}
+                          fontSize={11}
+                          fontWeight={800}
+                          fontFamily="'JetBrains Mono', monospace"
+                          textAnchor={textAnchor}
+                        >
+                          {value}
+                        </text>
+                      </g>
+                    );
+                  }} 
+                />
+                <PolarRadiusAxis angle={30} domain={[0, 160]} tick={false} axisLine={false} />
+                <Radar name="League Avg (100)" dataKey="league_avg" stroke="#71717a" strokeDasharray="3 3" fill="#71717a" fillOpacity={0.1} />
+                <Radar 
+                  name="Your Strength" 
+                  dataKey="A" 
+                  stroke="#f97316" 
+                  strokeWidth={2.5}
+                  fill="#f97316" 
+                  fillOpacity={0.25} 
+                  dot={(props: any) => {
+                    const { cx, cy, payload } = props;
+                    const pos = payload?.rawPos || payload?.subject?.split(' ')[0]?.toUpperCase() || 'QB';
+                    const colorMap: Record<string, string> = {
+                      QB: '#F97316',
+                      RB: '#A855F7',
+                      WR: '#22C55E',
+                      TE: '#EAB308',
+                      FLEX: '#38BDF8'
+                    };
+                    const dotColor = colorMap[pos] || '#F97316';
+                    return (
+                      <circle
+                        key={`${cx}-${cy}`}
+                        cx={cx}
+                        cy={cy}
+                        r={5}
+                        fill={dotColor}
+                        stroke="#09090b"
+                        strokeWidth={1.5}
+                      />
+                    );
+                  }}
+                />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', marginTop: '12px', fontFamily: "'JetBrains Mono', monospace" }} />
                 <RechartsTooltip 
-                  contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
-                  itemStyle={{ fontSize: '14px', fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px', fontFamily: "'JetBrains Mono', monospace" }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                 />
               </RadarChart>
             </ResponsiveContainer>

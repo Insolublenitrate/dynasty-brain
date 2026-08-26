@@ -73,7 +73,7 @@ const FAQS = [
     questions: [
       {
         q: "How do I install Blindside Dynasty on Apple iPhone or iPad?",
-        a: "1. Open Safari on your iPhone and visit waiverwiretap.kindofabigdill.com.\n2. Tap the Share button at the bottom toolbar.\n3. Scroll down and tap 'Add to Home Screen'.\n4. Tap 'Add' in the top-right. The app will launch in full-screen standalone mode with no browser bars!"
+        a: "1. Open Safari on your iPhone and visit ffdashboard.kindofabigdill.world.\n2. Tap the Share button at the bottom toolbar.\n3. Scroll down and tap 'Add to Home Screen'.\n4. Tap 'Add' in the top-right. The app will launch in full-screen standalone mode with no browser bars!"
       },
       {
         q: "How do I install Blindside Dynasty on Android?",

@@ -4,7 +4,7 @@
   "webDir": "out",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://waiverwiretap.kindofabigdill.com",
+    "url": "https://ffdashboard.kindofabigdill.world",
     "cleartext": true
   },
   "android": {
@@ -17,7 +17,7 @@
     "backgroundColor": "#09090b",
     "contentInset": "always",
     "preferredContentMode": "mobile",
-    "scheme": "WaiverWiretap",
+    "scheme": "BlindsideDynasty",
     "limitsNavigationsToAppBoundDomains": true
   },
   "plugins": {

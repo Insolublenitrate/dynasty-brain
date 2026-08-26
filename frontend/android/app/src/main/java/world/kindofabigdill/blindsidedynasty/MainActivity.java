@@ -1,4 +1,4 @@
-package io.athleticintel.wiretap;
+package world.kindofabigdill.blindsidedynasty;
 
 import com.getcapacitor.BridgeActivity;
 

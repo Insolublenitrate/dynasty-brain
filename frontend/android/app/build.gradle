@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "io.athleticintel.wiretap"
+    namespace = "world.kindofabigdill.blindsidedynasty"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "io.athleticintel.wiretap"
+        applicationId "world.kindofabigdill.blindsidedynasty"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

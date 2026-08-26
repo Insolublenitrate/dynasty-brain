@@ -379,7 +379,7 @@ export default function LandingPage() {
         </div>
 
         <p className="text-[11px] text-zinc-600 font-mono pt-2">
-          Domain: <strong>waiverwiretap.kindofabigdill.com</strong> / <strong>ffdashboard.kindofabigdill.world</strong>
+          Domain: <strong>ffdashboard.kindofabigdill.world</strong> • Blindside Dynasty Tactical GM
         </p>
       </footer>
 
