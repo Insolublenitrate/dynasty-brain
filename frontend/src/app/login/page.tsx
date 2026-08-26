@@ -66,7 +66,7 @@ export default function Login() {
               <Database className="text-amber-500" size={32} />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Waiver WireTap</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Blindside Dynasty</h1>
           <p className="text-zinc-400">Initialize your Quant Engine.</p>
         </div>
 

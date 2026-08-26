@@ -76,7 +76,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl sm:text-2xl font-black text-white italic tracking-tight font-sans">
-                INSTALL WAIVER WIRETAP
+                INSTALL BLINDSIDE DYNASTY
               </h2>
             </div>
             <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest mt-0.5">
@@ -216,7 +216,7 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
                 <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">3</span>
                 <div>
                   <p className="font-bold text-white font-sans text-xs">Touchdown!</p>
-                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top right. Waiver Wiretap launches in full-screen on your iPhone!</p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">Tap <strong>Add</strong> in the top right. Blindside Dynasty launches in full-screen on your iPhone!</p>
                 </div>
               </div>
             </div>

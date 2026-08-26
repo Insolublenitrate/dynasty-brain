@@ -105,7 +105,7 @@ export default function GlossaryPage() {
     <div className="max-w-4xl mx-auto space-y-8 h-full flex flex-col py-8 px-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Metrics Glossary</h1>
-        <p className="text-zinc-400">Definitions and explanations for the advanced analytics metrics used throughout Waiver WireTap.</p>
+        <p className="text-zinc-400">Definitions and explanations for the advanced analytics metrics used throughout Blindside Dynasty.</p>
       </div>
 
       <div className="space-y-8">

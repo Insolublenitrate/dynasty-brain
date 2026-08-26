@@ -1,7 +1,7 @@
 {
-  "name": "Waiver Wiretap",
-  "short_name": "Waiver Wiretap",
-  "description": "Tactical Fantasy Football Dynasty Analytics, Quant Tiers & AI War Room",
+  "name": "Blindside Dynasty",
+  "short_name": "Blindside",
+  "description": "Protect your roster. Blindside your league. Tactical dynasty fantasy football quant war room.",
   "start_url": "/dynasty-room",
   "display": "standalone",
   "background_color": "#09090b",

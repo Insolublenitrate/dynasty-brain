@@ -1,5 +1,5 @@
 /**
- * WAIVER WIRETAP — Interactive Showcase Script
+ * BLINDSIDE DYNASTY — Interactive Showcase Script
  * A Kind of a Big Dill (KBD) Product
  */
 

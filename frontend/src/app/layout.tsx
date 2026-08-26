@@ -39,21 +39,21 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Waiver Wiretap | Quant & AI Dynasty War Room",
-  description: "Tactical Fantasy Football Dynasty Analytics, Z-Score Power Tiers & Coach Madden AI War Room",
+  title: "Blindside Dynasty — The Tactical Dynasty War Room",
+  description: "Protect your roster. Blindside your league. High-stakes dynasty football quant engine, true power matrix, trade autopsies, and Coach Madden AI.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Waiver Wiretap",
+    title: "Blindside Dynasty",
   },
   icons: {
     icon: "/icon.png",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Waiver Wiretap | Quant & AI Dynasty War Room",
-    description: "Tactical Fantasy Football Dynasty Analytics, Z-Score Power Tiers & Coach Madden AI War Room",
+    title: "Blindside Dynasty — The Tactical Dynasty War Room",
+    description: "Protect your roster. Blindside your league. High-stakes dynasty football quant engine, true power matrix, trade autopsies, and Coach Madden AI.",
     images: ["/opengraph-image.png"],
   },
 };

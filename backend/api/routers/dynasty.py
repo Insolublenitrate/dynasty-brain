@@ -12,6 +12,18 @@ from services.utils import fetch_parquet
 
 router = APIRouter()
 
+def safe_extract_roster_id(val):
+    if val is None:
+        return 1
+    if isinstance(val, int):
+        return val
+    val_str = str(val)
+    if '_' in val_str:
+        parts = val_str.split('_')
+        return int(parts[-1]) if parts[-1].isdigit() else 1
+    return int(val_str) if val_str.isdigit() else 1
+
+
 @router.get("/api/quant/team-analyzer/{league_id}/{roster_id}")
 def get_team_analyzer(league_id: str, roster_id: int):
     session = SessionLocal()
@@ -814,5 +826,305 @@ def get_weekly_studio(league_id: str):
         }
     finally:
         session.close()
+
+
+@router.get("/api/quant/roster-details/{league_id}/{roster_id}")
+def get_roster_details(league_id: str, roster_id: int):
+    session = SessionLocal()
+    try:
+        roster = session.query(Roster).filter(Roster.league_id == league_id, Roster.roster_id == roster_id).first()
+        if not roster:
+            return {"error": "Roster not found."}
+            
+        league = session.query(League).filter(League.league_id == league_id).first()
+        all_rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        
+        # Owner names map
+        owner_name_map = {}
+        for r in all_rosters:
+            name = r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}"
+            owner_name_map[r.roster_id] = name
+            
+        from api.routers.league import get_sleeper_players_cache
+        sp_cache = get_sleeper_players_cache()
+        
+        # Load advanced stats for this roster's players
+        player_ids = roster.players or []
+        starter_ids = roster.starters or []
+        taxi_ids = roster.taxi or []
+        reserve_ids = roster.reserve or []
+        
+        stats = session.query(PlayerAdvancedStats).filter(
+            PlayerAdvancedStats.player_id.in_(player_ids),
+            PlayerAdvancedStats.season >= 2023
+        ).all()
+        
+        # Build stats map
+        stats_by_pid = {}
+        for s in stats:
+            pid = str(s.player_id)
+            if pid not in stats_by_pid or (s.season and s.season > stats_by_pid[pid].season):
+                stats_by_pid[pid] = s
+                
+        # League starting slot designations
+        league_slots = (league.roster_positions if league and league.roster_positions else [
+            "QB", "RB", "RB", "WR", "WR", "WR", "TE", "FLEX", "SUPER_FLEX"
+        ])
+        starter_slots = [s for s in league_slots if s not in ["BN", "IR", "TAXI"]]
+        
+        import datetime
+        current_year = datetime.datetime.now().year
+        
+        def build_player_obj(pid, is_starter=False, slot_label=None):
+            p_data = sp_cache.get(str(pid), {})
+            p_stat = stats_by_pid.get(str(pid))
+            
+            first = p_data.get("first_name", "")
+            last = p_data.get("last_name", "")
+            full_name = f"{first} {last}".strip() or p_data.get("full_name", f"Player {pid}")
+            pos = p_data.get("position", "UNK")
+            team = p_data.get("team") or "FA"
+            
+            # Age resolution
+            age = p_data.get("age")
+            if not age and p_data.get("birth_date"):
+                try:
+                    b_year = int(p_data["birth_date"].split("-")[0])
+                    age = current_year - b_year
+                except:
+                    age = 25
+            if not age: age = 25
+            
+            exp = p_data.get("years_exp", 1)
+            injury = p_data.get("injury_status") or None
+            
+            # Points and stats
+            fpts = round(float(p_stat.fantasy_points_ppr), 1) if p_stat and p_stat.fantasy_points_ppr is not None else 0.0
+            ppg = round(fpts / 17.0, 1) if fpts > 0 else (12.5 if is_starter else 5.0)
+            
+            # Snap share %
+            raw_snap = float(p_stat.offense_pct) if p_stat and p_stat.offense_pct is not None else (0.85 if is_starter else 0.35)
+            snap_share = round(raw_snap * 100, 1) if raw_snap <= 1.0 else round(raw_snap, 1)
+            
+            # Target share / Targets per game
+            targets = float(p_stat.targets) if p_stat and p_stat.targets is not None else 0.0
+            target_share = round((targets / 17.0) * 10.0, 1) if targets > 0 else (18.5 if (is_starter and pos == "WR") else 5.0)
+            
+            # Ceiling / Floor
+            ceiling = round(ppg * 1.35, 1)
+            floor = round(ppg * 0.65, 1)
+            
+            # Role tags
+            role_tag = "Starter" if is_starter else "Depth"
+            if not is_starter:
+                if exp <= 1:
+                    role_tag = "Rookie / Dev"
+                elif pos == "RB" and ppg >= 6.0:
+                    role_tag = "Premium Handcuff"
+                elif pos == "WR" and targets >= 40.0:
+                    role_tag = "High-Upside WR"
+                elif age >= 28:
+                    role_tag = "Veteran Depth"
+                    
+            return {
+                "id": str(pid),
+                "name": full_name,
+                "position": pos,
+                "team": team,
+                "age": age,
+                "years_exp": exp,
+                "injury_status": injury,
+                "ppg": ppg,
+                "total_fpts": fpts,
+                "target_share_pct": target_share,
+                "snap_share_pct": snap_share,
+                "ceiling": ceiling,
+                "floor": floor,
+                "slot": slot_label,
+                "role_tag": role_tag,
+                "is_starter": is_starter
+            }
+            
+        # Process Starters
+        starters_list = []
+        for idx, sid in enumerate(starter_ids):
+            slot_name = starter_slots[idx] if idx < len(starter_slots) else "FLEX"
+            starters_list.append(build_player_obj(sid, is_starter=True, slot_label=slot_name))
+            
+        # Process Bench
+        starter_id_set = set(str(s) for s in starter_ids)
+        taxi_id_set = set(str(t) for t in taxi_ids)
+        reserve_id_set = set(str(r) for r in reserve_ids)
+        
+        bench_list = []
+        taxi_list = []
+        reserve_list = []
+        
+        for pid in player_ids:
+            spid = str(pid)
+            if spid in starter_id_set:
+                continue
+            if spid in taxi_id_set:
+                taxi_list.append(build_player_obj(pid, is_starter=False, slot_label="TAXI"))
+            elif spid in reserve_id_set:
+                reserve_list.append(build_player_obj(pid, is_starter=False, slot_label="IR"))
+            else:
+                bench_list.append(build_player_obj(pid, is_starter=False, slot_label="BN"))
+                
+        # Sort bench by PPG descending
+        bench_list.sort(key=lambda x: x["ppg"], reverse=True)
+        taxi_list.sort(key=lambda x: x["ppg"], reverse=True)
+        
+        # Positional Audits & Age Cliff Analysis
+        all_players = starters_list + bench_list + taxi_list
+        pos_groups = {"QB": [], "RB": [], "WR": [], "TE": []}
+        for p in all_players:
+            if p["position"] in pos_groups:
+                pos_groups[p["position"]].append(p)
+                
+        def audit_group(pos):
+            group = pos_groups.get(pos, [])
+            if not group:
+                return {
+                    "avg_age": 25.0,
+                    "starter_quality": "C",
+                    "depth_grade": "D",
+                    "cliff_risk": "LOW",
+                    "summary": f"No active {pos} on roster."
+                }
+            avg_age = round(sum(p["age"] for p in group) / len(group), 1)
+            starters_in_pos = [p for p in group if p["is_starter"]]
+            avg_starter_ppg = (sum(p["ppg"] for p in starters_in_pos) / len(starters_in_pos)) if starters_in_pos else 0
+            
+            # Starter quality
+            if avg_starter_ppg >= 18.0: s_grade = "A+"
+            elif avg_starter_ppg >= 14.5: s_grade = "A"
+            elif avg_starter_ppg >= 11.0: s_grade = "B"
+            elif avg_starter_ppg >= 8.0: s_grade = "C"
+            else: s_grade = "D"
+            
+            # Depth grade
+            depth_count = len(group) - len(starters_in_pos)
+            if depth_count >= 4: d_grade = "A"
+            elif depth_count >= 2: d_grade = "B"
+            elif depth_count >= 1: d_grade = "C"
+            else: d_grade = "F (Thin)"
+            
+            # Cliff Risk
+            if pos == "RB":
+                cliff = "HIGH (Aging Cliff)" if avg_age >= 27.5 else ("MEDIUM" if avg_age >= 25.5 else "LOW (Youth Prime)")
+            elif pos == "WR":
+                cliff = "MEDIUM (Veteran)" if avg_age >= 29.0 else "LOW (Prime Window)"
+            elif pos == "QB":
+                cliff = "MEDIUM" if avg_age >= 34.0 else "LOW"
+            else:
+                cliff = "LOW"
+                
+            summary = f"{len(starters_in_pos)} Starter(s), {depth_count} Bench Reserve(s). Avg age: {avg_age} yrs."
+            return {
+                "avg_age": avg_age,
+                "starter_quality": s_grade,
+                "depth_grade": d_grade,
+                "cliff_risk": cliff,
+                "summary": summary
+            }
+            
+        pos_audits = {
+            "QB": audit_group("QB"),
+            "RB": audit_group("RB"),
+            "WR": audit_group("WR"),
+            "TE": audit_group("TE")
+        }
+        
+        # Future Draft Capital
+        picks = session.query(DraftPick).filter(DraftPick.owner_id == roster.id).all()
+        draft_picks_list = []
+        for p in picks:
+            orig_name = owner_name_map.get(safe_extract_roster_id(p.roster_id), f"Team {p.roster_id}")
+            draft_picks_list.append({
+                "season": str(p.season),
+                "round": p.round,
+                "original_team": orig_name,
+                "is_original": (p.roster_id == p.owner_id)
+            })
+        draft_picks_list.sort(key=lambda x: (x["season"], x["round"]))
+        
+        # Manager Diagnostics & Blindside Alerts
+        strengths = []
+        vulnerabilities = []
+        actions = []
+        
+        # WR analysis
+        wr_starters = [p for p in starters_list if p["position"] == "WR"]
+        if len(wr_starters) >= 3 and all(p["ppg"] >= 13.0 for p in wr_starters):
+            strengths.append("Alpha WR Core: High-volume target earners anchoring starting lineup.")
+        if len(pos_groups["WR"]) >= 7:
+            strengths.append(f"Deep WR Room: {len(pos_groups['WR'])} wideouts create trade leverage.")
+            actions.append("Package WR depth to target an elite Tier 1 tight end or future 1st round pick.")
+            
+        # RB Cliff analysis
+        rb_starters = [p for p in starters_list if p["position"] == "RB"]
+        if pos_audits["RB"]["avg_age"] >= 27.2:
+            vulnerabilities.append("RB Age Cliff Alert: Running back room is in late-career depreciation window.")
+            actions.append("Shop veteran running backs to contenders before rookie draft hype peaks.")
+        elif pos_audits["RB"]["depth_grade"].startswith("F"):
+            vulnerabilities.append("Zero RB Depth: Starting backfield has no protected handcuffs on the bench.")
+            actions.append("Target waiver handcuffs or cheap backup RBs with standalone spike-week upside.")
+            
+        # Draft capital strength
+        round1_picks = [p for p in draft_picks_list if p["round"] == 1]
+        if len(round1_picks) >= 2:
+            strengths.append(f"Draft War Chest: Holds {len(round1_picks)} future 1st-round draft picks.")
+        elif len(round1_picks) == 0:
+            vulnerabilities.append("Depleted Draft Capital: Zero future 1st round picks currently in reserve.")
+            
+        if not strengths:
+            strengths.append("Balanced Core: Solid floor across starting roster.")
+        if not vulnerabilities:
+            vulnerabilities.append("Well-Protected: No critical holes detected in starting lineup.")
+        if not actions:
+            actions.append("Hold steady and monitor waiver wire for emerging breakout targets.")
+            
+        # Total starter PPG
+        starter_total_ppg = round(sum(p["ppg"] for p in starters_list), 1)
+        bench_total_ppg = round(sum(p["ppg"] for p in bench_list), 1)
+        
+        # Team rank by fpts
+        ranked_rosters = sorted(all_rosters, key=lambda r: (r.fpts or 0), reverse=True)
+        team_rank = next((i + 1 for i, r in enumerate(ranked_rosters) if r.roster_id == roster.roster_id), 1)
+        
+        owner_name = roster.user.display_name if roster.user and roster.user.display_name else f"Team {roster.roster_id}"
+        
+        return {
+            "team_info": {
+                "roster_id": roster.roster_id,
+                "team_name": owner_name,
+                "avatar": roster.user.avatar if roster.user else None,
+                "wins": roster.wins or 0,
+                "losses": roster.losses or 0,
+                "ties": roster.ties or 0,
+                "total_fpts": round(roster.fpts or 0.0, 1),
+                "rank": team_rank,
+                "total_teams": len(all_rosters),
+                "starter_total_ppg": starter_total_ppg,
+                "bench_total_ppg": bench_total_ppg
+            },
+            "starters": starters_list,
+            "bench": bench_list,
+            "taxi": taxi_list,
+            "reserve": reserve_list,
+            "position_audits": pos_audits,
+            "draft_picks": draft_picks_list,
+            "diagnostics": {
+                "strengths": strengths,
+                "vulnerabilities": vulnerabilities,
+                "action_plan": actions
+            }
+        }
+    except Exception as err:
+        return {"error": str(err)}
+    finally:
+        session.close()
+
 
 

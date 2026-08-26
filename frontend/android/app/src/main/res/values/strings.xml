@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">WaiverWireTap</string>
-    <string name="title_activity_main">WaiverWireTap</string>
-    <string name="package_name">io.athleticintel.wiretap</string>
-    <string name="custom_url_scheme">io.athleticintel.wiretap</string>
+    <string name="app_name">Blindside Dynasty</string>
+    <string name="title_activity_main">Blindside Dynasty</string>
+    <string name="package_name">world.kindofabigdill.blindsidedynasty</string>
+    <string name="custom_url_scheme">world.kindofabigdill.blindsidedynasty</string>
 </resources>

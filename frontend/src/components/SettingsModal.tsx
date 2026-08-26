@@ -384,7 +384,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
         {/* Footer */}
         <div className="px-6 py-3.5 border-t border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-mono text-zinc-500">
-          <span>Waiver Wiretap Engine v3.5 • Multi-Platform</span>
+          <span>Blindside Dynasty Engine v3.5 • Multi-Platform</span>
           <button 
             onClick={onClose}
             className="px-4 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold transition-colors"

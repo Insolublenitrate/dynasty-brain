@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.athleticintel.wiretap',
-  appName: 'WaiverWireTap',
+  appId: 'io.athleticintel.blindside',
+  appName: 'Blindside Dynasty',
   webDir: 'out'
 };
 

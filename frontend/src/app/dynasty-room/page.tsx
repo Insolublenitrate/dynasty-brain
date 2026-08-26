@@ -9,6 +9,7 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import ActionCenterTab from '@/components/tabs/ActionCenterTab';
+import RosterIntelTab from '@/components/tabs/RosterIntelTab';
 import ScheduleTab from '@/components/tabs/ScheduleTab';
 import TeamAnalyzerTab from '@/components/tabs/TeamAnalyzerTab';
 import StudioTab from '@/components/tabs/StudioTab';
@@ -34,7 +35,7 @@ function DynastyRoomContent() {
   const [activeArena, setActiveArena] = useState(arenaParam);
 
   // Sub-tab selectors for multi-module arenas
-  const [commandSub, setCommandSub] = useState<'action' | 'studio' | 'bounties'>('action');
+  const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'teams' | 'studio' | 'bounties'>((subParam as any) || 'action');
   const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
   const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy' | 'trends'>((subParam as any) || 'architect');
 
@@ -123,38 +124,55 @@ function DynastyRoomContent() {
 
           {/* Contextual Sub-View Segmented Controls (Full Width & No Clipping on Mobile) */}
           {activeArena === 'command' && (
-            <div className="grid grid-cols-3 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
               <button
                 onClick={() => setCommandSub('action')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
                   commandSub === 'action' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'action' ? { color: currentTheme.primary } : {}}
               >
-                <Target size={13} className="shrink-0" />
+                <Target size={12} className="shrink-0" />
                 <span className="truncate">Action</span>
-                <span className="hidden sm:inline">Center</span>
+              </button>
+              <button
+                onClick={() => setCommandSub('roster')}
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                  commandSub === 'roster' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={commandSub === 'roster' ? { color: currentTheme.primary } : {}}
+              >
+                <Crown size={12} className="shrink-0" />
+                <span className="truncate">Roster</span>
+              </button>
+              <button
+                onClick={() => setCommandSub('teams')}
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                  commandSub === 'teams' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={commandSub === 'teams' ? { color: currentTheme.primary } : {}}
+              >
+                <Search size={12} className="shrink-0" />
+                <span className="truncate">Teams</span>
               </button>
               <button
                 onClick={() => setCommandSub('studio')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
                   commandSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'studio' ? { color: currentTheme.primary } : {}}
               >
-                <Radio size={13} className="shrink-0" />
+                <Radio size={12} className="shrink-0" />
                 <span className="truncate">Studio</span>
-                <span className="hidden sm:inline">Feed</span>
               </button>
               <button
                 onClick={() => setCommandSub('bounties')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-black transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-black transition-all flex items-center justify-center gap-1 text-center truncate ${
                   commandSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md' : 'text-emerald-400 hover:text-emerald-300'
                 }`}
               >
-                <Coins size={13} className="shrink-0 text-emerald-400" />
+                <Coins size={12} className="shrink-0 text-emerald-400" />
                 <span className="truncate">Bounties</span>
-                <span className="hidden sm:inline">& Cash</span>
               </button>
             </div>
           )}
@@ -265,6 +283,8 @@ function DynastyRoomContent() {
         {activeArena === 'command' && (
           <div>
             {commandSub === 'action' && <ActionCenterTab />}
+            {commandSub === 'roster' && <RosterIntelTab />}
+            {commandSub === 'teams' && <TeamAnalyzerTab />}
             {commandSub === 'studio' && <StudioTab />}
             {commandSub === 'bounties' && <BountyVaultTab />}
           </div>

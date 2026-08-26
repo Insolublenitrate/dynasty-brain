@@ -1,4 +1,4 @@
-# Waiver Wiretap — Complete Marketing & Promotion Suite 🚀
+# Blindside Dynasty — Complete Marketing & Promotion Suite 🚀
 *The Quant & AI Fantasy Football Dynasty War Room · a KBD Product*
 
 ---
@@ -31,7 +31,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 >
 > We spent months building the quant dynasty war room we always wanted.
 >
-> Meet **Waiver Wiretap** ⚡
+> Meet **Blindside Dynasty** ⚡
 > 
 > Connect Sleeper, ESPN & Yahoo leagues in seconds. Free live interactive demo below 👇
 > 
@@ -91,7 +91,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 > 
 > Like a lot of you, I got tired of standard fantasy platforms ranking dynasty teams solely by regular season record or generic trade calculator values that ignore future draft capital.
 > 
-> So we built **Waiver Wiretap** — a dedicated dynasty analytics tool and war room designed specifically for dynasty grinders.
+> So we built **Blindside Dynasty** — a dedicated dynasty analytics tool and war room designed specifically for dynasty grinders.
 > 
 > ### What it does:
 > 1. **True Power Matrix**: Evaluates team lifecycle on a 4-quadrant scatter (70% Optimal Max Points For + 30% Draft Capital weight). You immediately see if you’re in Dynasty Apex, Win-Now, Productive Struggle, or Rebuilding Valley.
@@ -114,7 +114,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 **Post Body:**
 > How many times have you put up the 2nd highest points in your league only to play the #1 scorer and catch an undeserved $L$?
 > 
-> We built **Waiver Wiretap** to solve schedule luck and give managers real predictive leverage.
+> We built **Blindside Dynasty** to solve schedule luck and give managers real predictive leverage.
 > 
 > - **10,000-Sim Matchup Engine**: Runs thousands of game simulations with touchdown variance, weather, and injury volatility.
 > - **Coach Madden AI**: Breakdowns of your roster strengths and weaknesses with actionable trade advice.
@@ -128,7 +128,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 ## 💬 Sleeper & Fantasy League Chat Drop-Ins (High Conversion)
 
 ### Option A: The Playful Challenge (For your personal league chat)
-> *"Hey boys, I just plugged our league into this new Dynasty War Room tool (Waiver Wiretap). It turns out half of you are in the 'Rebuilding Valley' and don't even know it 💀 Check out the interactive demo with Coach Madden AI roasting rosters:*  
+> *"Hey boys, I just plugged our league into this new Dynasty War Room tool (Blindside Dynasty). It turns out half of you are in the 'Rebuilding Valley' and don't even know it 💀 Check out the interactive demo with Coach Madden AI roasting rosters:*  
 > 👉 https://waiverwiretap.kindofabigdill.com/demo.html"
 
 ### Option B: The Trade Bait Bait (For targeting trade partners)
@@ -140,9 +140,9 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 ## 👾 Discord Server Announcement Template
 
 ```markdown
-⚡ **NEW TOOL ALERT: WAIVER WIRETAP — THE DYNASTY WAR ROOM** ⚡
+⚡ **NEW TOOL ALERT: BLINDSIDE DYNASTY — THE DYNASTY WAR ROOM** ⚡
 
-Hey @everyone! If you manage dynasty or redraft fantasy football teams, check out **Waiver Wiretap**:
+Hey @everyone! If you manage dynasty or redraft fantasy football teams, check out **Blindside Dynasty**:
 
 🏈 **Core Features:**
 • **True Power Matrix:** 4-quadrant lifecycle engine unmasking true power (70% Max PF / 30% Picks).

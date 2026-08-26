@@ -61,7 +61,7 @@ function TopNavInner() {
               <PlaybookLogo size={34} animated={true} />
               <div className="flex flex-col">
                 <span className="text-base sm:text-lg font-black text-white italic tracking-wider font-sans leading-none">
-                  WAIVER <span style={{ color: currentTheme.primary, textShadow: `0 0 8px ${currentTheme.glow}` }}>WIRETAP</span>
+                  BLINDSIDE <span style={{ color: currentTheme.primary, textShadow: `0 0 8px ${currentTheme.glow}` }}>DYNASTY</span>
                 </span>
                 {leagueName && (
                   <span className="text-[10px] font-mono text-zinc-400 truncate max-w-[140px] sm:max-w-[200px] mt-0.5 flex items-center gap-1">
@@ -178,7 +178,7 @@ export default function TopNav() {
     <Suspense fallback={
       <header className="bg-zinc-950/90 border-b border-zinc-800/80 sticky top-0 z-40 h-16">
         <div className="max-w-[1440px] mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="text-white font-black italic">WAIVER WIRETAP</div>
+          <div className="text-white font-black italic">BLINDSIDE DYNASTY</div>
         </div>
       </header>
     }>

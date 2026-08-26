@@ -18,22 +18,22 @@ const FAQS = [
     questions: [
       {
         q: "How do I link an ESPN Fantasy Football league?",
-        a: "1. Open your ESPN Fantasy Football league on espn.com.\n2. Copy the League ID from your browser's URL (e.g. fantasy.espn.com/football/league?leagueId=123456789).\n3. In Waiver Wiretap, open Settings > Tap the 'ESPN' tab > Enter your League ID and Season.\n4. If your ESPN league is Public, tap 'Connect & Sync'. If it is Private, enter your 'espn_s2' and 'SWID' cookies in the optional fields."
+        a: "1. Open your ESPN Fantasy Football league on espn.com.\n2. Copy the League ID from your browser's URL (e.g. fantasy.espn.com/football/league?leagueId=123456789).\n3. In Blindside Dynasty, open Settings > Tap the 'ESPN' tab > Enter your League ID and Season.\n4. If your ESPN league is Public, tap 'Connect & Sync'. If it is Private, enter your 'espn_s2' and 'SWID' cookies in the optional fields."
       },
       {
         q: "How do I link a Yahoo Fantasy Football league?",
-        a: "1. Open your Yahoo Fantasy league on football.fantasysports.yahoo.com.\n2. Copy your Yahoo League ID / Key (e.g. 123456 or 449.l.123456).\n3. In Waiver Wiretap, open Settings > Tap the 'Yahoo' tab > Enter your League ID and tap 'Connect & Sync'."
+        a: "1. Open your Yahoo Fantasy league on football.fantasysports.yahoo.com.\n2. Copy your Yahoo League ID / Key (e.g. 123456 or 449.l.123456).\n3. In Blindside Dynasty, open Settings > Tap the 'Yahoo' tab > Enter your League ID and tap 'Connect & Sync'."
       },
       {
-        q: "How does Waiver Wiretap sync with Sleeper dynasty leagues?",
-        a: "Waiver Wiretap connects directly to the public Sleeper REST API. Simply enter your public Sleeper League ID in League Settings, and the quant engine instantly ingests all rosters, starters, bench depth, future draft picks, and historical matchups with zero login credentials required."
+        q: "How does Blindside Dynasty sync with Sleeper dynasty leagues?",
+        a: "Blindside Dynasty connects directly to the public Sleeper REST API. Simply enter your public Sleeper League ID in League Settings, and the quant engine instantly ingests all rosters, starters, bench depth, future draft picks, and historical matchups with zero login credentials required."
       },
       {
         q: "Where do I find my Sleeper League ID?",
         a: "In the Sleeper mobile app: Open your league > Tap the League Settings gear icon > Scroll down to 'General' > Tap 'League ID' to copy the 18-digit number (e.g. 1312567432052760576)."
       },
       {
-        q: "Does Waiver Wiretap support Superflex, TE Premium, and Custom Scoring?",
+        q: "Does Blindside Dynasty support Superflex, TE Premium, and Custom Scoring?",
         a: "Yes! The quant engine dynamically recognizes Superflex roster configurations, adjusts quarterback replacement-level VORP baselines, and properly values tight ends and multi-flex positions based on your league's starting requirements across all platforms."
       }
     ]
@@ -72,11 +72,11 @@ const FAQS = [
     category: "Mobile Installation & App Setup",
     questions: [
       {
-        q: "How do I install Waiver Wiretap on Apple iPhone or iPad?",
+        q: "How do I install Blindside Dynasty on Apple iPhone or iPad?",
         a: "1. Open Safari on your iPhone and visit waiverwiretap.kindofabigdill.com.\n2. Tap the Share button at the bottom toolbar.\n3. Scroll down and tap 'Add to Home Screen'.\n4. Tap 'Add' in the top-right. The app will launch in full-screen standalone mode with no browser bars!"
       },
       {
-        q: "How do I install Waiver Wiretap on Android?",
+        q: "How do I install Blindside Dynasty on Android?",
         a: "1. Open Chrome or Brave on your Android phone.\n2. Tap the 'Get App' button in the top navigation bar (or tap the 3 vertical dots ⋮ menu).\n3. Tap 'Install app' or 'Add to Home screen' to generate a standalone Android WebAPK."
       }
     ]
@@ -135,7 +135,7 @@ export default function SupportPage() {
         </h1>
         
         <p className="text-sm text-zinc-400 font-mono max-w-lg mx-auto">
-          Guides, FAQ documentation, math methodology, and direct engineering support for Waiver Wiretap.
+          Guides, FAQ documentation, math methodology, and direct engineering support for Blindside Dynasty.
         </p>
 
         {/* Knowledge Base Search Bar */}
@@ -179,7 +179,7 @@ export default function SupportPage() {
             Mobile App Installation
           </h3>
           <p className="text-xs text-zinc-400 mt-1 font-sans">
-            Step-by-step guides for installing Waiver Wiretap on Apple iOS and Android devices.
+            Step-by-step guides for installing Blindside Dynasty on Apple iOS and Android devices.
           </p>
         </div>
 
@@ -403,10 +403,10 @@ export default function SupportPage() {
       {/* ========================================================================= */}
       <footer className="border-t border-zinc-800/80 pt-8 text-center space-y-3 font-mono text-xs text-zinc-500">
         <p>
-          Waiver Wiretap Support & Documentation Hub • App Version 1.0.0
+          Blindside Dynasty Support & Documentation Hub • App Version 1.0.0
         </p>
         <p className="text-[11px] text-zinc-600">
-          Disclaimer: Waiver Wiretap is an independent fantasy sports analytics platform. Not affiliated with the NFL or Sleeper.
+          Disclaimer: Blindside Dynasty is an independent fantasy sports analytics platform. Not affiliated with the NFL or Sleeper.
         </p>
       </footer>
 

@@ -123,17 +123,17 @@ export default function LandingPage() {
         {/* Main Headline */}
         <div className="space-y-2">
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white italic tracking-tight leading-none">
-            WAIVER <span style={{ color: currentTheme.primary, textShadow: `0 0 30px ${currentTheme.glow}` }}>WIRETAP</span>
+            BLINDSIDE <span style={{ color: currentTheme.primary, textShadow: `0 0 30px ${currentTheme.glow}` }}>DYNASTY</span>
           </h1>
           <p className="text-xl sm:text-2xl font-display font-bold text-zinc-200 tracking-tight">
-            The Unfair Advantage in Dynasty Fantasy Football
+            Protect Your Roster. Blindside Your League.
           </p>
         </div>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto font-sans leading-relaxed">
-          Real-time Sleeper synchronization, 4-quadrant lifecycle modeling, standardized Z-score power tiers, 
-          25+ metric cross-referencing, and legendary tactical breakdowns powered by <strong>Coach John Madden</strong>.
+          The tactical command terminal for serious dynasty managers. Real-time multi-platform sync (Sleeper, ESPN, Yahoo), 
+          0–100 Z-Score power tiers, full manager roster intelligence, trade autopsies, and <strong>Coach John Madden AI</strong>.
         </p>
 
         {/* Hero Call-To-Action Buttons */}
@@ -366,7 +366,7 @@ export default function LandingPage() {
         </div>
 
         <p className="text-xs font-mono text-zinc-500">
-          Waiver Wiretap • Built for Dynasty Champions • Powered by Sleeper API & Quant Analytics
+          Blindside Dynasty • Built for Dynasty Champions • Powered by Sleeper API & Quant Analytics
         </p>
 
         <div className="flex justify-center gap-6 text-xs font-mono text-zinc-400">
