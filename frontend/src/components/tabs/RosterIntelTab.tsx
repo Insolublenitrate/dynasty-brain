@@ -61,6 +61,17 @@ export default function RosterIntelTab() {
     fetchRosterDetails();
   }, [leagueId, selectedRosterId]);
 
+  const formatSlotLabel = (slot: string) => {
+    if (!slot) return 'BN';
+    const s = slot.toUpperCase();
+    if (s === 'SUPER_FLEX') return 'SF';
+    if (s === 'IDP_FLEX') return 'IDP';
+    if (s === 'REC_FLEX') return 'WR/TE';
+    if (s === 'KICKER') return 'K';
+    if (s === 'DEFENSE') return 'DEF';
+    return slot;
+  };
+
   const getPositionBadgeClass = (pos: string) => {
     switch (pos) {
       case 'QB':
@@ -321,28 +332,35 @@ export default function RosterIntelTab() {
               key={p.id || idx}
               className="bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-700 rounded-xl p-3.5 transition-all space-y-2.5 relative group shadow-md"
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700/80 flex items-center justify-center font-mono font-black text-xs text-white shrink-0">
-                    {p.slot || `S${idx+1}`}
+              <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="min-w-[34px] px-2 py-1 h-7 rounded-lg bg-zinc-900 border border-zinc-700/80 flex items-center justify-center font-mono font-black text-[10px] text-white shrink-0">
+                    {formatSlotLabel(p.slot || `S${idx+1}`)}
                   </span>
-                  <div>
-                    <h5 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                  <div className="min-w-0">
+                    <h5 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors truncate">
                       {p.name}
                     </h5>
-                    <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400">
-                      <span className={`font-bold ${getPositionBadgeClass(p.position).split(' ')[1]}`}>{p.position}</span>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 truncate">
+                      <span className={`font-bold shrink-0 ${getPositionBadgeClass(p.position).split(' ')[1]}`}>{p.position}</span>
                       <span>•</span>
-                      <span>{p.team}</span>
+                      <span className="truncate">{p.team}</span>
                       <span>•</span>
-                      <span>Age {p.age}</span>
+                      <span className="shrink-0">Age {p.age}</span>
                     </div>
                   </div>
                 </div>
 
-                <span className="font-mono font-black text-sm text-emerald-400 shrink-0">
-                  {p.ppg} <span className="text-[10px] text-zinc-400 font-normal">PPG</span>
-                </span>
+                <div className="flex flex-col items-end shrink-0 gap-1">
+                  <span className="font-mono font-black text-sm text-emerald-400">
+                    {p.ppg} <span className="text-[10px] text-zinc-400 font-normal">PPG</span>
+                  </span>
+                  {p.injury_status && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-tight">
+                      {p.injury_status}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Volume & Telemetry Bar */}
@@ -360,14 +378,6 @@ export default function RosterIntelTab() {
                   <span className="font-bold text-amber-400">{p.ceiling}</span>
                 </div>
               </div>
-
-              {p.injury_status && (
-                <div className="absolute top-2 right-2">
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase">
-                    {p.injury_status}
-                  </span>
-                </div>
-              )}
             </div>
           ))}
         </div>

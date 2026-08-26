@@ -212,20 +212,21 @@ export default function TeamAnalyzerTab() {
         </div>
 
         {/* Positional Breakdown Radar */}
-        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
-          <h4 className="text-white font-bold text-lg w-full text-left mb-2">Positional Breakdown</h4>
-          <p className="text-zinc-500 text-xs w-full text-left mb-4">Relative strength across core positions (100 = League Average Baseline).</p>
-          <div className="h-56 md:h-72 w-full">
+        <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-4 sm:p-6 shadow-md flex flex-col items-center justify-center">
+          <h4 className="text-white font-bold text-base sm:text-lg w-full text-left mb-1">Positional Breakdown</h4>
+          <p className="text-zinc-500 text-xs w-full text-left mb-3">Relative strength across core positions (100 = League Baseline).</p>
+          <div className="h-60 sm:h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="68%" data={posGradesOrder.map(pos => {
+              <RadarChart cx="50%" cy="50%" outerRadius="50%" data={posGradesOrder.map(pos => {
                 const grade = position_grades[pos] || 'B';
                 const teamScore = grade === 'A+' ? 152 : grade === 'A' ? 138 : grade === 'A-' ? 125 :
                                   grade === 'B+' ? 118 : grade === 'B' ? 105 : grade === 'B-' ? 95 :
                                   grade === 'C+' ? 88 : grade === 'C' ? 78 : grade === 'D' ? 62 : 45;
                 const ratingTag = teamScore >= 140 ? 'Loaded' : teamScore >= 125 ? 'Elite' : teamScore >= 110 ? 'Strong' : teamScore >= 90 ? 'Solid' : 'Weak';
-                const subjectLabel = pos === 'FLEX' ? `FLEX (${teamScore})` : `${pos} (${teamScore} – ${ratingTag})`;
+                const subjectLabel = `${pos} (${teamScore})`;
                 return {
                   subject: subjectLabel,
+                  fullLabel: `${pos} (${teamScore} · ${ratingTag})`,
                   rawPos: pos,
                   A: teamScore,
                   league_avg: 100, // 100 benchmark baseline
@@ -239,36 +240,32 @@ export default function TeamAnalyzerTab() {
                     const { payload, x = 0, y = 0, cx = 0, cy = 0 } = props || {};
                     const value = payload?.value || '';
                     const pos = value.split(' ')[0].toUpperCase();
-                    const colorMap: Record<string, { color: string; dot: string }> = {
-                      QB: { color: '#FFFFFF', dot: '#F97316' },
-                      RB: { color: '#C084FC', dot: '#A855F7' },
-                      WR: { color: '#22C55E', dot: '#22C55E' },
-                      TE: { color: '#EF4444', dot: '#EAB308' },
-                      FLEX: { color: '#38BDF8', dot: '#38BDF8' }
+                    const colorMap: Record<string, string> = {
+                      QB: '#F59E0B',
+                      RB: '#C084FC',
+                      WR: '#22C55E',
+                      TE: '#EF4444',
+                      FLEX: '#38BDF8'
                     };
-                    const cfg = colorMap[pos] || { color: '#E2E8F0', dot: '#F97316' };
-                    const isLeft = x < cx - 10;
-                    const isRight = x > cx + 10;
+                    const color = colorMap[pos] || '#E2E8F0';
+                    const isLeft = x < cx - 8;
+                    const isRight = x > cx + 8;
                     const isTop = y < cy;
                     const textAnchor = isRight ? 'start' : isLeft ? 'end' : 'middle';
-                    const dotX = isRight ? x - 6 : isLeft ? x + 6 : x;
-                    const dotY = isTop ? y - 10 : y + 14;
+                    const yOffset = isTop ? -8 : 12;
 
                     return (
-                      <g>
-                        <circle cx={dotX} cy={dotY} r={3.5} fill={cfg.dot} stroke="#09090b" strokeWidth={1} />
-                        <text
-                          x={x}
-                          y={y + (isTop ? -4 : 10)}
-                          fill={cfg.color}
-                          fontSize={11}
-                          fontWeight={800}
-                          fontFamily="'JetBrains Mono', monospace"
-                          textAnchor={textAnchor}
-                        >
-                          {value}
-                        </text>
-                      </g>
+                      <text
+                        x={x}
+                        y={y + yOffset}
+                        fill={color}
+                        fontSize={11}
+                        fontWeight={800}
+                        fontFamily="'JetBrains Mono', monospace"
+                        textAnchor={textAnchor}
+                      >
+                        {value}
+                      </text>
                     );
                   }} 
                 />
@@ -297,7 +294,7 @@ export default function TeamAnalyzerTab() {
                         key={`${cx}-${cy}`}
                         cx={cx}
                         cy={cy}
-                        r={5}
+                        r={5.5}
                         fill={dotColor}
                         stroke="#09090b"
                         strokeWidth={1.5}

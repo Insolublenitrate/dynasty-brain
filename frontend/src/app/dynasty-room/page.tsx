@@ -122,66 +122,66 @@ function DynastyRoomContent() {
             </button>
           </div>
 
-          {/* Contextual Sub-View Segmented Controls (Full Width & No Clipping on Mobile) */}
+          {/* Contextual Sub-View Segmented Controls (Smooth Horizontal Scroll & Full Labels on Mobile) */}
           {activeArena === 'command' && (
-            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="flex w-full sm:w-auto items-center gap-1.5 bg-zinc-900/90 p-1.5 rounded-2xl border border-zinc-800 shadow-inner overflow-x-auto no-scrollbar scrollbar-none">
               <button
                 onClick={() => setCommandSub('action')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   commandSub === 'action' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'action' ? { color: currentTheme.primary } : {}}
               >
-                <Target size={12} className="shrink-0" />
-                <span className="truncate">Action</span>
+                <Target size={13} className="shrink-0" />
+                <span>Action</span>
               </button>
               <button
                 onClick={() => setCommandSub('roster')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   commandSub === 'roster' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'roster' ? { color: currentTheme.primary } : {}}
               >
-                <Crown size={12} className="shrink-0" />
-                <span className="truncate">Roster</span>
+                <Crown size={13} className="shrink-0" />
+                <span>Roster</span>
               </button>
               <button
                 onClick={() => setCommandSub('teams')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   commandSub === 'teams' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'teams' ? { color: currentTheme.primary } : {}}
               >
-                <Search size={12} className="shrink-0" />
-                <span className="truncate">Teams</span>
+                <Search size={13} className="shrink-0" />
+                <span>Teams</span>
               </button>
               <button
                 onClick={() => setCommandSub('studio')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   commandSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={commandSub === 'studio' ? { color: currentTheme.primary } : {}}
               >
-                <Radio size={12} className="shrink-0" />
-                <span className="truncate">Studio</span>
+                <Radio size={13} className="shrink-0" />
+                <span>Studio</span>
               </button>
               <button
                 onClick={() => setCommandSub('bounties')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-black transition-all flex items-center justify-center gap-1 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   commandSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md' : 'text-emerald-400 hover:text-emerald-300'
                 }`}
               >
-                <Coins size={12} className="shrink-0 text-emerald-400" />
-                <span className="truncate">Bounties</span>
+                <Coins size={13} className="shrink-0 text-emerald-400" />
+                <span>Bounties</span>
               </button>
             </div>
           )}
 
           {activeArena === 'power' && (
-            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="flex w-full sm:w-auto items-center gap-1.5 bg-zinc-900/90 p-1.5 rounded-2xl border border-zinc-800 shadow-inner overflow-x-auto no-scrollbar scrollbar-none">
               <button
                 onClick={() => setPowerSub('matrix')}
-                className={`py-1.5 px-1.5 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap ${
                   powerSub === 'matrix' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'matrix' ? { color: currentTheme.primary } : {}}
@@ -190,7 +190,7 @@ function DynastyRoomContent() {
               </button>
               <button
                 onClick={() => setPowerSub('tiers')}
-                className={`py-1.5 px-1.5 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap ${
                   powerSub === 'tiers' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'tiers' ? { color: currentTheme.primary } : {}}
@@ -199,77 +199,75 @@ function DynastyRoomContent() {
               </button>
               <button
                 onClick={() => setPowerSub('rivalries')}
-                className={`py-1.5 px-1.5 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap ${
                   powerSub === 'rivalries' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'rivalries' ? { color: currentTheme.primary } : {}}
               >
-                <span className="sm:hidden">Rivals</span>
-                <span className="hidden sm:inline">Rivalries</span>
+                Rivalries
               </button>
               <button
                 onClick={() => setPowerSub('records')}
-                className={`py-1.5 px-1.5 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap ${
                   powerSub === 'records' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'records' ? { color: currentTheme.primary } : {}}
               >
-                Records
+                Record Book
               </button>
               <button
                 onClick={() => setPowerSub('simulator')}
-                className={`py-1.5 px-1.5 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap ${
                   powerSub === 'simulator' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'simulator' ? { color: currentTheme.primary } : {}}
               >
-                Sim
+                Simulator
               </button>
             </div>
           )}
 
           {activeArena === 'trade' && (
-            <div className="grid grid-cols-4 w-full sm:w-auto sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="flex w-full sm:w-auto items-center gap-1.5 bg-zinc-900/90 p-1.5 rounded-2xl border border-zinc-800 shadow-inner overflow-x-auto no-scrollbar scrollbar-none">
               <button
                 onClick={() => setTradeSub('architect')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   tradeSub === 'architect' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={tradeSub === 'architect' ? { color: currentTheme.primary } : {}}
               >
                 <Briefcase size={13} className="shrink-0" />
-                <span className="truncate">Architect</span>
+                <span>Trade Architect</span>
               </button>
               <button
                 onClick={() => setTradeSub('team')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   tradeSub === 'team' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={tradeSub === 'team' ? { color: currentTheme.primary } : {}}
               >
                 <Search size={13} className="shrink-0" />
-                <span className="truncate">Team</span>
-                <span className="hidden sm:inline">Analyzer</span>
+                <span>Team Analyzer</span>
               </button>
               <button
                 onClick={() => setTradeSub('autopsy')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   tradeSub === 'autopsy' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={tradeSub === 'autopsy' ? { color: currentTheme.primary } : {}}
               >
                 <ArrowRightLeft size={13} className="shrink-0" />
-                <span className="truncate">Autopsy</span>
+                <span>Trade Autopsy</span>
               </button>
               <button
                 onClick={() => setTradeSub('trends')}
-                className={`py-1.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-center truncate ${
+                className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${
                   tradeSub === 'trends' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={tradeSub === 'trends' ? { color: currentTheme.primary } : {}}
               >
                 <TrendingUp size={13} className="shrink-0" />
-                <span className="truncate">Trends</span>
+                <span>Trade Trends</span>
               </button>
             </div>
           )}

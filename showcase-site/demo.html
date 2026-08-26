@@ -334,6 +334,7 @@
         <button class="tab-btn active" data-tab="tab-matrix">True Power Matrix</button>
         <button class="tab-btn" data-tab="tab-schedule">Matchups & 18-Week Schedule</button>
         <button class="tab-btn" data-tab="tab-radar">Positional Strength Radar</button>
+        <button class="tab-btn" data-tab="tab-roster">Manager Roster Deep Dive</button>
         <button class="tab-btn" data-tab="tab-madden">Coach Madden AI War Room</button>
         <button class="tab-btn" data-tab="tab-scatter">Buy-Low / Sell-High Matrix</button>
         <button class="tab-btn" data-tab="tab-sim">10,000-Game Matchup Simulator</button>
@@ -432,6 +433,155 @@
                 <text id="lbl-rb" x="35" y="76" fill="#A855F7" font-size="8.5" font-weight="800" text-anchor="middle">RB (118)</text>
               </svg>
             </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- TAB: MANAGER ROSTER DEEP DIVE -->
+      <div class="demo-view-panel" id="tab-roster">
+        <div class="app-shot" style="margin-bottom:1.5rem;">
+          <div class="app-shot-bar">
+            <span class="app-shot-dot"></span><span class="app-shot-dot"></span><span class="app-shot-dot"></span>
+            <span class="app-shot-label">Manager Roster Deep Dive · Starter Firepower & Age Cliff Audit (Live Interactive)</span>
+          </div>
+
+          <!-- Telemetry Strip -->
+          <div class="radar-stats-grid" style="margin-bottom:1.5rem;">
+            <div class="radar-stat-box">
+              <span>Starter Firepower</span>
+              <strong class="accent-turf" style="color:#22C55E;">114.6 PPG</strong>
+            </div>
+            <div class="radar-stat-box">
+              <span>Roster Avg Age</span>
+              <strong style="color:#F59E0B;">25.2 yrs</strong>
+            </div>
+            <div class="radar-stat-box">
+              <span>RB Cliff Risk</span>
+              <strong style="color:#22C55E;">LOW (Youth Prime)</strong>
+            </div>
+            <div class="radar-stat-box">
+              <span>Future 1st Picks</span>
+              <strong style="color:#38BDF8;">3 Held</strong>
+            </div>
+          </div>
+
+          <!-- Positional Audit Cards -->
+          <h4 style="font-size:0.9rem; font-weight:800; text-transform:uppercase; color:var(--kbd-smoke); margin-bottom:0.75rem; letter-spacing:0.04em;">
+            Positional Room Health & Cliff Risk
+          </h4>
+          <div class="roadmap-grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-bottom:1.5rem;">
+            <div class="roadmap-card" style="padding:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="badge badge-amber" style="background:rgba(245,158,11,0.15); color:#F59E0B; border:1px solid rgba(245,158,11,0.3); font-weight:800; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:6px;">QB ROOM</span>
+                <span style="font-size:0.7rem; color:#22c55e; font-weight:700; font-family:'JetBrains Mono', monospace;">LOW RISK</span>
+              </div>
+              <p style="font-size:0.8rem; color:#d4d4d8; margin:0;">2 Starters (Daniels, Goff), 1 Bench. Avg age: 28.0 y. Grade: A</p>
+            </div>
+
+            <div class="roadmap-card" style="padding:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="badge" style="background:rgba(168,85,247,0.15); color:#C084FC; border:1px solid rgba(168,85,247,0.3); font-weight:800; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:6px;">RB ROOM</span>
+                <span style="font-size:0.7rem; color:#22c55e; font-weight:700; font-family:'JetBrains Mono', monospace;">LOW (PRIME)</span>
+              </div>
+              <p style="font-size:0.8rem; color:#d4d4d8; margin:0;">Jonathan Taylor (21.3 PPG), Kyren Williams (15.5 PPG). Avg age: 26.5 y.</p>
+            </div>
+
+            <div class="roadmap-card" style="padding:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="badge" style="background:rgba(34,197,94,0.15); color:#22C55E; border:1px solid rgba(34,197,94,0.3); font-weight:800; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:6px;">WR ROOM</span>
+                <span style="font-size:0.7rem; color:#22c55e; font-weight:700; font-family:'JetBrains Mono', monospace;">ALPHA CORE</span>
+              </div>
+              <p style="font-size:0.8rem; color:#d4d4d8; margin:0;">CeeDee Lamb, Justin Jefferson, Malik Nabers. Avg age: 24.1 y. Grade: A+</p>
+            </div>
+
+            <div class="roadmap-card" style="padding:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="badge" style="background:rgba(239,68,68,0.15); color:#EF4444; border:1px solid rgba(239,68,68,0.3); font-weight:800; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:6px;">TE ROOM</span>
+                <span style="font-size:0.7rem; color:#f59e0b; font-weight:700; font-family:'JetBrains Mono', monospace;">MODERATE</span>
+              </div>
+              <p style="font-size:0.8rem; color:#d4d4d8; margin:0;">Trey McBride (12.4 PPG). Thin depth behind starter. Grade: B</p>
+            </div>
+          </div>
+
+          <!-- Active Starters Grid -->
+          <h4 style="font-size:0.9rem; font-weight:800; text-transform:uppercase; color:var(--kbd-smoke); margin-bottom:0.75rem; letter-spacing:0.04em;">
+            Active Starting Lineup Slot-by-Slot
+          </h4>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:0.75rem;">
+            
+            <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:10px; padding:0.85rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="background:rgba(245,158,11,0.2); color:#F59E0B; border:1px solid rgba(245,158,11,0.4); font-family:'JetBrains Mono', monospace; font-weight:900; font-size:0.75rem; padding:0.15rem 0.45rem; border-radius:6px;">QB</span>
+                  <div>
+                    <strong style="color:#fff; font-size:0.88rem; display:block;">Jayden Daniels</strong>
+                    <span style="font-size:0.72rem; color:var(--kbd-smoke); font-family:'JetBrains Mono', monospace;">WAS · Age 25</span>
+                  </div>
+                </div>
+                <strong style="color:#22C55E; font-family:'JetBrains Mono', monospace; font-size:0.88rem;">21.8 <span style="font-size:0.65rem; color:#a1a1aa; font-weight:normal;">PPG</span></strong>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.35rem; background:rgba(0,0,0,0.3); border-radius:6px; padding:0.35rem; text-align:center; font-family:'JetBrains Mono', monospace; font-size:0.7rem;">
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Snap %</span><strong style="color:#fff;">90.6%</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Pass Yds/G</span><strong style="color:#fff;">242.0</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Ceiling</span><strong style="color:#f59e0b;">29.4</strong></div>
+              </div>
+            </div>
+
+            <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:10px; padding:0.85rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="background:rgba(168,85,247,0.2); color:#C084FC; border:1px solid rgba(168,85,247,0.4); font-family:'JetBrains Mono', monospace; font-weight:900; font-size:0.75rem; padding:0.15rem 0.45rem; border-radius:6px;">RB1</span>
+                  <div>
+                    <strong style="color:#fff; font-size:0.88rem; display:block;">Jonathan Taylor</strong>
+                    <span style="font-size:0.72rem; color:var(--kbd-smoke); font-family:'JetBrains Mono', monospace;">IND · Age 27</span>
+                  </div>
+                </div>
+                <strong style="color:#22C55E; font-family:'JetBrains Mono', monospace; font-size:0.88rem;">21.3 <span style="font-size:0.65rem; color:#a1a1aa; font-weight:normal;">PPG</span></strong>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.35rem; background:rgba(0,0,0,0.3); border-radius:6px; padding:0.35rem; text-align:center; font-family:'JetBrains Mono', monospace; font-size:0.7rem;">
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Snap %</span><strong style="color:#fff;">84.3%</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Carries/G</span><strong style="color:#fff;">18.5</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Ceiling</span><strong style="color:#f59e0b;">28.8</strong></div>
+              </div>
+            </div>
+
+            <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:10px; padding:0.85rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="background:rgba(34,197,94,0.2); color:#22C55E; border:1px solid rgba(34,197,94,0.4); font-family:'JetBrains Mono', monospace; font-weight:900; font-size:0.75rem; padding:0.15rem 0.45rem; border-radius:6px;">WR1</span>
+                  <div>
+                    <strong style="color:#fff; font-size:0.88rem; display:block;">CeeDee Lamb</strong>
+                    <span style="font-size:0.72rem; color:var(--kbd-smoke); font-family:'JetBrains Mono', monospace;">DAL · Age 26</span>
+                  </div>
+                </div>
+                <strong style="color:#22C55E; font-family:'JetBrains Mono', monospace; font-size:0.88rem;">23.4 <span style="font-size:0.65rem; color:#a1a1aa; font-weight:normal;">PPG</span></strong>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.35rem; background:rgba(0,0,0,0.3); border-radius:6px; padding:0.35rem; text-align:center; font-family:'JetBrains Mono', monospace; font-size:0.7rem;">
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Snap %</span><strong style="color:#fff;">94.2%</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Target %</span><strong style="color:#fff;">29.8%</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Ceiling</span><strong style="color:#f59e0b;">34.2</strong></div>
+              </div>
+            </div>
+
+            <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:10px; padding:0.85rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="background:rgba(56,189,248,0.2); color:#38BDF8; border:1px solid rgba(56,189,248,0.4); font-family:'JetBrains Mono', monospace; font-weight:900; font-size:0.75rem; padding:0.15rem 0.45rem; border-radius:6px;">SF</span>
+                  <div>
+                    <strong style="color:#fff; font-size:0.88rem; display:block;">Jared Goff</strong>
+                    <span style="font-size:0.72rem; color:var(--kbd-smoke); font-family:'JetBrains Mono', monospace;">DET · Age 31</span>
+                  </div>
+                </div>
+                <strong style="color:#22C55E; font-family:'JetBrains Mono', monospace; font-size:0.88rem;">17.9 <span style="font-size:0.65rem; color:#a1a1aa; font-weight:normal;">PPG</span></strong>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.35rem; background:rgba(0,0,0,0.3); border-radius:6px; padding:0.35rem; text-align:center; font-family:'JetBrains Mono', monospace; font-size:0.7rem;">
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Snap %</span><strong style="color:#fff;">98.4%</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Pass Yds/G</span><strong style="color:#fff;">265.0</strong></div>
+                <div><span style="color:#71717a; font-size:0.6rem; display:block;">Ceiling</span><strong style="color:#f59e0b;">24.2</strong></div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

@@ -876,6 +876,26 @@ def get_roster_details(league_id: str, roster_id: int):
         current_year = datetime.datetime.now().year
         
         def build_player_obj(pid, is_starter=False, slot_label=None):
+            if not pid or str(pid) in ("0", "none", "null"):
+                return {
+                    "id": f"empty_{slot_label}",
+                    "name": f"Empty ({slot_label or 'Slot'})",
+                    "position": slot_label or "FLEX",
+                    "team": "VACANT",
+                    "age": 0,
+                    "years_exp": 0,
+                    "injury_status": None,
+                    "ppg": 0.0,
+                    "total_fpts": 0.0,
+                    "target_share_pct": 0.0,
+                    "snap_share_pct": 0.0,
+                    "ceiling": 0.0,
+                    "floor": 0.0,
+                    "slot": slot_label,
+                    "role_tag": "Vacant Slot",
+                    "is_starter": is_starter
+                }
+
             p_data = sp_cache.get(str(pid), {})
             p_stat = stats_by_pid.get(str(pid))
             
@@ -906,9 +926,17 @@ def get_roster_details(league_id: str, roster_id: int):
             raw_snap = float(p_stat.offense_pct) if p_stat and p_stat.offense_pct is not None else (0.85 if is_starter else 0.35)
             snap_share = round(raw_snap * 100, 1) if raw_snap <= 1.0 else round(raw_snap, 1)
             
-            # Target share / Targets per game
+            # Volume metric: passing yds/g for QB, rush attempts/g for RB, targets for WR/TE
+            pass_yds = float(p_stat.pass_yd) if p_stat and hasattr(p_stat, "pass_yd") and p_stat.pass_yd else 0.0
+            rush_att = float(p_stat.rush_att) if p_stat and hasattr(p_stat, "rush_att") and p_stat.rush_att else 0.0
             targets = float(p_stat.targets) if p_stat and p_stat.targets is not None else 0.0
-            target_share = round((targets / 17.0) * 10.0, 1) if targets > 0 else (18.5 if (is_starter and pos == "WR") else 5.0)
+
+            if pos == "QB":
+                vol_metric = round(pass_yds / 17.0, 1) if pass_yds > 0 else (245.0 if is_starter else 50.0)
+            elif pos == "RB":
+                vol_metric = round(rush_att / 17.0, 1) if rush_att > 0 else (14.5 if is_starter else 4.0)
+            else:
+                vol_metric = round((targets / 17.0) * 10.0, 1) if targets > 0 else (18.5 if (is_starter and pos == "WR") else 5.0)
             
             # Ceiling / Floor
             ceiling = round(ppg * 1.35, 1)
@@ -936,7 +964,7 @@ def get_roster_details(league_id: str, roster_id: int):
                 "injury_status": injury,
                 "ppg": ppg,
                 "total_fpts": fpts,
-                "target_share_pct": target_share,
+                "target_share_pct": vol_metric,
                 "snap_share_pct": snap_share,
                 "ceiling": ceiling,
                 "floor": floor,
