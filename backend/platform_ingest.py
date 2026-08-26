@@ -15,7 +15,7 @@ def ingest_espn_league(
 ) -> Dict[str, Any]:
     """
     Ingests an ESPN Fantasy Football league using ESPN Fantasy API v3
-    and transforms the data into Waiver Wiretap's unified schema.
+    and transforms the data into Blindside Dynasty's unified schema.
     """
     close_session_at_end = False
     if session is None:
@@ -241,7 +241,7 @@ def ingest_yahoo_league(
     session=None
 ) -> Dict[str, Any]:
     """
-    Ingests or normalizes a Yahoo Fantasy Football league into Waiver Wiretap's schema.
+    Ingests or normalizes a Yahoo Fantasy Football league into Blindside Dynasty's schema.
     """
     close_session_at_end = False
     if session is None:

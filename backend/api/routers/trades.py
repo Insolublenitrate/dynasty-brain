@@ -257,7 +257,7 @@ def post_war_room(req: WarRoomRequest):
         team_id = data.get("roster_id", "1")
         pts = data.get("points", 124.5)
         return {
-            "text": f"🎙️ **WAIVER WIRETAP WAR ROOM: MATCHUP PREVIEW**\n\n"
+            "text": f"🎙️ **BLINDSIDE DYNASTY WAR ROOM: MATCHUP PREVIEW**\n\n"
                     f"**Vegas Line & Analytics Outlook:** Team {team_id} enters this slate projected for **{pts:.1f} Max PF** with high volatility. "
                     f"Our quant model shows a 64% likelihood of a shootout in the trenches.\n\n"
                     f"🔥 **Trap Game Alert:** Watch the flex spot closely. Sub-optimal bench point efficiency has cost this roster in 3 of the last 4 weeks.\n\n"
