@@ -51,7 +51,14 @@ def get_team_analyzer(league_id: str, roster_id: int):
         ]
         
         # 2. Positional Radar
-        roster_player_ids = roster.players or []
+        from api.routers.league import get_sleeper_players_cache
+        sp_cache = get_sleeper_players_cache()
+        espn_to_sleeper = {}
+        for sp_id, p_info in sp_cache.items():
+            if isinstance(p_info, dict) and p_info.get("espn_id"):
+                espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
+
+        roster_player_ids = [espn_to_sleeper.get(str(p), str(p)) for p in (roster.players or [])]
         stats = session.query(PlayerAdvancedStats).filter(
             PlayerAdvancedStats.player_id.in_(roster_player_ids),
             PlayerAdvancedStats.season >= 2022
@@ -60,7 +67,7 @@ def get_team_analyzer(league_id: str, roster_id: int):
         all_players_in_league = []
         for r in all_rosters:
             if r.players:
-                all_players_in_league.extend(r.players)
+                all_players_in_league.extend([espn_to_sleeper.get(str(p), str(p)) for p in r.players])
                 
         all_stats = session.query(PlayerAdvancedStats).filter(
             PlayerAdvancedStats.player_id.in_(all_players_in_league),
@@ -847,6 +854,10 @@ def get_roster_details(league_id: str, roster_id: int):
             
         from api.routers.league import get_sleeper_players_cache
         sp_cache = get_sleeper_players_cache()
+        espn_to_sleeper = {}
+        for sp_id, p_info in sp_cache.items():
+            if isinstance(p_info, dict) and p_info.get("espn_id"):
+                espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
         
         # Load advanced stats for this roster's players
         player_ids = roster.players or []
@@ -855,16 +866,20 @@ def get_roster_details(league_id: str, roster_id: int):
         reserve_ids = roster.reserve or []
         
         stats = session.query(PlayerAdvancedStats).filter(
-            PlayerAdvancedStats.player_id.in_(player_ids),
             PlayerAdvancedStats.season >= 2023
         ).all()
         
-        # Build stats map
+        # Build stats map by player_id and player_name
         stats_by_pid = {}
+        stats_by_name = {}
         for s in stats:
-            pid = str(s.player_id)
-            if pid not in stats_by_pid or (s.season and s.season > stats_by_pid[pid].season):
-                stats_by_pid[pid] = s
+            pid_str = str(s.player_id)
+            if pid_str not in stats_by_pid or (s.season and s.season > stats_by_pid[pid_str].season):
+                stats_by_pid[pid_str] = s
+            if s.player_name:
+                clean_nm = s.player_name.lower().strip()
+                if clean_nm not in stats_by_name or (s.season and s.season > stats_by_name[clean_nm].season):
+                    stats_by_name[clean_nm] = s
                 
         # League starting slot designations
         league_slots = (league.roster_positions if league and league.roster_positions else [
@@ -874,6 +889,10 @@ def get_roster_details(league_id: str, roster_id: int):
         
         import datetime
         current_year = datetime.datetime.now().year
+        
+        player_metadata_fallback = {}
+        if roster.settings and isinstance(roster.settings, dict):
+            player_metadata_fallback = roster.settings.get("player_metadata", {})
         
         def build_player_obj(pid, is_starter=False, slot_label=None):
             if not pid or str(pid) in ("0", "none", "null"):
@@ -896,14 +915,30 @@ def get_roster_details(league_id: str, roster_id: int):
                     "is_starter": is_starter
                 }
 
-            p_data = sp_cache.get(str(pid), {})
-            p_stat = stats_by_pid.get(str(pid))
+            pid_str = str(pid)
+            p_data = sp_cache.get(pid_str, {})
             
+            # Cross-reference ESPN ID if not found directly
+            if not p_data and pid_str in espn_to_sleeper:
+                c_id = espn_to_sleeper[pid_str]
+                p_data = sp_cache.get(c_id, {})
+                
+            # Fallback to roster settings player metadata
+            if not p_data and pid_str in player_metadata_fallback:
+                p_data = player_metadata_fallback[pid_str]
+                
             first = p_data.get("first_name", "")
             last = p_data.get("last_name", "")
             full_name = f"{first} {last}".strip() or p_data.get("full_name", f"Player {pid}")
             pos = p_data.get("position", "UNK")
             team = p_data.get("team") or "FA"
+            
+            # Lookup stats by PID, canonical ID, or full name
+            p_stat = stats_by_pid.get(pid_str)
+            if not p_stat and pid_str in espn_to_sleeper:
+                p_stat = stats_by_pid.get(espn_to_sleeper[pid_str])
+            if not p_stat and full_name:
+                p_stat = stats_by_name.get(full_name.lower().strip())
             
             # Age resolution
             age = p_data.get("age")

@@ -118,35 +118,110 @@ def ingest_league(league_id: str):
         return {"error": str(e)}
 
 
+@router.get("/api/league/info/{league_id}")
+def get_league_info(league_id: str):
+    session = SessionLocal()
+    try:
+        league = session.query(League).filter(League.league_id == league_id).first()
+        if not league:
+            return {"error": "League not found"}
+        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        num_teams = len(rosters) if rosters else 10
+        plat = (league.settings.get("platform") if isinstance(league.settings, dict) else "sleeper") or "sleeper"
+        is_sf = (league.settings.get("superflex") if isinstance(league.settings, dict) else False) or False
+        is_dyn = (league.settings.get("is_dynasty") if isinstance(league.settings, dict) else True) or True
+        return {
+            "league_id": league.league_id,
+            "name": league.name,
+            "season": league.season,
+            "status": league.status,
+            "platform": plat,
+            "total_teams": num_teams,
+            "superflex": is_sf,
+            "is_dynasty": is_dyn,
+            "roster_positions": league.roster_positions or ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "SUPER_FLEX", "BN", "BN", "BN", "BN", "BN", "BN"],
+            "scoring_settings": league.scoring_settings or {}
+        }
+    finally:
+        session.close()
+
+
+@router.get("/api/league/teams/{league_id}")
+def get_league_teams(league_id: str):
+    session = SessionLocal()
+    try:
+        rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        if not rosters:
+            return {"error": "No teams found"}
+        teams_data = []
+        for r in rosters:
+            team_name = (r.settings.get("team_name") if r.settings and isinstance(r.settings, dict) and r.settings.get("team_name") else None) or (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
+            avatar = (r.settings.get("avatar") if r.settings and isinstance(r.settings, dict) and r.settings.get("avatar") else None) or (r.user.avatar if r.user else None)
+            fpts_against = (r.settings.get("fpts_against", 0.0) if r.settings and isinstance(r.settings, dict) else 0.0)
+            teams_data.append({
+                "roster_id": r.roster_id,
+                "team_name": team_name,
+                "owner_id": r.owner_id,
+                "avatar": avatar,
+                "wins": r.wins or 0,
+                "losses": r.losses or 0,
+                "ties": r.ties or 0,
+                "fpts": r.fpts or 0.0,
+                "fpts_against": fpts_against,
+                "total_players": len(r.players or []),
+                "starters": r.starters or [],
+                "settings": r.settings or {}
+            })
+        return {"league_id": league_id, "teams": teams_data}
+    finally:
+        session.close()
+
+
 @router.get("/api/quant/matrix")
 def get_power_matrix(league_id: str = "1312567432052760576"):
     session = SessionLocal()
     try:
+        league = session.query(League).filter(League.league_id == league_id).first()
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         if not rosters:
             return {"error": "No rosters found for this league."}
             
         sp_cache = get_sleeper_players_cache()
+        espn_to_sleeper = {}
+        for sp_id, p_info in sp_cache.items():
+            if isinstance(p_info, dict) and p_info.get("espn_id"):
+                espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
+
+        curr_season = str(league.season if league and league.season else "2024")
+        eval_year = int(curr_season) if curr_season.isdigit() else 2024
         
-        # 1. Fetch 2024 active season Matchup totals (Max PF) for each team
+        # 1. Fetch active season Matchup totals (Max PF) for each team
         max_pfs = {}
         for r in rosters:
-            m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", MatchupHistory.season == "2024").all()
+            m_list = session.query(MatchupHistory).filter(
+                MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", 
+                MatchupHistory.season == curr_season
+            ).all()
+            if not m_list:
+                m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}").all()
             max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
 
         data = []
         for r in rosters:
-            owner_name = (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
+            owner_name = (r.settings.get("team_name") if r.settings and isinstance(r.settings, dict) and r.settings.get("team_name") else None) or (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
+            avatar = (r.settings.get("avatar") if r.settings and isinstance(r.settings, dict) and r.settings.get("avatar") else None) or (r.user.avatar if r.user else None)
             
             # Get picks owned by this roster
             picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
-            quant_picks = [QuantDraftPick(year=int(p.season), round=p.round) for p in picks]
-            future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
+            quant_picks = [QuantDraftPick(year=int(p.season) if str(p.season).isdigit() else eval_year + 1, round=p.round) for p in picks]
+            future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=eval_year)
             
             player_ids = r.players or []
             ages = []
+            fallback_meta = (r.settings.get("player_metadata", {}) if r.settings and isinstance(r.settings, dict) else {})
             for pid in player_ids:
-                p_info = sp_cache.get(str(pid), {})
+                pid_str = str(pid)
+                p_info = sp_cache.get(pid_str) or sp_cache.get(espn_to_sleeper.get(pid_str)) or fallback_meta.get(pid_str) or {}
                 age = p_info.get("age", 25)
                 if age: ages.append(age)
                 
@@ -175,7 +250,7 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 "future_capital_score": future_capital_score,
                 "power_index": power_index,
                 "health_score": health_score,
-                "avatar": r.user.avatar if r.user else None
+                "avatar": avatar
             })
             
         df = pd.DataFrame(data)
@@ -668,34 +743,54 @@ def get_league_record_book(league_id: str):
 def get_power_rankings(league_id: str):
     session = SessionLocal()
     try:
+        league = session.query(League).filter(League.league_id == league_id).first()
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         if not rosters:
             return {"error": "No rosters found."}
             
-        owner_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
-        avatar_map = {r.roster_id: (r.user.avatar if r.user and r.user.avatar else None) for r in rosters}
+        owner_map = {}
+        avatar_map = {}
+        for r in rosters:
+            t_name = (r.settings.get("team_name") if r.settings and isinstance(r.settings, dict) and r.settings.get("team_name") else None) or (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
+            t_avatar = (r.settings.get("avatar") if r.settings and isinstance(r.settings, dict) and r.settings.get("avatar") else None) or (r.user.avatar if r.user else None)
+            owner_map[r.roster_id] = t_name
+            avatar_map[r.roster_id] = t_avatar
         
         sp_cache = get_sleeper_players_cache()
+        espn_to_sleeper = {}
+        for sp_id, p_info in sp_cache.items():
+            if isinstance(p_info, dict) and p_info.get("espn_id"):
+                espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
+
+        curr_season = str(league.season if league and league.season else "2024")
+        eval_year = int(curr_season) if curr_season.isdigit() else 2024
         
-        # 1. Fetch Max PF / Optimal Points from 2024 matchups
+        # 1. Fetch Max PF / Optimal Points from matchups
         max_pfs = {}
         for r in rosters:
-            m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", MatchupHistory.season == "2024").all()
+            m_list = session.query(MatchupHistory).filter(
+                MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", 
+                MatchupHistory.season == curr_season
+            ).all()
+            if not m_list:
+                m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}").all()
             max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
 
         # 2. Evaluate Rosters, Draft Capital, and Positional Monopolies
         raw_evals = []
         for r in rosters:
             picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
-            quant_picks = [QuantDraftPick(year=int(p.season), round=p.round) for p in picks]
-            capital_score = evaluate_pick_portfolio(quant_picks, current_year=2024)
+            quant_picks = [QuantDraftPick(year=int(p.season) if str(p.season).isdigit() else eval_year + 1, round=p.round) for p in picks]
+            capital_score = evaluate_pick_portfolio(quant_picks, current_year=eval_year)
             
             player_ids = r.players or []
             ages = []
             pos_counts = {"QB": 0, "RB": 0, "WR": 0, "TE": 0}
+            fallback_meta = (r.settings.get("player_metadata", {}) if r.settings and isinstance(r.settings, dict) else {})
             
             for pid in player_ids:
-                p_info = sp_cache.get(str(pid), {})
+                pid_str = str(pid)
+                p_info = sp_cache.get(pid_str) or sp_cache.get(espn_to_sleeper.get(pid_str)) or fallback_meta.get(pid_str) or {}
                 age = p_info.get("age", 25)
                 if age: ages.append(age)
                 pos = p_info.get("position")

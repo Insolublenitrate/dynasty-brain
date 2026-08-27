@@ -4,9 +4,148 @@ import os
 import sys
 from typing import Optional, Dict, Any, List
 from database import SessionLocal
-from models import League, User, Roster, DraftPick, MatchupHistory
+from models import League, User, Roster, DraftPick, MatchupHistory, SleeperTransaction
 
 import urllib.parse
+
+# ESPN Slot ID to Standard Fantasy Position
+ESPN_SLOT_MAP = {
+    0: "QB",
+    1: "TQB",
+    2: "RB",
+    3: "RB/WR",
+    4: "WR",
+    5: "WR/TE",
+    6: "TE",
+    7: "SUPER_FLEX", # OP (QB/RB/WR/TE)
+    8: "DT",
+    9: "DE",
+    10: "LB",
+    11: "DL",
+    12: "CB",
+    13: "S",
+    14: "DB",
+    15: "IDP_FLEX",
+    16: "DEF",
+    17: "K",
+    18: "P",
+    19: "HC",
+    20: "BN",
+    21: "IR",
+    22: "TAXI",
+    23: "FLEX" # RB/WR/TE
+}
+
+ESPN_POS_ID_MAP = {
+    1: "QB",
+    2: "RB",
+    3: "WR",
+    4: "TE",
+    5: "K",
+    16: "DEF"
+}
+
+ESPN_TEAM_MAP = {
+    0: "FA", 1: "ATL", 2: "BUF", 3: "CHI", 4: "CIN", 5: "CLE",
+    6: "DAL", 7: "DEN", 8: "DET", 9: "GB", 10: "TEN", 11: "IND",
+    12: "KC", 13: "LV", 14: "LAR", 15: "MIA", 16: "MIN", 17: "NE",
+    18: "NO", 19: "NYG", 20: "NYJ", 21: "PHI", 22: "ARI", 23: "PIT",
+    24: "LAC", 25: "SF", 26: "SEA", 27: "TB", 28: "WAS", 29: "CAR",
+    30: "JAX", 33: "BAL", 34: "HOU"
+}
+
+def transform_espn_roster_positions(lineup_slot_counts: dict) -> list:
+    """
+    Transforms ESPN lineupSlotCounts dict into a standardized ordered list of positions.
+    """
+    ordered_slots = []
+    starter_priority = [0, 1, 2, 3, 4, 5, 6, 23, 7, 16, 17, 8, 9, 10, 11, 12, 13, 14, 15]
+    bench_priority = [20, 21, 22]
+
+    for slot_id in starter_priority:
+        count = lineup_slot_counts.get(str(slot_id), 0) or lineup_slot_counts.get(slot_id, 0)
+        pos_name = ESPN_SLOT_MAP.get(slot_id, "FLEX")
+        for _ in range(count):
+            ordered_slots.append(pos_name)
+
+    for slot_id in bench_priority:
+        count = lineup_slot_counts.get(str(slot_id), 0) or lineup_slot_counts.get(slot_id, 0)
+        pos_name = ESPN_SLOT_MAP.get(slot_id, "BN")
+        for _ in range(count):
+            ordered_slots.append(pos_name)
+
+    if not ordered_slots:
+        ordered_slots = ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "SUPER_FLEX", "BN", "BN", "BN", "BN", "BN", "BN", "IR"]
+
+    return ordered_slots
+
+def map_espn_player(entry: dict, sp_cache: dict, espn_to_sleeper: dict, name_pos_to_sleeper: dict) -> tuple:
+    """
+    Resolves an ESPN player entry into canonical Sleeper/Blindside ID and complete metadata.
+    """
+    espn_pid = str(entry.get("playerId"))
+    player_pool = entry.get("playerPoolEntry", {})
+    player_raw = player_pool.get("player", {}) or entry.get("player", {})
+    
+    full_name = player_raw.get("fullName") or f"{player_raw.get('firstName', '')} {player_raw.get('lastName', '')}".strip()
+    pos_id = player_raw.get("defaultPositionId")
+    pos = ESPN_POS_ID_MAP.get(pos_id, "UNK")
+    if pos == "UNK" and "eligibleSlots" in player_raw:
+        for s in player_raw.get("eligibleSlots", []):
+            if s in ESPN_SLOT_MAP and ESPN_SLOT_MAP[s] not in ["BN", "IR", "TAXI", "FLEX", "SUPER_FLEX"]:
+                pos = ESPN_SLOT_MAP[s]
+                break
+
+    pro_team_id = player_raw.get("proTeamId")
+    team = ESPN_TEAM_MAP.get(pro_team_id, "FA")
+    injury = player_raw.get("injuryStatus") or None
+    
+    # 1. Match by explicit ESPN ID
+    canonical_id = espn_to_sleeper.get(espn_pid)
+    
+    # 2. Match by Full Name + Position
+    if not canonical_id and full_name and pos != "UNK":
+        canonical_id = name_pos_to_sleeper.get((full_name.lower(), pos.upper()))
+
+    # 3. Match by Full Name only
+    if not canonical_id and full_name:
+        for (fn, _), sid in name_pos_to_sleeper.items():
+            if fn == full_name.lower():
+                canonical_id = sid
+                break
+
+    if canonical_id and canonical_id in sp_cache:
+        sp_data = sp_cache[canonical_id]
+        meta = {
+            "player_id": canonical_id,
+            "espn_id": espn_pid,
+            "full_name": sp_data.get("full_name") or full_name,
+            "first_name": sp_data.get("first_name", ""),
+            "last_name": sp_data.get("last_name", ""),
+            "position": sp_data.get("position") or pos,
+            "team": sp_data.get("team") or team,
+            "age": sp_data.get("age", 25),
+            "years_exp": sp_data.get("years_exp", 1),
+            "injury_status": injury or sp_data.get("injury_status")
+        }
+        return canonical_id, meta
+
+    # Fallback to ESPN data directly
+    final_id = canonical_id or espn_pid
+    meta = {
+        "player_id": final_id,
+        "espn_id": espn_pid,
+        "full_name": full_name or f"Player {espn_pid}",
+        "first_name": player_raw.get("firstName", ""),
+        "last_name": player_raw.get("lastName", ""),
+        "position": pos if pos != "UNK" else "FLEX",
+        "team": team,
+        "age": 25,
+        "years_exp": 1,
+        "injury_status": injury
+    }
+    return final_id, meta
+
 
 def ingest_espn_league(
     league_id: str, 
@@ -28,7 +167,7 @@ def ingest_espn_league(
         clean_id = str(league_id).strip()
         url = f"https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/{season}/segments/0/leagues/{clean_id}"
         params = {
-            "view": ["mRoster", "mTeam", "mSettings", "mMatchup", "mDraftDetail", "mStatus"]
+            "view": ["mRoster", "mTeam", "mSettings", "mMatchup", "mDraftDetail", "mStatus", "mStandings", "mTransactions2"]
         }
         cookies = {}
         if espn_s2:
@@ -57,14 +196,44 @@ def ingest_espn_league(
 
         data = resp.json()
         
+        # Load Sleeper player dictionary for cross-platform mapping
+        from api.routers.league import get_sleeper_players_cache
+        sp_cache = get_sleeper_players_cache()
+        espn_to_sleeper = {}
+        name_pos_to_sleeper = {}
+        for pid, p in sp_cache.items():
+            if not isinstance(p, dict): continue
+            eid = p.get("espn_id")
+            if eid:
+                espn_to_sleeper[str(eid)] = str(pid)
+            fn = p.get("full_name") or f"{p.get('first_name', '')} {p.get('last_name', '')}".strip()
+            pos = p.get("position")
+            if fn and pos:
+                name_pos_to_sleeper[(fn.lower(), pos.upper())] = str(pid)
+
         # 1. Ingest League Settings
         league_settings = data.get("settings", {})
         league_name = league_settings.get("name", f"ESPN League {clean_id}")
         roster_settings = league_settings.get("rosterSettings", {})
         lineup_slots = roster_settings.get("lineupSlotCounts", {})
+        standard_slots = transform_espn_roster_positions(lineup_slots)
+        scoring_settings = league_settings.get("scoringSettings", {})
         
         # Check Superflex / 2QB
-        is_superflex = (lineup_slots.get("17", 0) > 0 or lineup_slots.get("0", 0) > 1) # 17 is OP/Superflex, 0 is QB
+        is_superflex = (lineup_slots.get("7", 0) > 0 or lineup_slots.get("17", 0) > 0 or lineup_slots.get("0", 0) > 1)
+
+        teams = data.get("teams", [])
+        status_info = data.get("status", {})
+        current_period = status_info.get("currentMatchupPeriod", 1)
+
+        league_meta = {
+            "platform": "espn",
+            "num_teams": len(teams),
+            "draft_rounds": 4,
+            "is_dynasty": True,
+            "superflex": is_superflex,
+            "current_period": current_period
+        }
 
         db_league = session.query(League).filter(League.league_id == clean_id).first()
         if not db_league:
@@ -73,13 +242,18 @@ def ingest_espn_league(
                 name=league_name,
                 season=str(season),
                 status="in_season",
-                settings={"platform": "espn", "superflex": is_superflex, "is_dynasty": True}
+                roster_positions=standard_slots,
+                scoring_settings=scoring_settings,
+                settings=league_meta
             )
             session.add(db_league)
         else:
             db_league.name = league_name
             db_league.season = str(season)
-            db_league.settings = {"platform": "espn", "superflex": is_superflex, "is_dynasty": True}
+            db_league.status = "in_season"
+            db_league.roster_positions = standard_slots
+            db_league.scoring_settings = scoring_settings
+            db_league.settings = league_meta
         
         session.flush()
 
@@ -105,8 +279,8 @@ def ingest_espn_league(
         session.flush()
 
         # 3. Ingest Teams & Rosters
-        teams = data.get("teams", [])
         team_id_to_roster_id = {}
+        all_league_player_meta = {}
         
         # Clear existing draft picks & matchups for refresh
         session.query(DraftPick).filter(DraftPick.league_id == clean_id).delete()
@@ -119,15 +293,24 @@ def ingest_espn_league(
             loc = t.get("location", "")
             nick = t.get("nickname", "")
             team_name = f"{loc} {nick}".strip() or f"Team {idx}"
+            team_logo = t.get("logo") or t.get("logoUrl") or None
             
             owners_list = t.get("owners") or []
             primary_owner_id = str(owners_list[0]) if owners_list else f"espn_owner_{clean_id}_{idx}"
             
             if primary_owner_id not in owner_map:
                 owner_map[primary_owner_id] = team_name
-                if not session.query(User).filter(User.user_id == primary_owner_id).first():
-                    session.add(User(user_id=primary_owner_id, display_name=team_name))
+                db_user = session.query(User).filter(User.user_id == primary_owner_id).first()
+                if not db_user:
+                    db_user = User(user_id=primary_owner_id, display_name=team_name, avatar=team_logo)
+                    session.add(db_user)
                     session.flush()
+                else:
+                    if team_logo: db_user.avatar = team_logo
+            else:
+                db_user = session.query(User).filter(User.user_id == primary_owner_id).first()
+                if db_user and team_logo and not db_user.avatar:
+                    db_user.avatar = team_logo
 
             record = t.get("record", {}).get("overall", {})
             wins = record.get("wins", 0)
@@ -135,19 +318,33 @@ def ingest_espn_league(
             ties = record.get("ties", 0)
             points_for = float(record.get("pointsFor", 0.0))
             points_against = float(record.get("pointsAgainst", 0.0))
+            streak_len = record.get("streakLength", 0)
+            streak_type = record.get("streakType", "WIN")
+            streak_str = f"{streak_len}{streak_type[0]}" if streak_len else "0"
 
             roster_data = t.get("roster", {})
             entries = roster_data.get("entries", [])
             
             player_ids = []
             starter_ids = []
+            reserve_ids = []
+            taxi_ids = []
+            team_player_meta = {}
             
             for entry in entries:
-                pid = str(entry.get("playerId"))
-                slot_id = entry.get("lineupSlotId")
-                player_ids.append(pid)
-                if slot_id not in [20, 21]:
-                    starter_ids.append(pid)
+                slot_id = entry.get("lineupSlotId", 20)
+                canonical_id, p_meta = map_espn_player(entry, sp_cache, espn_to_sleeper, name_pos_to_sleeper)
+                
+                player_ids.append(canonical_id)
+                team_player_meta[canonical_id] = p_meta
+                all_league_player_meta[canonical_id] = p_meta
+
+                if slot_id == 21:
+                    reserve_ids.append(canonical_id)
+                elif slot_id == 22:
+                    taxi_ids.append(canonical_id)
+                elif slot_id != 20: # 20 is Bench
+                    starter_ids.append(canonical_id)
 
             roster_pk = f"{clean_id}_{idx}"
             db_roster = session.query(Roster).filter(Roster.id == roster_pk).first()
@@ -155,7 +352,12 @@ def ingest_espn_league(
             roster_settings_data = {
                 "fpts_against": round(points_against, 1),
                 "team_name": team_name,
-                "espn_team_id": espn_team_id
+                "avatar": team_logo,
+                "espn_team_id": espn_team_id,
+                "streak": streak_str,
+                "waiver_position": t.get("waiverRank", idx),
+                "standing": t.get("playoffSeed", idx),
+                "player_metadata": team_player_meta
             }
 
             if not db_roster:
@@ -166,6 +368,8 @@ def ingest_espn_league(
                     owner_id=primary_owner_id,
                     players=player_ids,
                     starters=starter_ids,
+                    reserve=reserve_ids,
+                    taxi=taxi_ids,
                     wins=wins,
                     losses=losses,
                     ties=ties,
@@ -177,6 +381,8 @@ def ingest_espn_league(
                 db_roster.owner_id = primary_owner_id
                 db_roster.players = player_ids
                 db_roster.starters = starter_ids
+                db_roster.reserve = reserve_ids
+                db_roster.taxi = taxi_ids
                 db_roster.wins = wins
                 db_roster.losses = losses
                 db_roster.ties = ties
@@ -185,8 +391,8 @@ def ingest_espn_league(
 
             session.flush()
 
-            # Multi-Year Picks
-            for pick_year in range(season + 1, season + 4):
+            # Multi-Year Picks (4 rounds x 3-4 future seasons)
+            for pick_year in range(season + 1, season + 5):
                 for pick_round in range(1, 5):
                     session.add(DraftPick(
                         league_id=clean_id,
@@ -195,6 +401,26 @@ def ingest_espn_league(
                         roster_id=db_roster.id,
                         owner_id=db_roster.id
                     ))
+
+        # Re-assign traded picks if available in draftDetail
+        traded_picks = data.get("draftDetail", {}).get("tradedPicks", [])
+        for tp in traded_picks:
+            tp_season = str(tp.get("season", season + 1))
+            tp_round = tp.get("round", 1)
+            orig_team_id = tp.get("originalTeamId")
+            orig_r_idx = team_id_to_roster_id.get(orig_team_id)
+            new_team_id = tp.get("teamId")
+            new_r_idx = team_id_to_roster_id.get(new_team_id)
+            
+            if orig_r_idx and new_r_idx:
+                pick = session.query(DraftPick).filter(
+                    DraftPick.league_id == clean_id,
+                    DraftPick.season == tp_season,
+                    DraftPick.round == tp_round,
+                    DraftPick.roster_id == f"{clean_id}_{orig_r_idx}"
+                ).first()
+                if pick:
+                    pick.owner_id = f"{clean_id}_{new_r_idx}"
 
         # 4. Ingest Matchup Schedule & Weekly Points
         schedule = data.get("schedule", [])
@@ -211,6 +437,29 @@ def ingest_espn_league(
             a_roster_id = team_id_to_roster_id.get(a_team_id) if a_team_id is not None else None
             a_pts = float(away.get("totalPoints", 0.0)) if away else 0.0
             
+            # Extract player points for autopsy / blunder tracking
+            h_starters, h_starters_pts, h_players, h_players_pts = [], [], [], []
+            if home and "rosterForCurrentScoringPeriod" in home:
+                for pe in home.get("rosterForCurrentScoringPeriod", {}).get("entries", []):
+                    c_pid, _ = map_espn_player(pe, sp_cache, espn_to_sleeper, name_pos_to_sleeper)
+                    p_score = round(float(pe.get("appliedStatTotal", 0.0)), 2)
+                    h_players.append(c_pid)
+                    h_players_pts.append(p_score)
+                    if pe.get("lineupSlotId") not in [20, 21, 22]:
+                        h_starters.append(c_pid)
+                        h_starters_pts.append(p_score)
+
+            a_starters, a_starters_pts, a_players, a_players_pts = [], [], [], []
+            if away and "rosterForCurrentScoringPeriod" in away:
+                for pe in away.get("rosterForCurrentScoringPeriod", {}).get("entries", []):
+                    c_pid, _ = map_espn_player(pe, sp_cache, espn_to_sleeper, name_pos_to_sleeper)
+                    p_score = round(float(pe.get("appliedStatTotal", 0.0)), 2)
+                    a_players.append(c_pid)
+                    a_players_pts.append(p_score)
+                    if pe.get("lineupSlotId") not in [20, 21, 22]:
+                        a_starters.append(c_pid)
+                        a_starters_pts.append(p_score)
+
             if h_roster_id:
                 session.add(MatchupHistory(
                     league_id=clean_id,
@@ -221,7 +470,11 @@ def ingest_espn_league(
                     opponent_points=round(a_pts, 2) if a_roster_id else 0.0,
                     is_win=1 if h_pts > a_pts else (0 if h_pts < a_pts else -1),
                     matchup_id=m.get("id"),
-                    season=str(season)
+                    season=str(season),
+                    starters=h_starters if h_starters else None,
+                    starters_points=h_starters_pts if h_starters_pts else None,
+                    players=h_players if h_players else None,
+                    players_points=h_players_pts if h_players_pts else None
                 ))
 
             if a_roster_id:
@@ -232,9 +485,51 @@ def ingest_espn_league(
                     week=matchup_period,
                     points=round(a_pts, 2),
                     opponent_points=round(h_pts, 2) if h_roster_id else 0.0,
-                    is_win=1 if a_pts > h_pts else (0 if a_pts < h_pts else -1),
+                    is_win=1 if a_pts > h_pts else (0 if h_pts < a_pts else -1),
                     matchup_id=m.get("id"),
-                    season=str(season)
+                    season=str(season),
+                    starters=a_starters if a_starters else None,
+                    starters_points=a_starters_pts if a_starters_pts else None,
+                    players=a_players if a_players else None,
+                    players_points=a_players_pts if a_players_pts else None
+                ))
+
+        # 5. Ingest Transactions / Activity
+        raw_txs = data.get("transactions", [])
+        for tx in raw_txs:
+            tx_id = str(tx.get("id", f"espn_tx_{clean_id}_{len(raw_txs)}"))
+            tx_type = str(tx.get("type", "FREEAGENT")).lower()
+            if "trade" in tx_type:
+                tx_type = "trade"
+            elif "waiver" in tx_type:
+                tx_type = "waiver"
+            else:
+                tx_type = "free_agent"
+
+            items = tx.get("items", [])
+            adds_map = {}
+            drops_map = {}
+            for itm in items:
+                p_raw_id = str(itm.get("playerId"))
+                c_id = espn_to_sleeper.get(p_raw_id, p_raw_id)
+                to_t = itm.get("toTeamId")
+                from_t = itm.get("fromTeamId")
+                if to_t and to_t in team_id_to_roster_id:
+                    adds_map[c_id] = team_id_to_roster_id[to_t]
+                if from_t and from_t in team_id_to_roster_id:
+                    drops_map[c_id] = team_id_to_roster_id[from_t]
+
+            db_tx = session.query(SleeperTransaction).filter(SleeperTransaction.id == tx_id).first()
+            if not db_tx:
+                session.add(SleeperTransaction(
+                    id=tx_id,
+                    league_id=clean_id,
+                    season=str(season),
+                    week=tx.get("scoringPeriodId", current_period),
+                    type=tx_type,
+                    status=tx.get("status", "complete"),
+                    adds=adds_map if adds_map else None,
+                    drops=drops_map if drops_map else None
                 ))
 
         session.commit()
@@ -246,7 +541,7 @@ def ingest_espn_league(
             "league_name": league_name,
             "total_teams": len(teams),
             "season": str(season),
-            "message": f"Successfully ingested ESPN League '{league_name}' with {len(teams)} teams and full matchup history."
+            "message": f"Successfully ingested ESPN League '{league_name}' with {len(teams)} teams, roster slots, and full matchup schedule."
         }
 
     except Exception as e:
