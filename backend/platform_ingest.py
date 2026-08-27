@@ -6,6 +6,8 @@ from typing import Optional, Dict, Any, List
 from database import SessionLocal
 from models import League, User, Roster, DraftPick, MatchupHistory
 
+import urllib.parse
+
 def ingest_espn_league(
     league_id: str, 
     season: int = 2024, 
@@ -30,15 +32,21 @@ def ingest_espn_league(
         }
         cookies = {}
         if espn_s2:
-            cookies["espn_s2"] = espn_s2.strip()
+            s2_raw = espn_s2.strip()
+            # Auto-unquote if URL-encoded
+            cookies["espn_s2"] = urllib.parse.unquote(s2_raw)
         if swid:
-            cookies["SWID"] = swid.strip()
+            clean_swid = swid.strip()
+            # Standardize SWID with braces if missing
+            if not clean_swid.startswith("{") and not clean_swid.endswith("}"):
+                clean_swid = f"{{{clean_swid}}}"
+            cookies["SWID"] = clean_swid
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
 
-        resp = requests.get(url, params=params, cookies=cookies, headers=headers, timeout=12)
+        resp = requests.get(url, params=params, cookies=cookies, headers=headers, timeout=15)
         
         if resp.status_code == 401:
             return {"error": "ESPN League is Private. Please provide your espn_s2 and SWID cookies to link this league.", "status_code": 401}
@@ -126,6 +134,7 @@ def ingest_espn_league(
             losses = record.get("losses", 0)
             ties = record.get("ties", 0)
             points_for = float(record.get("pointsFor", 0.0))
+            points_against = float(record.get("pointsAgainst", 0.0))
 
             roster_data = t.get("roster", {})
             entries = roster_data.get("entries", [])
@@ -143,6 +152,12 @@ def ingest_espn_league(
             roster_pk = f"{clean_id}_{idx}"
             db_roster = session.query(Roster).filter(Roster.id == roster_pk).first()
 
+            roster_settings_data = {
+                "fpts_against": round(points_against, 1),
+                "team_name": team_name,
+                "espn_team_id": espn_team_id
+            }
+
             if not db_roster:
                 db_roster = Roster(
                     id=roster_pk,
@@ -155,7 +170,7 @@ def ingest_espn_league(
                     losses=losses,
                     ties=ties,
                     fpts=round(points_for, 1),
-                    fpts_against=round(float(record.get("pointsAgainst", 0.0)), 1)
+                    settings=roster_settings_data
                 )
                 session.add(db_roster)
             else:
@@ -166,6 +181,7 @@ def ingest_espn_league(
                 db_roster.losses = losses
                 db_roster.ties = ties
                 db_roster.fpts = round(points_for, 1)
+                db_roster.settings = roster_settings_data
 
             session.flush()
 
@@ -187,31 +203,39 @@ def ingest_espn_league(
             home = m.get("home", {})
             away = m.get("away", {})
             
-            if home and "teamId" in home:
-                h_team_id = home.get("teamId")
-                h_roster_id = team_id_to_roster_id.get(h_team_id)
-                h_pts = float(home.get("totalPoints", 0.0))
-                if h_roster_id:
-                    session.add(MatchupHistory(
-                        roster_id=f"{clean_id}_{h_roster_id}",
-                        week=matchup_period,
-                        points=round(h_pts, 2),
-                        matchup_id=m.get("id"),
-                        season=str(season)
-                    ))
+            h_team_id = home.get("teamId") if home else None
+            h_roster_id = team_id_to_roster_id.get(h_team_id) if h_team_id is not None else None
+            h_pts = float(home.get("totalPoints", 0.0)) if home else 0.0
 
-            if away and "teamId" in away:
-                a_team_id = away.get("teamId")
-                a_roster_id = team_id_to_roster_id.get(a_team_id)
-                a_pts = float(away.get("totalPoints", 0.0))
-                if a_roster_id:
-                    session.add(MatchupHistory(
-                        roster_id=f"{clean_id}_{a_roster_id}",
-                        week=matchup_period,
-                        points=round(a_pts, 2),
-                        matchup_id=m.get("id"),
-                        season=str(season)
-                    ))
+            a_team_id = away.get("teamId") if away else None
+            a_roster_id = team_id_to_roster_id.get(a_team_id) if a_team_id is not None else None
+            a_pts = float(away.get("totalPoints", 0.0)) if away else 0.0
+            
+            if h_roster_id:
+                session.add(MatchupHistory(
+                    league_id=clean_id,
+                    roster_id=f"{clean_id}_{h_roster_id}",
+                    opponent_roster_id=f"{clean_id}_{a_roster_id}" if a_roster_id else None,
+                    week=matchup_period,
+                    points=round(h_pts, 2),
+                    opponent_points=round(a_pts, 2) if a_roster_id else 0.0,
+                    is_win=1 if h_pts > a_pts else (0 if h_pts < a_pts else -1),
+                    matchup_id=m.get("id"),
+                    season=str(season)
+                ))
+
+            if a_roster_id:
+                session.add(MatchupHistory(
+                    league_id=clean_id,
+                    roster_id=f"{clean_id}_{a_roster_id}",
+                    opponent_roster_id=f"{clean_id}_{h_roster_id}" if h_roster_id else None,
+                    week=matchup_period,
+                    points=round(a_pts, 2),
+                    opponent_points=round(h_pts, 2) if h_roster_id else 0.0,
+                    is_win=1 if a_pts > h_pts else (0 if a_pts < h_pts else -1),
+                    matchup_id=m.get("id"),
+                    season=str(season)
+                ))
 
         session.commit()
         
