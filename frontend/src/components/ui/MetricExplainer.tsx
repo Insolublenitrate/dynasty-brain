@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { HelpCircle, Info, TrendingUp, AlertTriangle, Sparkles, ChevronRight, X, BookOpen } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -148,17 +149,31 @@ export const METRIC_DICTIONARY: Record<string, MetricDefinition> = {
   },
   archetype: {
     id: "archetype",
-    name: "Dynasty Lifecycle Archetype",
+    name: "Dynasty Roster Archetype",
     shortName: "Archetype",
     category: "power",
-    summary: "A behavioral classification assigned to each franchise based on its roster composition, draft capital, starter power, and competitive window.",
-    formula: "Algorithmic clustering across 6 distinct profiles: Goliath, Juggernaut, Ground & Pound, Retool, Rebuild, and Purgatory.",
+    summary: "A behavioral classification describing a roster's core construction strategy (e.g. Apex Juggernaut, Win-Now Goliath, Productive Struggle, Draft Dragon, Aging Empire).",
+    formula: "Multi-factor clustering of Starter Max PF, Draft Capital, Positional Monopolies, and Average Age.",
     benchmarks: {
-      elite: "The Championship Goliath / Dynasty Apex",
-      average: "The Balanced Contender",
-      warning: "Dynasty Purgatory (Immediate Action Required)"
+      elite: "👑 Dynasty Juggernaut / 🏆 Win-Now Goliath",
+      average: "🎯 Balanced Core / ⚡ Rising Contender",
+      warning: "⏳ Aging Empire / 🏚️ Rebuild Retool"
     },
-    tacticalAdvice: "Identify your true archetype to stop 'straddling the middle'. If in Purgatory, sell aging players immediately to shift to a clean Rebuild."
+    tacticalAdvice: "Align your trading behavior with your archetype. Never buy aging veterans if your archetype is 'Productive Struggle' or 'Draft Dragon'."
+  },
+  point_differential: {
+    id: "point_differential",
+    name: "Point Differential / Luck Index",
+    shortName: "Luck / Differential",
+    category: "power",
+    summary: "The difference between your actual fantasy points scored and your expected points based on Max PF baseline.",
+    formula: "Actual Points - (Max PF × 0.92)",
+    benchmarks: {
+      elite: "+100.0+ pts (Elite Efficiency / High Luck)",
+      average: "± 30.0 pts (Neutral Luck)",
+      warning: "-100.0+ pts (Severely Unlucky / Underperformed)"
+    },
+    tacticalAdvice: "Negative differential teams with high Max PF are prime buy-low contenders whose win-loss record will naturally positive regress."
   },
   starter_firepower: {
     id: "starter_firepower",
@@ -179,41 +194,44 @@ export const METRIC_DICTIONARY: Record<string, MetricDefinition> = {
 interface MetricExplainerProps {
   term: string;
   label?: string;
-  className?: string;
-  size?: "xs" | "sm" | "md";
   showName?: boolean;
+  size?: "xs" | "sm" | "md";
+  className?: string;
 }
 
 export default function MetricExplainer({
   term,
   label,
-  className = "",
+  showName = false,
   size = "xs",
-  showName = false
+  className = ""
 }: MetricExplainerProps) {
-  const { currentTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
-
-  const def = METRIC_DICTIONARY[term.toLowerCase()] || {
-    id: term,
-    name: label || term.toUpperCase(),
-    summary: `Metric information for ${label || term}.`,
-    category: "power" as const,
-    tacticalAdvice: "Evaluate how this metric relates to your team's overall dynasty strategy."
-  };
+  const [mounted, setMounted] = useState(false);
+  const { currentTheme } = useTheme();
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
+
+  const def = METRIC_DICTIONARY[term] || {
+    id: term,
+    name: label || term.toUpperCase().replace(/_/g, " "),
+    summary: `Tactical metric information and strategy guidelines for ${label || term}.`,
+    category: "power" as const,
+    tacticalAdvice: "Evaluate how this metric relates to your team's overall dynasty strategy and active trade opportunities."
+  };
 
   const sizeClasses = {
     xs: "p-0.5 text-[10px]",
@@ -222,48 +240,51 @@ export default function MetricExplainer({
   };
 
   return (
-    <div className={`relative inline-flex items-center gap-1 ${className}`} ref={popoverRef}>
-      {showName && (
-        <span className="font-mono text-zinc-300 text-xs font-bold">
-          {label || def.shortName || def.name}
-        </span>
-      )}
-      
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-        title={`Click for explainer: ${def.name}`}
-        className={`inline-flex items-center justify-center rounded-full text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 transition-all hover:scale-110 shadow-sm focus:outline-none focus:ring-1 focus:ring-emerald-400 ${sizeClasses[size]}`}
-        style={isOpen ? { color: currentTheme.primary, borderColor: currentTheme.primary } : {}}
-      >
-        <HelpCircle size={size === "xs" ? 12 : 14} />
-      </button>
+    <>
+      <span className={`inline-flex items-center gap-1 ${className}`}>
+        {showName && (
+          <span className="font-mono text-zinc-300 text-xs font-bold">
+            {label || def.shortName || def.name}
+          </span>
+        )}
+        
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
+          title={`Explain metric: ${def.name}`}
+          className={`inline-flex items-center justify-center rounded-full text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 transition-all hover:scale-110 shadow-sm focus:outline-none focus:ring-1 focus:ring-emerald-400 ${sizeClasses[size]}`}
+          style={isOpen ? { color: currentTheme.primary, borderColor: currentTheme.primary } : {}}
+        >
+          <HelpCircle size={size === "xs" ? 12 : 14} />
+        </button>
+      </span>
 
-      {/* Interactive Mobile-Safe Dialog / Explainer Modal */}
-      {isOpen && (
+      {/* Interactive Mobile-Safe Dialog / Explainer Modal Teleported to document.body */}
+      {isOpen && mounted && createPortal(
         <div 
-          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(false);
           }}
         >
           <div 
-            className="bg-zinc-950 border border-zinc-700/90 rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-5 space-y-3.5 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 text-left relative max-h-[85dvh] overflow-y-auto"
+            className="bg-zinc-950 border border-zinc-700/90 rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-5 space-y-3.5 animate-in zoom-in-95 duration-200 text-left relative max-h-[85dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b border-zinc-800 pb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: currentTheme.primary }} />
-                <div>
+                <div className="min-w-0">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
                     TACTICAL METRIC EXPLAINER
                   </span>
-                  <h4 className="text-sm sm:text-base font-black text-white font-sans tracking-wide leading-snug">
+                  <h4 className="text-sm sm:text-base font-black text-white font-sans tracking-wide leading-snug truncate">
                     {def.name}
                   </h4>
                 </div>
@@ -271,10 +292,10 @@ export default function MetricExplainer({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 shrink-0 transition-colors"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 shrink-0 transition-colors"
                 title="Close"
               >
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
 
@@ -340,8 +361,9 @@ export default function MetricExplainer({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 }
