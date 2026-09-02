@@ -72,20 +72,20 @@ function TopNavInner() {
   return (
     <>
       <header className="bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/80 sticky top-0 z-40 w-full max-w-[100vw] overflow-x-hidden">
-        <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-3 min-w-0">
+        <div className="max-w-[1440px] mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
           
           {/* Left: Logo + League Pill */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link href="/dynasty-room" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-              <PlaybookLogo size={34} animated={true} />
-              <div className="flex flex-col">
-                <span className="text-base sm:text-lg font-black text-white italic tracking-wider font-sans leading-none">
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
+            <Link href="/dynasty-room" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity min-w-0">
+              <PlaybookLogo size={28} animated={true} />
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs sm:text-lg font-black text-white italic tracking-wider font-sans leading-none whitespace-nowrap">
                   BLINDSIDE <span style={{ color: currentTheme.primary, textShadow: `0 0 8px ${currentTheme.glow}` }}>DYNASTY</span>
                 </span>
                 {leagueName && (
-                  <span className="text-[10px] font-mono text-zinc-400 truncate max-w-[140px] sm:max-w-[200px] mt-0.5 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
-                    {leagueName}
+                  <span className="text-[9px] sm:text-[10px] font-mono text-zinc-400 truncate max-w-[85px] sm:max-w-[200px] mt-0.5 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block shrink-0" />
+                    <span className="truncate">{leagueName}</span>
                   </span>
                 )}
               </div>
@@ -154,12 +154,12 @@ function TopNavInner() {
             </div>
           </nav>
 
-          {/* Right Actions: Field Guide, Tour, Get App, Settings */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Right Actions: Field Guide, Tour, Get App, Settings (Fits 100% on Mobile) */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Quick Tour Button */}
             <button
               onClick={() => setIsTourOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Launch Guided War Room Tour"
             >
               <Compass size={14} style={{ color: currentTheme.primary }} />
@@ -169,7 +169,7 @@ function TopNavInner() {
             {/* Field Guide Glossary Button */}
             <button
               onClick={() => setIsGlossaryOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Open Tactical Metric Field Guide"
             >
               <BookOpen size={14} className="text-amber-400" />
@@ -179,7 +179,7 @@ function TopNavInner() {
             {/* Mobile App Download Button */}
             <button
               onClick={() => setIsInstallModalOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/90 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Download & Install Mobile App"
             >
               <Smartphone size={14} className="text-emerald-400" />
@@ -189,10 +189,10 @@ function TopNavInner() {
             {/* Settings Button */}
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="text-zinc-400 hover:text-white p-2 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 text-xs font-mono font-bold"
+              className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold"
               title="League & Theme Settings"
             >
-              <Settings size={16} className="transition-transform hover:rotate-45" />
+              <Settings size={15} className="transition-transform hover:rotate-45" />
               <span className="hidden 2xl:inline text-zinc-300">Settings</span>
             </button>
           </div>

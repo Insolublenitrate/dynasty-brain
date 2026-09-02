@@ -79,12 +79,12 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
   const xMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.max_pf - b.max_pf)[Math.floor(matrixData.length/2)]?.max_pf || 1500 : 1500;
   const yMedian = matrixData.length > 0 ? [...matrixData].sort((a,b) => a.future_capital_score - b.future_capital_score)[Math.floor(matrixData.length/2)]?.future_capital_score || 5000 : 5000;
 
-  // Group teams by exact 4 quadrants
+  // Group teams by exact 4 quadrants matching backend quant lifecycle states
   const quadrantTeams = {
-    topLeft: matrixData.filter(t => t.lifecycle_state === 'Rebuilding' || (t.max_pf < xMedian && t.future_capital_score >= yMedian)),
-    topRight: matrixData.filter(t => t.lifecycle_state === 'Dynasty Juggernaut' || (t.max_pf >= xMedian && t.future_capital_score >= yMedian)),
-    bottomLeft: matrixData.filter(t => t.lifecycle_state === 'Purgatory' || (t.max_pf < xMedian && t.future_capital_score < yMedian)),
-    bottomRight: matrixData.filter(t => t.lifecycle_state === 'All-In Contender' || (t.max_pf >= xMedian && t.future_capital_score < yMedian))
+    topLeft: matrixData.filter(t => t.lifecycle_state === 'Rebuilding'),
+    topRight: matrixData.filter(t => t.lifecycle_state === 'Dynasty Juggernaut'),
+    bottomLeft: matrixData.filter(t => t.lifecycle_state === 'Purgatory'),
+    bottomRight: matrixData.filter(t => t.lifecycle_state === 'All-In Contender')
   };
 
   const CustomTooltip = ({ active, payload }: any) => {

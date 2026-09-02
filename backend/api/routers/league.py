@@ -177,6 +177,91 @@ def get_league_teams(league_id: str):
         session.close()
 
 
+def compute_roster_firepower_and_max_pf(session, league_id, curr_season, rosters, sp_cache, espn_to_sleeper):
+    """
+    Computes authentic starting lineup firepower and Max PF for all rosters in a league.
+    If actual regular season matchup points have been accumulated (total > 500), uses actual points.
+    If in preseason or off-season (total <= 500 or 0), calculates optimal 17-week projected Max PF from
+    active roster player projections and positional baselines.
+    """
+    # 1. Check actual matchup points
+    actual_max_pfs = {}
+    total_league_played_pts = 0.0
+    for r in rosters:
+        m_list = session.query(MatchupHistory).filter(
+            MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", 
+            MatchupHistory.season == curr_season
+        ).all()
+        if not m_list:
+            m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}").all()
+        pts = sum((m.points or 0.0) for m in m_list) if m_list else float(r.fpts or 0.0)
+        actual_max_pfs[r.roster_id] = pts
+        total_league_played_pts += pts
+
+    # If games have actually been played in regular season, return actual points
+    if total_league_played_pts > 500.0:
+        return actual_max_pfs, {r.roster_id: round(actual_max_pfs.get(r.roster_id, 0.0) / 17.0, 1) for r in rosters}
+
+    # Otherwise (Preseason / Offseason / 2026), calculate optimal starting lineup projection
+    pas_rows = session.query(PlayerAdvancedStats).filter(PlayerAdvancedStats.season >= 2023).all()
+    player_ppg = {}
+    for p in pas_rows:
+        if p.games_played and p.games_played >= 4 and p.fantasy_points_ppr:
+            ppg = p.fantasy_points_ppr / p.games_played
+            if p.player_name not in player_ppg or p.season == 2024:
+                player_ppg[p.player_name] = round(ppg, 2)
+
+    def get_player_ppg(pid, p_name, pos):
+        if p_name in player_ppg:
+            return player_ppg[p_name]
+        baselines = {"QB": 17.5, "RB": 12.8, "WR": 12.2, "TE": 8.8, "K": 8.0, "DEF": 7.5}
+        return baselines.get(pos, 10.0)
+
+    computed_max_pfs = {}
+    starter_ppgs = {}
+
+    for r in rosters:
+        player_ids = r.players or []
+        fallback_meta = (r.settings.get("player_metadata", {}) if r.settings and isinstance(r.settings, dict) else {})
+        
+        evaluated_players = []
+        for pid in player_ids:
+            pid_str = str(pid)
+            p_info = sp_cache.get(pid_str) or sp_cache.get(espn_to_sleeper.get(pid_str)) or fallback_meta.get(pid_str) or {}
+            p_name = p_info.get("full_name") or f"Player {pid}"
+            pos = p_info.get("position") or "FLEX"
+            ppg = get_player_ppg(pid_str, p_name, pos)
+            evaluated_players.append({"id": pid_str, "name": p_name, "pos": pos, "ppg": ppg})
+
+        # Calculate optimal starting lineup (1 QB, 2 RB, 3 WR, 1 TE, 2 FLEX, 1 SUPERFLEX)
+        qbs = sorted([p for p in evaluated_players if p["pos"] == "QB"], key=lambda x: x["ppg"], reverse=True)
+        rbs = sorted([p for p in evaluated_players if p["pos"] == "RB"], key=lambda x: x["ppg"], reverse=True)
+        wrs = sorted([p for p in evaluated_players if p["pos"] == "WR"], key=lambda x: x["ppg"], reverse=True)
+        tes = sorted([p for p in evaluated_players if p["pos"] == "TE"], key=lambda x: x["ppg"], reverse=True)
+
+        starters = []
+        used_ids = set()
+
+        if qbs: starters.append(qbs[0]); used_ids.add(qbs[0]["id"])
+        for rb in rbs[:2]: starters.append(rb); used_ids.add(rb["id"])
+        for wr in wrs[:3]: starters.append(wr); used_ids.add(wr["id"])
+        if tes: starters.append(tes[0]); used_ids.add(tes[0]["id"])
+
+        flex_pool = sorted([p for p in evaluated_players if p["pos"] in ["RB", "WR", "TE"] and p["id"] not in used_ids], key=lambda x: x["ppg"], reverse=True)
+        for flx in flex_pool[:2]: starters.append(flx); used_ids.add(flx["id"])
+
+        sf_pool = sorted([p for p in evaluated_players if p["pos"] in ["QB", "RB", "WR", "TE"] and p["id"] not in used_ids], key=lambda x: x["ppg"], reverse=True)
+        if sf_pool: starters.append(sf_pool[0]); used_ids.add(sf_pool[0]["id"])
+
+        weekly_ppg = round(sum(s["ppg"] for s in starters), 1) if starters else 140.0
+        season_max_pf = round(weekly_ppg * 17.0, 1)
+
+        computed_max_pfs[r.roster_id] = season_max_pf
+        starter_ppgs[r.roster_id] = weekly_ppg
+
+    return computed_max_pfs, starter_ppgs
+
+
 @router.get("/api/quant/matrix")
 def get_power_matrix(league_id: str = "1312567432052760576"):
     session = SessionLocal()
@@ -192,19 +277,13 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
             if isinstance(p_info, dict) and p_info.get("espn_id"):
                 espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
 
-        curr_season = str(league.season if league and league.season else "2024")
-        eval_year = int(curr_season) if curr_season.isdigit() else 2024
+        curr_season = str(league.season if league and league.season else "2026")
+        eval_year = int(curr_season) if curr_season.isdigit() else 2026
         
-        # 1. Fetch active season Matchup totals (Max PF) for each team
-        max_pfs = {}
-        for r in rosters:
-            m_list = session.query(MatchupHistory).filter(
-                MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", 
-                MatchupHistory.season == curr_season
-            ).all()
-            if not m_list:
-                m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}").all()
-            max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
+        # 1. Fetch dynamic Starter Firepower (Max PF) for each team
+        max_pfs, starter_ppgs = compute_roster_firepower_and_max_pf(
+            session, league_id, curr_season, rosters, sp_cache, espn_to_sleeper
+        )
 
         data = []
         for r in rosters:
@@ -226,8 +305,8 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 if age: ages.append(age)
                 
             age_score = round(sum(ages) / len(ages), 1) if ages else 25.5
-            actual_pts = r.fpts or max_pfs.get(r.roster_id, 1500.0)
-            max_pf = max_pfs.get(r.roster_id, 1500.0)
+            max_pf = max_pfs.get(r.roster_id, 2600.0)
+            actual_pts = r.fpts if (r.fpts or 0.0) > 500.0 else round(max_pf * 0.94, 1)
             expected_pts = round(max_pf * 0.92, 1)
             point_differential = round(actual_pts - expected_pts, 1)
             
@@ -245,6 +324,7 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 "expected_points": expected_pts,
                 "actual_points": actual_pts,
                 "max_pf": max_pf,
+                "starter_ppg": starter_ppgs.get(r.roster_id, 150.0),
                 "point_differential": point_differential,
                 "roster_age_score": age_score,
                 "future_capital_score": future_capital_score,
@@ -762,19 +842,13 @@ def get_power_rankings(league_id: str):
             if isinstance(p_info, dict) and p_info.get("espn_id"):
                 espn_to_sleeper[str(p_info["espn_id"])] = str(sp_id)
 
-        curr_season = str(league.season if league and league.season else "2024")
-        eval_year = int(curr_season) if curr_season.isdigit() else 2024
+        curr_season = str(league.season if league and league.season else "2026")
+        eval_year = int(curr_season) if curr_season.isdigit() else 2026
         
-        # 1. Fetch Max PF / Optimal Points from matchups
-        max_pfs = {}
-        for r in rosters:
-            m_list = session.query(MatchupHistory).filter(
-                MatchupHistory.roster_id == f"{league_id}_{r.roster_id}", 
-                MatchupHistory.season == curr_season
-            ).all()
-            if not m_list:
-                m_list = session.query(MatchupHistory).filter(MatchupHistory.roster_id == f"{league_id}_{r.roster_id}").all()
-            max_pfs[r.roster_id] = sum((m.points or 0.0) for m in m_list) if m_list else (r.fpts or 1500.0)
+        # 1. Fetch dynamic Starter Firepower (Max PF) for each team
+        max_pfs, starter_ppgs = compute_roster_firepower_and_max_pf(
+            session, league_id, curr_season, rosters, sp_cache, espn_to_sleeper
+        )
 
         # 2. Evaluate Rosters, Draft Capital, and Positional Monopolies
         raw_evals = []
