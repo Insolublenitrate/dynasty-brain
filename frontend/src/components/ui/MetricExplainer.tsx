@@ -242,65 +242,102 @@ export default function MetricExplainer({
         <HelpCircle size={size === "xs" ? 12 : 14} />
       </button>
 
-      {/* Interactive Tooltip Card / Popover */}
+      {/* Interactive Mobile-Safe Dialog / Explainer Modal */}
       {isOpen && (
         <div 
-          className="absolute left-0 bottom-full mb-2 w-72 sm:w-80 p-3.5 bg-zinc-950/95 border border-zinc-700/90 rounded-2xl shadow-2xl backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-200 text-left"
-          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(false);
+          }}
         >
-          {/* Header */}
-          <div className="flex items-start justify-between gap-2 border-b border-zinc-800 pb-2 mb-2.5">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentTheme.primary }} />
-              <h4 className="text-xs font-black text-white font-sans tracking-wide">
-                {def.name}
-              </h4>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-zinc-500 hover:text-zinc-300 p-0.5 rounded-lg"
-            >
-              <X size={13} />
-            </button>
-          </div>
-
-          {/* Definition */}
-          <p className="text-[11px] text-zinc-300 leading-relaxed mb-2.5 font-sans">
-            {def.summary}
-          </p>
-
-          {/* Formula if available */}
-          {def.formula && (
-            <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2 mb-2 font-mono text-[10px] text-zinc-300">
-              <span className="text-zinc-500 font-bold block text-[9px] uppercase tracking-wider mb-0.5">Calculation Formula:</span>
-              <span style={{ color: currentTheme.primary }}>{def.formula}</span>
-            </div>
-          )}
-
-          {/* Benchmarks if available */}
-          {def.benchmarks && (
-            <div className="space-y-1 mb-2.5 bg-zinc-900/60 p-2 rounded-xl border border-zinc-800/80 font-mono text-[10px]">
-              <div className="flex justify-between items-center text-emerald-400">
-                <span className="text-[9px] uppercase text-zinc-500">Elite:</span>
-                <span>{def.benchmarks.elite}</span>
+          <div 
+            className="bg-zinc-950 border border-zinc-700/90 rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-5 space-y-3.5 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 text-left relative max-h-[85dvh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3 border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: currentTheme.primary }} />
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
+                    TACTICAL METRIC EXPLAINER
+                  </span>
+                  <h4 className="text-sm sm:text-base font-black text-white font-sans tracking-wide leading-snug">
+                    {def.name}
+                  </h4>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-amber-400">
-                <span className="text-[9px] uppercase text-zinc-500">Average:</span>
-                <span>{def.benchmarks.average}</span>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 shrink-0 transition-colors"
+                title="Close"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Definition */}
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
+              {def.summary}
+            </p>
+
+            {/* Formula if available */}
+            {def.formula && (
+              <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 font-mono text-xs text-zinc-300">
+                <span className="text-zinc-500 font-bold block text-[10px] uppercase tracking-wider mb-1">
+                  Calculation Formula:
+                </span>
+                <span style={{ color: currentTheme.primary }} className="font-semibold break-words">
+                  {def.formula}
+                </span>
               </div>
-              <div className="flex justify-between items-center text-rose-400">
-                <span className="text-[9px] uppercase text-zinc-500">Danger:</span>
-                <span>{def.benchmarks.warning}</span>
+            )}
+
+            {/* Benchmarks if available */}
+            {def.benchmarks && (
+              <div className="space-y-1.5 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80 font-mono text-xs">
+                <span className="text-zinc-500 font-bold block text-[10px] uppercase tracking-wider mb-1">
+                  Target League Benchmarks:
+                </span>
+                <div className="flex justify-between items-center text-emerald-400">
+                  <span className="text-[10px] uppercase text-zinc-500 font-bold">Elite:</span>
+                  <span className="font-bold">{def.benchmarks.elite}</span>
+                </div>
+                <div className="flex justify-between items-center text-amber-400">
+                  <span className="text-[10px] uppercase text-zinc-500 font-bold">Average:</span>
+                  <span className="font-bold">{def.benchmarks.average}</span>
+                </div>
+                <div className="flex justify-between items-center text-rose-400">
+                  <span className="text-[10px] uppercase text-zinc-500 font-bold">Danger:</span>
+                  <span className="font-bold">{def.benchmarks.warning}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Tactical Takeaway */}
+            <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-xl p-3 text-xs text-emerald-300 flex items-start gap-2">
+              <Sparkles size={16} className="shrink-0 text-emerald-400 mt-0.5" />
+              <div>
+                <strong className="text-emerald-200 block text-[10px] uppercase tracking-wider font-bold">
+                  Tactical Playbook Action:
+                </strong>
+                <p className="font-sans leading-relaxed mt-0.5 text-emerald-300/90 text-xs">
+                  {def.tacticalAdvice}
+                </p>
               </div>
             </div>
-          )}
 
-          {/* Tactical Takeaway */}
-          <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-xl p-2 text-[10px] text-emerald-300 flex items-start gap-1.5">
-            <Sparkles size={13} className="shrink-0 text-emerald-400 mt-0.5" />
-            <div>
-              <strong className="text-emerald-200 block text-[9px] uppercase tracking-wider font-bold">Tactical Action:</strong>
-              <p className="font-sans leading-tight mt-0.5 text-emerald-300/90">{def.tacticalAdvice}</p>
+            {/* Action Footer */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-600 text-white text-xs font-mono font-bold transition-all shadow-md active:scale-[0.99]"
+              >
+                Got It
+              </button>
             </div>
           </div>
         </div>
