@@ -33,6 +33,7 @@ function MobileBottomNavInner() {
               pathname.startsWith("/rookie-analyzer") ||
               pathname.startsWith("/top-performers") ||
               pathname.startsWith("/radar") ||
+              pathname.startsWith("/cross-reference") ||
               pathname.startsWith("/players");
           } else if (item.isDynastyTab) {
             isActive = (pathname === "/dynasty-room" || pathname === "/") && currentArena === item.id;

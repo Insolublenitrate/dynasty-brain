@@ -28,6 +28,7 @@ import PlayerDatabaseTab from '@/components/tabs/PlayerDatabaseTab';
 import RookieAnalyzerTab from '@/components/tabs/RookieAnalyzerTab';
 import TopPerformersTab from '@/components/tabs/TopPerformersTab';
 import PlayerCompareTab from '@/components/tabs/PlayerCompareTab';
+import CrossReferenceTab from '@/components/tabs/CrossReferenceTab';
 
 function DynastyRoomContent() {
   const { leagueId, leagueName, isLoading: isLeagueLoading } = useLeague();
@@ -42,7 +43,7 @@ function DynastyRoomContent() {
 
   // Sub-tab selectors for multi-module arenas
   const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'teams' | 'studio' | 'bounties'>((subParam as any) || 'action');
-  const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'compare'>((subParam as any) || 'analyzer');
+  const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'crossref' | 'compare'>((subParam as any) || 'analyzer');
   const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
   const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy' | 'trends'>((subParam as any) || 'architect');
 
@@ -240,14 +241,14 @@ function DynastyRoomContent() {
                 <span className="truncate">Leaders</span>
               </button>
               <button
-                onClick={() => setPlayersSub('compare')}
+                onClick={() => setPlayersSub('crossref')}
                 className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  playersSub === 'compare' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                  playersSub === 'crossref' || playersSub === 'compare' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
-                style={playersSub === 'compare' ? { color: currentTheme.primary } : {}}
+                style={(playersSub === 'crossref' || playersSub === 'compare') ? { color: currentTheme.primary } : {}}
               >
                 <Radar size={13} className="shrink-0" />
-                <span className="truncate">Compare</span>
+                <span className="truncate">Cross-Ref</span>
               </button>
             </div>
           )}
@@ -370,7 +371,7 @@ function DynastyRoomContent() {
             {playersSub === 'database' && <PlayerDatabaseTab />}
             {playersSub === 'rookies' && <RookieAnalyzerTab />}
             {playersSub === 'leaders' && <TopPerformersTab />}
-            {playersSub === 'compare' && <PlayerCompareTab />}
+            {(playersSub === 'crossref' || playersSub === 'compare') && <CrossReferenceTab />}
           </div>
         )}
 

@@ -71,6 +71,7 @@ function TopNavInner() {
         pathname.startsWith("/rookie-analyzer") ||
         pathname.startsWith("/top-performers") ||
         pathname.startsWith("/radar") ||
+        pathname.startsWith("/cross-reference") ||
         pathname.startsWith("/players");
     }
     if (item.isDynasty) {
