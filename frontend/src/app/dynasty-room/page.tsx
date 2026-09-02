@@ -4,7 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
-  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins, TrendingUp
+  AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins, TrendingUp,
+  Users, Database, GraduationCap, Radar
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -22,6 +23,11 @@ import RivalriesTab from '@/components/tabs/RivalriesTab';
 import RecordBookTab from '@/components/tabs/RecordBookTab';
 import PowerRankingsTab from '@/components/tabs/PowerRankingsTab';
 import MatchupSimulatorTab from '@/components/tabs/MatchupSimulatorTab';
+import PlayerAnalyzerTab from '@/components/tabs/PlayerAnalyzerTab';
+import PlayerDatabaseTab from '@/components/tabs/PlayerDatabaseTab';
+import RookieAnalyzerTab from '@/components/tabs/RookieAnalyzerTab';
+import TopPerformersTab from '@/components/tabs/TopPerformersTab';
+import PlayerCompareTab from '@/components/tabs/PlayerCompareTab';
 
 function DynastyRoomContent() {
   const { leagueId, leagueName, isLoading: isLeagueLoading } = useLeague();
@@ -36,6 +42,7 @@ function DynastyRoomContent() {
 
   // Sub-tab selectors for multi-module arenas
   const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'teams' | 'studio' | 'bounties'>((subParam as any) || 'action');
+  const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'compare'>((subParam as any) || 'analyzer');
   const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
   const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy' | 'trends'>((subParam as any) || 'architect');
 
@@ -80,6 +87,19 @@ function DynastyRoomContent() {
             >
               <Target size={14} className={activeArena === 'command' ? 'stroke-[2.5]' : 'stroke-[1.75]'} />
               <span>Command</span>
+            </button>
+
+            <button
+              onClick={() => handleArenaChange('players')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
+                activeArena === 'players'
+                  ? 'bg-zinc-800 text-white shadow-md border border-zinc-700'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+              style={activeArena === 'players' ? { color: currentTheme.primary } : {}}
+            >
+              <Users size={14} className={activeArena === 'players' ? 'stroke-[2.5]' : 'stroke-[1.75]'} />
+              <span>Players</span>
             </button>
 
             <button
@@ -173,6 +193,61 @@ function DynastyRoomContent() {
               >
                 <Coins size={13} className="shrink-0 text-emerald-400" />
                 <span className="truncate">Bounties</span>
+              </button>
+            </div>
+          )}
+
+          {activeArena === 'players' && (
+            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
+              <button
+                onClick={() => setPlayersSub('analyzer')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  playersSub === 'analyzer' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={playersSub === 'analyzer' ? { color: currentTheme.primary } : {}}
+              >
+                <Search size={13} className="shrink-0" />
+                <span className="truncate">Analyzer</span>
+              </button>
+              <button
+                onClick={() => setPlayersSub('database')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  playersSub === 'database' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={playersSub === 'database' ? { color: currentTheme.primary } : {}}
+              >
+                <Database size={13} className="shrink-0" />
+                <span className="truncate">Database</span>
+              </button>
+              <button
+                onClick={() => setPlayersSub('rookies')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  playersSub === 'rookies' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={playersSub === 'rookies' ? { color: currentTheme.primary } : {}}
+              >
+                <GraduationCap size={13} className="shrink-0" />
+                <span className="truncate">Rookies</span>
+              </button>
+              <button
+                onClick={() => setPlayersSub('leaders')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  playersSub === 'leaders' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={playersSub === 'leaders' ? { color: currentTheme.primary } : {}}
+              >
+                <Trophy size={13} className="shrink-0" />
+                <span className="truncate">Leaders</span>
+              </button>
+              <button
+                onClick={() => setPlayersSub('compare')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  playersSub === 'compare' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={playersSub === 'compare' ? { color: currentTheme.primary } : {}}
+              >
+                <Radar size={13} className="shrink-0" />
+                <span className="truncate">Compare</span>
               </button>
             </div>
           )}
@@ -285,6 +360,17 @@ function DynastyRoomContent() {
             {commandSub === 'teams' && <TeamAnalyzerTab />}
             {commandSub === 'studio' && <StudioTab />}
             {commandSub === 'bounties' && <BountyVaultTab />}
+          </div>
+        )}
+
+        {/* Arena 2: Players */}
+        {activeArena === 'players' && (
+          <div>
+            {playersSub === 'analyzer' && <PlayerAnalyzerTab />}
+            {playersSub === 'database' && <PlayerDatabaseTab />}
+            {playersSub === 'rookies' && <RookieAnalyzerTab />}
+            {playersSub === 'leaders' && <TopPerformersTab />}
+            {playersSub === 'compare' && <PlayerCompareTab />}
           </div>
         )}
 

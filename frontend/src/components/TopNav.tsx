@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { 
   Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, 
   Sparkles, Smartphone, Activity, HelpCircle, ChevronDown, Target, 
-  CalendarDays, Crown, Briefcase, BookOpen, Compass
+  CalendarDays, Crown, Briefcase, BookOpen, Compass, Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -45,6 +45,7 @@ function TopNavInner() {
 
   const mainArenas = [
     { id: "command", href: "/dynasty-room?arena=command", label: "Command", icon: Target, isDynasty: true },
+    { id: "players", href: "/dynasty-room?arena=players", label: "Players", icon: Users, isDynasty: true },
     { id: "matchups", href: "/dynasty-room?arena=matchups", label: "Matchups", icon: CalendarDays, isDynasty: true },
     { id: "power", href: "/dynasty-room?arena=power", label: "Power", icon: Crown, isDynasty: true },
     { id: "trade", href: "/dynasty-room?arena=trade", label: "Trade", icon: Briefcase, isDynasty: true },
@@ -63,6 +64,15 @@ function TopNavInner() {
   ];
 
   const isArenaActive = (item: typeof mainArenas[0]) => {
+    if (item.id === "players") {
+      return ((pathname === "/dynasty-room" || pathname === "/") && currentArena === "players") ||
+        pathname.startsWith("/player-analyzer") ||
+        pathname.startsWith("/database") ||
+        pathname.startsWith("/rookie-analyzer") ||
+        pathname.startsWith("/top-performers") ||
+        pathname.startsWith("/radar") ||
+        pathname.startsWith("/players");
+    }
     if (item.isDynasty) {
       return (pathname === "/dynasty-room" || pathname === "/") && currentArena === item.id;
     }

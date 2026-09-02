@@ -3,7 +3,7 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Target, CalendarDays, Crown, Briefcase, Sparkles } from "lucide-react";
+import { Target, CalendarDays, Crown, Briefcase, Sparkles, Users } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 function MobileBottomNavInner() {
@@ -14,6 +14,7 @@ function MobileBottomNavInner() {
 
   const NAV_ITEMS = [
     { id: "command", href: "/dynasty-room?arena=command", label: "Command", icon: Target, isDynastyTab: true },
+    { id: "players", href: "/dynasty-room?arena=players", label: "Players", icon: Users, isDynastyTab: true },
     { id: "matchups", href: "/dynasty-room?arena=matchups", label: "Matchups", icon: CalendarDays, isDynastyTab: true },
     { id: "power", href: "/dynasty-room?arena=power", label: "Power", icon: Crown, isDynastyTab: true },
     { id: "trade", href: "/dynasty-room?arena=trade", label: "Trade", icon: Briefcase, isDynastyTab: true },
@@ -25,7 +26,15 @@ function MobileBottomNavInner() {
       <div className="flex items-center justify-around h-16 px-1 max-w-[100vw]">
         {NAV_ITEMS.map((item) => {
           let isActive = false;
-          if (item.isDynastyTab) {
+          if (item.id === "players") {
+            isActive = ((pathname === "/dynasty-room" || pathname === "/") && currentArena === "players") ||
+              pathname.startsWith("/player-analyzer") ||
+              pathname.startsWith("/database") ||
+              pathname.startsWith("/rookie-analyzer") ||
+              pathname.startsWith("/top-performers") ||
+              pathname.startsWith("/radar") ||
+              pathname.startsWith("/players");
+          } else if (item.isDynastyTab) {
             isActive = (pathname === "/dynasty-room" || pathname === "/") && currentArena === item.id;
           } else {
             isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
