@@ -269,7 +269,7 @@ export default function RookieAnalyzerPage() {
                   Athletic Profile
                 </h3>
                 <p className="text-xs text-zinc-500 mb-4">Compared to NFL positional averages</p>
-                <div className="flex-1 min-h-[250px] -mx-4">
+                <div className="flex-1 min-h-[250px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={analytics.athleticism.radar_data}>
                       <PolarGrid stroke="#334155" />

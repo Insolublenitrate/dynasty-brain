@@ -64,7 +64,7 @@ function DynastyRoomContent() {
     <div className="flex flex-col min-h-[calc(100vh-5rem)] pb-24 md:pb-16">
       
       {/* ── STICKY ARENA CONTROLLER & SUB-NAV (MOBILE-FIRST) ────────────── */}
-      <div className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl sticky top-16 z-30 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 mb-6 shadow-xl">
+      <div className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl sticky top-16 z-30 w-full py-2.5 sm:py-3 mb-6 shadow-xl rounded-2xl">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           
           {/* Main 4 Arena Switcher (Desktop / Tablet Only - Mobile uses Bottom Nav) */}
@@ -313,9 +313,9 @@ function DynastyRoomContent() {
         )}
       </div>
 
-      {/* ── PERSISTENT TICKER (Mobile Aware Spacing) ────────────────────── */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 w-full bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/90 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.7)]">
-        <div className="flex items-stretch h-8 sm:h-9">
+      {/* ── PERSISTENT TICKER (Mobile Aware Spacing - Zero Overflow) ────────────────────── */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 w-full max-w-[100vw] overflow-hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/90 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.7)]">
+        <div className="flex items-stretch h-8 sm:h-9 max-w-[100vw] overflow-hidden">
           <div 
             className="text-zinc-950 font-black italic px-3 sm:px-4 flex items-center justify-center gap-1.5 z-20 shadow-md text-[11px] sm:text-xs tracking-wider shrink-0"
             style={{ backgroundColor: currentTheme.primary }}
