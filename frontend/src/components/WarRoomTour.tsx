@@ -236,11 +236,11 @@ export default function WarRoomTour({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 md:p-6 bg-black/85 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 md:p-6 pb-20 sm:pb-6 bg-black/85 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
-        className="bg-zinc-950 border border-zinc-800 rounded-2xl sm:rounded-3xl w-full max-w-3xl max-h-[92dvh] sm:max-h-[88vh] flex flex-col shadow-2xl relative overflow-hidden text-left"
+        className="bg-zinc-950 border border-zinc-800 rounded-2xl sm:rounded-3xl w-full max-w-3xl max-h-[82dvh] sm:max-h-[86vh] flex flex-col shadow-2xl relative overflow-hidden text-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Strip with Step Selector Tabs */}
@@ -479,39 +479,39 @@ export default function WarRoomTour({
           </div>
         </div>
 
-        {/* Sticky Action Footer */}
-        <div className="shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 border-t border-zinc-800 bg-zinc-950/95 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
-            <label className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono cursor-pointer select-none">
+        {/* Sticky Action Footer (Single-Row Responsive Bar - Zero Cutoff) */}
+        <div className="shrink-0 px-3 sm:px-6 py-2.5 sm:py-3.5 border-t border-zinc-800 bg-zinc-950/95 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <label className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-400 font-mono cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={dontShowAgain}
                 onChange={(e) => setDontShowAgain(e.target.checked)}
-                className="rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-0 w-3.5 h-3.5"
+                className="rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-0 w-3.5 h-3.5 shrink-0"
               />
-              <span>Don't show on startup</span>
+              <span className="truncate max-w-[90px] sm:max-w-none">Don't show</span>
             </label>
 
             {onOpenGlossary && (
               <button
                 type="button"
                 onClick={onOpenGlossary}
-                className="text-[11px] font-mono text-zinc-400 hover:text-white flex items-center gap-1 underline underline-offset-2 transition-colors sm:ml-2"
+                className="text-[10px] sm:text-[11px] font-mono text-zinc-400 hover:text-white flex items-center gap-1 underline underline-offset-2 transition-colors shrink-0 ml-1"
               >
-                <BookOpen size={12} className="text-amber-400" />
-                <span>Field Guide</span>
+                <BookOpen size={11} className="text-amber-400 shrink-0" />
+                <span className="hidden xs:inline sm:inline">Guide</span>
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {currentStep > 0 && (
               <button
                 type="button"
                 onClick={() => setCurrentStep(currentStep - 1)}
-                className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono font-bold text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-[11px] sm:text-xs font-mono font-bold text-zinc-300 transition-all flex items-center gap-1 cursor-pointer"
               >
-                <ChevronLeft size={14} />
+                <ChevronLeft size={13} />
                 <span>Back</span>
               </button>
             )}
@@ -520,21 +520,21 @@ export default function WarRoomTour({
               <button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
-                className="px-5 py-2 rounded-xl text-xs font-mono font-black text-black transition-all flex items-center gap-1.5 shadow-lg hover:brightness-110 cursor-pointer"
+                className="px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-black text-black transition-all flex items-center gap-1 shadow-lg hover:brightness-110 cursor-pointer"
                 style={{ backgroundColor: currentTheme.primary }}
               >
-                <span>Next Module</span>
-                <ChevronRight size={14} />
+                <span>Next</span>
+                <ChevronRight size={13} />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleFinish}
-                className="px-5 py-2 rounded-xl text-xs font-mono font-black text-black transition-all flex items-center gap-1.5 shadow-lg hover:brightness-110 cursor-pointer"
+                className="px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-black text-black transition-all flex items-center gap-1 shadow-lg hover:brightness-110 cursor-pointer"
                 style={{ backgroundColor: currentTheme.primary }}
               >
-                <Sparkles size={14} />
-                <span>Enter War Room</span>
+                <Sparkles size={13} />
+                <span>Finish</span>
               </button>
             )}
           </div>
