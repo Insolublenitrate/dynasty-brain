@@ -237,39 +237,39 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
             </div>
           </div>
           
-          {/* Interactive Legend Filters */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-bold bg-zinc-950 p-2 rounded-2xl border border-zinc-800/90 shadow-inner">
+          {/* Interactive Legend Filters (Responsive Grid on Mobile - Zero Horizontal Scrolling) */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold bg-zinc-950 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border border-zinc-800/90 shadow-inner">
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'juggernaut' ? null : 'juggernaut')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg sm:rounded-xl transition-all ${
                 selectedQuadrant === 'juggernaut' ? 'bg-purple-500/30 border border-purple-500/60 text-purple-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Juggernaut ({quadrantTeams.topRight.length})
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span> <span className="truncate">Juggernaut ({quadrantTeams.topRight.length})</span>
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'rebuild' ? null : 'rebuild')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg sm:rounded-xl transition-all ${
                 selectedQuadrant === 'rebuild' ? 'bg-emerald-500/30 border border-emerald-500/60 text-emerald-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Rebuilding ({quadrantTeams.topLeft.length})
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> <span className="truncate">Rebuilding ({quadrantTeams.topLeft.length})</span>
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'contender' ? null : 'contender')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg sm:rounded-xl transition-all ${
                 selectedQuadrant === 'contender' ? 'bg-amber-500/30 border border-amber-500/60 text-amber-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Contender ({quadrantTeams.bottomRight.length})
+              <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span> <span className="truncate">Contender ({quadrantTeams.bottomRight.length})</span>
             </button>
             <button
               onClick={() => setSelectedQuadrant(selectedQuadrant === 'purgatory' ? null : 'purgatory')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg sm:rounded-xl transition-all ${
                 selectedQuadrant === 'purgatory' ? 'bg-red-500/30 border border-red-500/60 text-red-200 shadow-sm' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> Purgatory ({quadrantTeams.bottomLeft.length})
+              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0"></span> <span className="truncate">Purgatory ({quadrantTeams.bottomLeft.length})</span>
             </button>
           </div>
         </div>

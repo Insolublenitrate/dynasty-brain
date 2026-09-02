@@ -358,45 +358,45 @@ export default function ScheduleTab() {
             </div>
           </div>
 
-          {/* View Mode Selector Tabs */}
-          <div className="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-2xl border border-zinc-800 font-mono text-xs">
+          {/* View Mode Selector Tabs (Full Width Grid on Mobile - Zero Scrolling) */}
+          <div className="grid grid-cols-3 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-950 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-zinc-800 font-mono text-xs">
             <button
               onClick={() => setViewMode('slate')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              className={`py-1.5 sm:py-2 px-1 sm:px-3.5 rounded-lg sm:rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-[10px] sm:text-xs text-center ${
                 viewMode === 'slate' 
                   ? 'bg-zinc-800 text-white shadow-md border border-zinc-700' 
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
               style={viewMode === 'slate' ? { borderColor: currentTheme.border } : {}}
             >
-              <Swords size={14} style={viewMode === 'slate' ? { color: currentTheme.primary } : {}} />
-              <span>Weekly Slate</span>
+              <Swords size={13} style={viewMode === 'slate' ? { color: currentTheme.primary } : {}} />
+              <span className="truncate">Weekly Slate</span>
             </button>
 
             <button
               onClick={() => setViewMode('franchise')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              className={`py-1.5 sm:py-2 px-1 sm:px-3.5 rounded-lg sm:rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-[10px] sm:text-xs text-center ${
                 viewMode === 'franchise' 
                   ? 'bg-zinc-800 text-white shadow-md border border-zinc-700' 
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
               style={viewMode === 'franchise' ? { borderColor: currentTheme.border } : {}}
             >
-              <Shield size={14} style={viewMode === 'franchise' ? { color: currentTheme.primary } : {}} />
-              <span>Team Schedule</span>
+              <Shield size={13} style={viewMode === 'franchise' ? { color: currentTheme.primary } : {}} />
+              <span className="truncate">Franchise</span>
             </button>
 
             <button
               onClick={() => setViewMode('allplay')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              className={`py-1.5 sm:py-2 px-1 sm:px-3.5 rounded-lg sm:rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-[10px] sm:text-xs text-center ${
                 viewMode === 'allplay' 
                   ? 'bg-zinc-800 text-white shadow-md border border-zinc-700' 
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
               style={viewMode === 'allplay' ? { borderColor: currentTheme.border } : {}}
             >
-              <TrendingUp size={14} style={viewMode === 'allplay' ? { color: currentTheme.primary } : {}} />
-              <span>All-Play Table</span>
+              <TrendingUp size={13} style={viewMode === 'allplay' ? { color: currentTheme.primary } : {}} />
+              <span className="truncate">All-Play</span>
             </button>
           </div>
 
