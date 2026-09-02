@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: 'world.kindofabigdill.blindsidedynasty',
   appName: 'Blindside Dynasty',
   webDir: 'out',
-  bundledWebRuntime: false,
   server: {
     url: 'https://ffdashboard.kindofabigdill.world',
     cleartext: true

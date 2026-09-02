@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { 
   Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, 
   Sparkles, Smartphone, Activity, HelpCircle, ChevronDown, Target, 
-  CalendarDays, Crown, Briefcase 
+  CalendarDays, Crown, Briefcase, BookOpen, Compass
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import SettingsModal from "@/components/SettingsModal";
 import InstallAppModal from "@/components/InstallAppModal";
+import TacticalGlossaryModal from "@/components/TacticalGlossaryModal";
+import WarRoomTour from "@/components/WarRoomTour";
 import PlaybookLogo from "@/components/PlaybookLogo";
 import { useTheme } from "@/context/ThemeContext";
 import { useLeague } from "@/context/LeagueContext";
@@ -23,7 +25,23 @@ function TopNavInner() {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
+
+  // Auto-launch tour for first-time visitors
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasCompletedTour = localStorage.getItem("blindside_tour_completed");
+      if (!hasCompletedTour) {
+        // Small delay so page finishes loading
+        const timer = setTimeout(() => {
+          setIsTourOpen(true);
+        }, 1200);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
 
   const mainArenas = [
     { id: "command", href: "/dynasty-room?arena=command", label: "Command", icon: Target, isDynasty: true },
@@ -34,6 +52,7 @@ function TopNavInner() {
   ];
 
   const secondaryTools = [
+    { href: "/glossary", label: "Field Guide Encyclopedia", icon: BookOpen },
     { href: "/player-analyzer", label: "Player Analyzer", icon: Search },
     { href: "/cross-reference", label: "Cross Reference Radar", icon: Radar },
     { href: "/top-performers", label: "Top Performers", icon: Trophy },
@@ -135,28 +154,66 @@ function TopNavInner() {
             </div>
           </nav>
 
-          {/* Right Actions: Install App Button & Settings Button */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right Actions: Field Guide, Tour, Get App, Settings */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Quick Tour Button */}
+            <button
+              onClick={() => setIsTourOpen(true)}
+              className="px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              title="Launch Guided War Room Tour"
+            >
+              <Compass size={14} style={{ color: currentTheme.primary }} />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+
+            {/* Field Guide Glossary Button */}
+            <button
+              onClick={() => setIsGlossaryOpen(true)}
+              className="px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              title="Open Tactical Metric Field Guide"
+            >
+              <BookOpen size={14} className="text-amber-400" />
+              <span className="hidden md:inline">Field Guide</span>
+            </button>
+
+            {/* Mobile App Download Button */}
             <button
               onClick={() => setIsInstallModalOpen(true)}
               className="px-2.5 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Download & Install Mobile App"
             >
               <Smartphone size={14} className="text-emerald-400" />
-              <span className="hidden sm:inline">Get App</span>
+              <span className="hidden xl:inline">Get App</span>
             </button>
 
+            {/* Settings Button */}
             <button 
               onClick={() => setIsSettingsOpen(true)}
               className="text-zinc-400 hover:text-white p-2 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-1.5 text-xs font-mono font-bold"
               title="League & Theme Settings"
             >
               <Settings size={16} className="transition-transform hover:rotate-45" />
-              <span className="hidden xl:inline text-zinc-300">Settings</span>
+              <span className="hidden 2xl:inline text-zinc-300">Settings</span>
             </button>
           </div>
         </div>
       </header>
+
+      {/* Field Guide Glossary Modal */}
+      <TacticalGlossaryModal 
+        isOpen={isGlossaryOpen}
+        onClose={() => setIsGlossaryOpen(false)}
+      />
+
+      {/* Interactive Guided Tour */}
+      <WarRoomTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onOpenGlossary={() => {
+          setIsTourOpen(false);
+          setIsGlossaryOpen(true);
+        }}
+      />
 
       {/* Settings Modal */}
       <SettingsModal 

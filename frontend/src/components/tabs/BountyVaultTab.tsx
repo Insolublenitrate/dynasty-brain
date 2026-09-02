@@ -12,6 +12,8 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 // ── ERROR BOUNDARY FOR TAB RESILIENCE ────────────────────────────────────
 interface Props {
@@ -231,8 +233,35 @@ function BountyVaultTabInner() {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Bounty Vault: Weekly Cash Bounties & Season Side-Pots"
+        subtitle="How to track side-pot payouts, weekly high-score earnings, and the Max PF crown"
+        badge="SIDE-POT RULES & LEDGER"
+        points={[
+          {
+            icon: Coins,
+            label: "1. Weekly High-Score Pot",
+            text: "Each week, the franchise with the single highest fantasy score in the league earns an automated cash bounty payout.",
+            color: "#34d399"
+          },
+          {
+            icon: Trophy,
+            label: "2. Season Scoring Crowns",
+            text: "End-of-season bonus pots are awarded to the regular season Max PF champion, divisional winners, and podium finishers.",
+            color: "#fbbf24"
+          },
+          {
+            icon: Zap,
+            label: "3. The Tactical Play",
+            text: "Even during a rebuild season, you can capture weekly cash bounties by streaming high-variance boom players in easy matchups.",
+            color: "#38bdf8"
+          }
+        ]}
+      />
+
       {/* ── STADIUM JUMBOTRON HEADER (MOBILE-OPTIMIZED) ─────────────────── */}
       <div className="bg-gradient-to-r from-emerald-950/60 via-zinc-900/90 to-amber-950/40 border border-emerald-500/30 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl card-bezel">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none transform rotate-12">
@@ -249,6 +278,7 @@ function BountyVaultTabInner() {
               <span className="text-[11px] sm:text-xs font-mono text-zinc-400 truncate max-w-[180px] sm:max-w-none">
                 {leagueName || "Dynasty League"}
               </span>
+              <MetricExplainer term="bounty_vault" size="xs" />
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight flex items-center gap-2 sm:gap-3 font-sans">
               <span>THE CASH ENDZONE</span>

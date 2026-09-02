@@ -12,6 +12,8 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function MatrixTab({ matrixData: initialData }: { matrixData?: any[] }) {
   const { leagueId, leagueName } = useLeague();
@@ -178,8 +180,35 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Dynasty Lifecycle Matrix: Reading the 4 Strategic Quadrants"
+        subtitle="Where your franchise stands in multi-year championship contention vs rebuilding"
+        badge="STRATEGIC WAR MAP"
+        points={[
+          {
+            icon: Crosshair,
+            label: "1. The 4 Quadrants",
+            text: "Top-Right = Apex Juggernaut (High points + High picks). Bottom-Right = All-In Contender. Top-Left = Rebuilder. Bottom-Left = Dynasty Purgatory.",
+            color: "#a855f7"
+          },
+          {
+            icon: Zap,
+            label: "2. Why Max PF (X-Axis)",
+            text: "Max PF calculates what your roster scores with mathematically optimal weekly lineups, stripping away lucky head-to-head records and benching errors.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Shield,
+            label: "3. The Tactical Play",
+            text: "Never stay in Purgatory (bottom-left). If you aren't a top-3 contender, immediately sell aging veterans for future 1st round draft capital.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* ── MAIN 2x2 VISUAL MATRIX GRAPH ─────────────────────────────────── */}
       <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-4 sm:p-7 shadow-2xl relative overflow-hidden">
         
@@ -192,13 +221,20 @@ export default function MatrixTab({ matrixData: initialData }: { matrixData?: an
                 QUANT POWER MATRIX · 2X2 MAP
               </span>
               <span className="text-xs font-mono text-zinc-400">{leagueName}</span>
+              <MetricExplainer term="true_power_matrix" size="xs" />
             </div>
             <h3 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight flex items-center gap-3">
               <span>DYNASTY LIFECYCLE MATRIX</span>
             </h3>
-            <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
-              Horizontal: Roster Output (Max PF) · Vertical: Draft Capital Equity (Picks)
-            </p>
+            <div className="flex items-center gap-3 text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
+              <span className="flex items-center gap-1">
+                Horizontal: Roster Output (Max PF) <MetricExplainer term="max_pf" size="xs" />
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1">
+                Vertical: Draft Capital (Picks) <MetricExplainer term="draft_capital" size="xs" />
+              </span>
+            </div>
           </div>
           
           {/* Interactive Legend Filters */}

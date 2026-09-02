@@ -8,6 +8,8 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function AutopsyTab({ 
   autopsyData: initialAutopsy, 
@@ -108,6 +110,33 @@ export default function AutopsyTab({
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Trade Autopsy: Post-Execution Value Extraction"
+        subtitle="Tracking the exact real-world fantasy points produced by all sides of a completed trade"
+        badge="POST-TRADE AUDIT"
+        points={[
+          {
+            icon: ArrowRightLeft,
+            label: "1. Realized Points Differential",
+            text: "Measures actual fantasy points scored by every traded player and rookie draft pick since the trade timestamp.",
+            color: "#2dd4bf"
+          },
+          {
+            icon: Activity,
+            label: "2. Win/Loss Margin",
+            text: "Reveals who extracted net positive scoring value and which manager overpaid based on retrospective performance.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Sparkles,
+            label: "3. The Tactical Play",
+            text: "Audit which league-mates consistently sell low on struggling stars or overvalue short-term injury fill-ins.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* ── TOP CONTROL & SELECTOR STRIP ──────────────────────────────── */}
       <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-md backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -120,6 +149,7 @@ export default function AutopsyTab({
               <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-[10px] font-mono text-zinc-400 border border-zinc-700 font-normal">
                 {autopsyData.date || "Completed Trade"}
               </span>
+              <MetricExplainer term="trade_arbitrage" size="xs" />
             </h3>
             <p className="text-[11px] font-mono text-zinc-400">
               Actual fantasy points produced by all assets since trade execution date.

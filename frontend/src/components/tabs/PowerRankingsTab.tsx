@@ -5,6 +5,8 @@ import { Crown, Sparkles, Shield, TrendingUp, Zap, Clock, Trophy, AlertTriangle,
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function PowerRankingsTab() {
   const { leagueId } = useLeague();
@@ -51,14 +53,43 @@ export default function PowerRankingsTab() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Dynasty Power Tiers: How Scores & Tiers Are Weighted"
+        subtitle="Standardized 0–100 composite index combining current firepower and future draft wealth"
+        badge="POWER RANKINGS GUIDE"
+        points={[
+          {
+            icon: Crown,
+            label: "1. 70/30 Quant Model",
+            text: "Scores are computed as 70% Starter Max PF (active ceiling) + 30% Future Draft Capital Equity. 50.0 is the exact median of the league.",
+            color: "#a855f7"
+          },
+          {
+            icon: Zap,
+            label: "2. The Tiers (S, A, B, C, D)",
+            text: "Tier S (>60.0) = Championship Juggernauts. Tier A (54-60) = True Contenders. Tier B (48-54) = Playoff Bubble. Tier C/D (<48) = Rebuild Targets.",
+            color: "#f59e0b"
+          },
+          {
+            icon: Sparkles,
+            label: "3. The Tactical Play",
+            text: "Tier A teams should trade late 1sts for Tier S veteran starters. Tier D teams should hoard 2026/2027 1st round draft picks.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* Header & Methodology Toggle */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
             <Crown size={28} style={{ color: currentTheme.primary }} /> DYNASTY POWER TIERS & BUILD METAS
+            <MetricExplainer term="z_score" size="sm" />
           </h2>
-          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
-            Standardized Quant Model (Starter Power + Future Draft Capital + Roster Depth)
+          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1 flex items-center gap-2">
+            <span>Standardized Quant Model (Starter Power + Future Draft Capital)</span>
+            <MetricExplainer term="archetype" size="xs" />
           </p>
         </div>
 

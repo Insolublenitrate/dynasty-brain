@@ -10,6 +10,8 @@ import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 import { PositionPill } from '@/components/ui/TacticalVisualAids';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function ScheduleTab() {
   const { leagueId, leagueName, platform } = useLeague();
@@ -281,6 +283,33 @@ export default function ScheduleTab() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Matchups & 18-Week Slate: Spreads, Odds & Box Scores"
+        subtitle="How to analyze modeled point spreads, win probabilities, and weekly head-to-head slates"
+        badge="SCHEDULE WAR ROOM GUIDE"
+        points={[
+          {
+            icon: CalendarDays,
+            label: "1. 2026 Preseason Modeling",
+            text: "Before games kickoff, all matchups feature modeled point spreads and win probabilities based on multi-year player projection baselines.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Flame,
+            label: "2. Logistic Win Probability",
+            text: "Win percentages reflect player scoring variance distributions. A -7.5 point favorite carries an approximately 64% win probability.",
+            color: "#fb923c"
+          },
+          {
+            icon: Sparkles,
+            label: "3. The Tactical Play",
+            text: "In tight underdog matchups (<40% win prob), start high-variance boom/bust flex options to raise your single-game scoring ceiling.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* ── 1. HEADER & VIEW SELECTOR ────────────────────────────────────── */}
       <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -304,6 +333,8 @@ export default function ScheduleTab() {
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
                   ● SYNCED
                 </span>
+                <MetricExplainer term="spread" size="xs" />
+                <MetricExplainer term="win_prob" size="xs" />
                 {scheduleData.available_seasons && scheduleData.available_seasons.length > 1 && (
                   <div className="flex items-center gap-1 bg-zinc-950 px-2.5 py-1 rounded-xl border border-zinc-700 text-xs font-mono">
                     <span className="text-zinc-400 text-[10px] uppercase font-bold">Season</span>

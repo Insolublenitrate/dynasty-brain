@@ -9,6 +9,8 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function TeamAnalyzerTab() {
   const { leagueId } = useLeague();
@@ -86,16 +88,44 @@ export default function TeamAnalyzerTab() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Team Analyzer: Positional Grades & Asset Allocation"
+        subtitle="How to identify structural roster imbalances and asset liquidity distribution"
+        badge="FRANCHISE ANALYZER GUIDE"
+        points={[
+          {
+            icon: ShieldAlert,
+            label: "1. 5-Point Positional Grades",
+            text: "Evaluates your QB, RB, WR, TE, and FLEX tiers against the league median to expose your single biggest positional hole.",
+            color: "#f59e0b"
+          },
+          {
+            icon: TrendingUp,
+            label: "2. Player vs Pick Allocation",
+            text: "Analyzes what percentage of your dynasty portfolio is tied up in active roster production vs future draft pick equity.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Zap,
+            label: "3. The Tactical Play",
+            text: "If your RB grade is D while WR is A+, do not draft more receivers. Trade a WR2 for an established workhorse running back.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* Header Area with Dropdown */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <div>
-          <h2 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3">
             <Search className="text-orange-500" /> Team Analyzer
+            <MetricExplainer term="starter_firepower" size="xs" />
           </h2>
-          <p className="text-zinc-400 text-sm mt-1">Deep dive into your dynasty build, historical progression, and asset allocation.</p>
+          <p className="text-zinc-400 text-xs sm:text-sm mt-1">Deep dive into your dynasty build, historical progression, and asset allocation.</p>
         </div>
         <select 
-          className="bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 min-w-[200px]"
+          className="bg-zinc-900 border border-zinc-700 text-white rounded-xl px-4 py-2 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-orange-500 min-w-[200px]"
           value={selectedRosterId}
           onChange={(e) => setSelectedRosterId(e.target.value)}
         >

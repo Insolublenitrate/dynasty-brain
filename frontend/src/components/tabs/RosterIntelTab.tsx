@@ -9,6 +9,8 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function RosterIntelTab() {
   const { leagueId } = useLeague();
@@ -130,6 +132,33 @@ export default function RosterIntelTab() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Roster Intel & Aging Diagnostics: Protecting Your Dynasty Assets"
+        subtitle="Slot-by-slot starter depth, backup pipelines, and positional cliff threshold tracking"
+        badge="ROSTER DIAGNOSTICS GUIDE"
+        points={[
+          {
+            icon: ShieldAlert,
+            label: "1. Positional Age Cliffs",
+            text: "Running backs age 27+, wide receivers age 29+, and tight ends age 30+ face steep statistical drop-offs and rapid trade value depreciation.",
+            color: "#fb7185"
+          },
+          {
+            icon: Target,
+            label: "2. Starters vs Bench",
+            text: "Dynasty titles are won by weekly set-and-forget superstars. Consolidate your deep bench players for elite top-12 weekly starters.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Sparkles,
+            label: "3. The Tactical Play",
+            text: "Trade aging high-risk veterans 1 year before they hit the cliff. Target young Year-2 receivers before their market price skyrockets.",
+            color: "#34d399"
+          }
+        ]}
+      />
+
       {/* ── FRANCHISE COMMAND HEADER & SELECTOR ──────────────────────── */}
       <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-10" style={{ background: currentTheme.primary }} />
@@ -153,6 +182,7 @@ export default function RosterIntelTab() {
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
                   Rank #{team_info.rank} of {team_info.total_teams}
                 </span>
+                <MetricExplainer term="age_cliff" size="xs" />
               </div>
               
               <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-zinc-400 flex-wrap">
@@ -160,7 +190,9 @@ export default function RosterIntelTab() {
                 <span className="text-zinc-600">•</span>
                 <span>{team_info.total_fpts.toLocaleString()} Total FPTS</span>
                 <span className="text-zinc-600">•</span>
-                <span className="text-emerald-400 font-bold">{team_info.starter_total_ppg} Starter PPG Baseline</span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                  {team_info.starter_total_ppg} Starter PPG <MetricExplainer term="starter_firepower" size="xs" />
+                </span>
               </div>
             </div>
           </div>
