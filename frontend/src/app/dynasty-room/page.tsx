@@ -61,11 +61,11 @@ function DynastyRoomContent() {
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-5rem)] pb-24 md:pb-16">
+    <div className="flex flex-col min-h-[calc(100vh-5rem)]">
       
-      {/* ── STICKY ARENA CONTROLLER & SUB-NAV (COMPACT & ZERO DEAD SPACE) ────────────── */}
-      <div className={`${activeArena === 'matchups' ? 'hidden sm:block' : 'block'} border-b border-zinc-800/90 bg-zinc-950 sticky top-14 sm:top-16 z-30 w-full py-1.5 sm:py-2 mb-2 sm:mb-4 shadow-2xl`}>
-        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      {/* ── STICKY ARENA CONTROLLER & SUB-NAV (SEAMLESS FLUSH DOCK WITH ZERO DEAD SPACE) ────────────── */}
+      <div className={`${activeArena === 'matchups' ? 'hidden sm:block' : 'block'} -mx-2.5 sm:-mx-6 lg:-mx-8 px-2.5 sm:px-6 lg:px-8 border-b border-zinc-800/90 bg-zinc-950 sticky top-14 sm:top-16 z-30 py-1.5 sm:py-2 shadow-xl`}>
+        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           
           {/* Main 4 Arena Switcher (Desktop / Tablet Only - Mobile uses Bottom Nav) */}
           <div className="hidden sm:flex items-center gap-1.5 bg-zinc-900/90 p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
@@ -276,7 +276,7 @@ function DynastyRoomContent() {
       </div>
 
       {/* ── ARENA CONTENT VIEWS ────────────────────────────────────────── */}
-      <div className="flex-1 w-full max-w-[1440px] mx-auto animate-in fade-in duration-300">
+      <div className="flex-1 w-full max-w-[1440px] mx-auto pt-3 sm:pt-4 animate-in fade-in duration-300">
         {/* Arena 1: Command */}
         {activeArena === 'command' && (
           <div>

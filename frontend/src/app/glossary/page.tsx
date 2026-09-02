@@ -61,11 +61,11 @@ export default function GlossaryPage() {
               <BookOpen size={22} />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white italic tracking-tight font-sans">
-                DYNASTY FIELD GUIDE & METRIC ENCYCLOPEDIA
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tight font-sans">
+                DYNASTY FIELD GUIDE
               </h1>
-              <p className="text-zinc-400 text-xs font-mono tracking-wider uppercase mt-0.5">
-                The complete handbook of proprietary models, quantitative formulas, and tactical dynasty advice
+              <p className="text-zinc-400 text-[11px] sm:text-xs font-mono tracking-wider uppercase mt-0.5">
+                The complete handbook of proprietary models and formulas
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function GlossaryPage() {
 
         <Link
           href="/dynasty-room?arena=command"
-          className="px-4 py-2 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono font-bold text-zinc-200 transition-all flex items-center gap-2 self-start sm:self-auto shadow-md"
+          className="hidden sm:flex px-4 py-2 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono font-bold text-zinc-200 transition-all items-center gap-2 self-start sm:self-auto shadow-md"
         >
           <Sparkles size={14} style={{ color: currentTheme.primary }} />
           <span>Launch War Room</span>

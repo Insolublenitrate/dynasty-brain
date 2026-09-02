@@ -102,14 +102,14 @@ export default function ActionCenterTab() {
   }
 
   return (
-    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-500">
       
       {/* Top Header */}
       <div>
-        <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-          <Target size={28} style={{ color: currentTheme.primary }} /> ACTION CENTER
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
+          <Target size={24} style={{ color: currentTheme.primary }} /> ACTION CENTER
         </h2>
-        <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
+        <p className="text-zinc-400 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mt-0.5">
           AI-curated intelligence feed based on market discrepancies, roster lifecycles, and 2026 preseason forecasts.
         </p>
       </div>

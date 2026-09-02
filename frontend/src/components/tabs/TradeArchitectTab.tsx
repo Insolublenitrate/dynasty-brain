@@ -104,15 +104,15 @@ export default function TradeArchitectTab() {
   const diff = valA - valB;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-            <Briefcase size={28} style={{ color: currentTheme.primary }} /> TRADE ARCHITECT
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
+            <Briefcase size={24} style={{ color: currentTheme.primary }} /> TRADE ARCHITECT
           </h2>
-          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
+          <p className="text-zinc-400 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mt-0.5">
             Build, balance, and optimize dynasty trades using empirical player output and draft pick capital.
           </p>
         </div>

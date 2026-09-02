@@ -64,8 +64,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark overflow-x-hidden w-full max-w-[100vw]">
-      <body className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} ${fontCoach.variable} font-sans bg-zinc-950 text-zinc-100 antialiased overflow-x-hidden w-full max-w-[100vw] min-w-0`}>
+    <html lang="en" className="dark overflow-x-clip w-full max-w-[100vw]">
+      <body className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable} ${fontCoach.variable} font-sans bg-zinc-950 text-zinc-100 antialiased overflow-x-clip w-full max-w-[100vw] min-w-0`}>
         <ThemeProvider>
           <LeagueProvider>
             <AppLayout>
