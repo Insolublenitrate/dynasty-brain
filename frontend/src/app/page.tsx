@@ -105,7 +105,7 @@ export default function LandingPage() {
       {/* ========================================================================= */}
       {/* 1. HERO SECTION */}
       {/* ========================================================================= */}
-      <section className="relative pt-6 sm:pt-16 pb-8 text-center max-w-4xl mx-auto space-y-6">
+      <section className="relative pt-2 sm:pt-8 pb-8 text-center max-w-4xl mx-auto space-y-6">
         
         {/* Top Floating Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-700 shadow-xl backdrop-blur-md">

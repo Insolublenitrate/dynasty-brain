@@ -189,10 +189,10 @@ export default function PlayerAnalyzer() {
   const yprrLeader = yprrReceivers[0];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 h-full flex flex-col animate-in fade-in duration-500 pb-12">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 h-full flex flex-col animate-in fade-in duration-500 pb-8">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-3 sm:pb-4">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3 uppercase italic">

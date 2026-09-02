@@ -41,7 +41,7 @@ export default function GlossaryPage() {
   }, [searchQuery, activeCategory]);
 
   return (
-    <div className="min-h-screen pb-24 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8 animate-in fade-in duration-300">
+    <div className="min-h-screen pb-24 max-w-[1440px] mx-auto px-2 sm:px-6 lg:px-8 pt-1 sm:pt-2 space-y-4 sm:space-y-6 animate-in fade-in duration-300">
       
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">

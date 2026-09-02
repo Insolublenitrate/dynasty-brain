@@ -137,7 +137,7 @@ export default function RookieAnalyzerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-200 p-4 md:p-8">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 pb-12">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}

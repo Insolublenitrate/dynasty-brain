@@ -138,10 +138,10 @@ export default function AskMaddenPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-16">
+    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500 pb-16">
       
       {/* Google-Style Centerpiece Header */}
-      <div className="flex flex-col items-center justify-center pt-6 sm:pt-12 text-center space-y-3">
+      <div className="flex flex-col items-center justify-center pt-2 sm:pt-4 text-center space-y-3">
         
         {/* Legendary Madden Badge & Logo */}
         <div className="relative group cursor-pointer" onClick={handleBoomFeelingLucky}>

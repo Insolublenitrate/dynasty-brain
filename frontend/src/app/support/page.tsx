@@ -117,12 +117,12 @@ export default function SupportPage() {
   })).filter(cat => cat.questions.length > 0);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 sm:space-y-16 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12 animate-in fade-in duration-500 pb-20">
       
       {/* ========================================================================= */}
       {/* 1. SUPPORT HEADER & SEARCH BAR */}
       {/* ========================================================================= */}
-      <section className="text-center pt-6 sm:pt-12 max-w-3xl mx-auto space-y-4">
+      <section className="text-center pt-2 sm:pt-4 max-w-3xl mx-auto space-y-3.5">
         
         {/* Support Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-300 font-mono text-xs shadow-md">

@@ -101,10 +101,10 @@ export default function TopPerformers() {
   );
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-500">
       
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800 pb-5">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800 pb-3 sm:pb-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
             <Trophy size={28} style={{ color: currentTheme.primary }} /> TOP PERFORMERS
