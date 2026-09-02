@@ -51,7 +51,7 @@ export default function PowerRankingsTab() {
   const tiers = Array.from(new Set(power_rankings.map((t: any) => t.tier)));
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-3.5 sm:space-y-6 animate-in fade-in duration-500 pb-12">
       
       {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
       <TacticalBriefingCard

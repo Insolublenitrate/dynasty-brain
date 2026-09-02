@@ -281,7 +281,7 @@ export default function ScheduleTab() {
   const selectedFranchise = scheduleData.franchises?.find((f: any) => f.roster_id === selectedRosterId) || scheduleData.franchises?.[0];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-3.5 sm:space-y-6 animate-in fade-in duration-300">
       
       {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
       <TacticalBriefingCard
