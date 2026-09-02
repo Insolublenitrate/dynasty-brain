@@ -71,7 +71,7 @@ function TopNavInner() {
 
   return (
     <>
-      <header className="bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/80 sticky top-0 z-40 w-full max-w-[100vw] overflow-x-hidden">
+      <header className="bg-zinc-950 border-b border-zinc-800/90 sticky top-0 z-40 w-full max-w-[100vw] overflow-x-hidden shadow-md">
         <div className="max-w-[1440px] mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
           
           {/* Left: Logo + League Pill */}

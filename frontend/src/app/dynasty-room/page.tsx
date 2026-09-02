@@ -63,8 +63,8 @@ function DynastyRoomContent() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)] pb-24 md:pb-16">
       
-      {/* ── STICKY ARENA CONTROLLER & SUB-NAV (MOBILE-FIRST) ────────────── */}
-      <div className="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl sticky top-16 z-30 w-full py-2.5 sm:py-3 mb-6 shadow-xl rounded-2xl">
+      {/* ── STICKY ARENA CONTROLLER & SUB-NAV (MOBILE-FIRST FULLY OPAQUE SHELF) ────────────── */}
+      <div className="border-b border-zinc-800/90 bg-zinc-950 sticky top-14 sm:top-16 z-30 w-full py-2 sm:py-2.5 mb-6 shadow-2xl">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           
           {/* Main 4 Arena Switcher (Desktop / Tablet Only - Mobile uses Bottom Nav) */}
