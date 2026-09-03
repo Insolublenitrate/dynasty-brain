@@ -145,27 +145,27 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
                   <Smartphone size={13} /> Option 1: Native Android App (.APK)
                 </span>
                 <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase">
-                  Direct Download
+                  v1.1 (Latest Release)
                 </span>
               </div>
 
               <a
-                href="/downloads/BlindsideDynasty.apk"
-                download="BlindsideDynasty.apk"
+                href="/downloads/BlindsideDynasty-v1.1.apk"
+                download="BlindsideDynasty-v1.1.apk"
                 className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2.5 group"
               >
                 <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
-                <span>Download Android APK (27.8 MB)</span>
+                <span>Download Android APK v1.1 (28 MB)</span>
               </a>
 
               <div className="space-y-1.5 text-[11px] font-mono text-zinc-400 pt-1">
                 <div className="flex items-start gap-2">
                   <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0 mt-0.5">1</span>
-                  <span>Tap <strong>"Download Android APK"</strong> above.</span>
+                  <span>Tap <strong>"Download Android APK v1.1"</strong> above.</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0 mt-0.5">2</span>
-                  <span>When downloaded, tap the file in your notification bar and select <strong>"Install"</strong>.</span>
+                  <span>When downloaded, tap <strong>BlindsideDynasty-v1.1.apk</strong> in your notification bar and select <strong>"Install"</strong> (or "Update").</span>
                 </div>
               </div>
             </div>

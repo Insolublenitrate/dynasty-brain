@@ -644,7 +644,7 @@ export default function LandingPage() {
                   <span>Android (Native APK & WebAPK)</span>
                 </div>
                 <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase">
-                  Available Now
+                  v1.1 Release
                 </span>
               </div>
               <p className="text-zinc-400 text-[11px] font-sans leading-relaxed">
@@ -654,12 +654,12 @@ export default function LandingPage() {
 
             <div className="pt-2">
               <a
-                href="/downloads/BlindsideDynasty.apk"
-                download="BlindsideDynasty.apk"
+                href="/downloads/BlindsideDynasty-v1.1.apk"
+                download="BlindsideDynasty-v1.1.apk"
                 className="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
               >
                 <Download size={14} />
-                <span>Download APK (Direct Install)</span>
+                <span>Download APK v1.1 (Direct Install)</span>
               </a>
             </div>
           </div>
@@ -668,12 +668,12 @@ export default function LandingPage() {
 
         <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
           <a
-            href="/downloads/BlindsideDynasty.apk"
-            download="BlindsideDynasty.apk"
+            href="/downloads/BlindsideDynasty-v1.1.apk"
+            download="BlindsideDynasty-v1.1.apk"
             className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(16,185,129,0.35)] inline-flex items-center gap-2"
           >
             <Download size={18} />
-            <span>Download Android APK (Direct)</span>
+            <span>Download Android APK v1.1 (Direct)</span>
           </a>
 
           <button

@@ -77,7 +77,7 @@ const FAQS = [
       },
       {
         q: "How do I install Blindside Dynasty on Android?",
-        a: "You have two easy options:\n\nOption 1 (Direct Native APK): Tap 'Get App' or visit our download link to download BlindsideDynasty.apk directly. Tap the downloaded file in your notification bar and select 'Install'.\n\nOption 2 (Instant WebAPK): Open Chrome or Brave on your Android phone, tap the 3 vertical dots (⋮) menu, and tap 'Install app' or 'Add to Home screen' for an instant app experience."
+        a: "You have two easy options:\n\nOption 1 (Direct Native APK v1.1): Tap 'Get App' or visit our download link to download BlindsideDynasty-v1.1.apk directly. Tap the downloaded file in your notification bar and select 'Install' (or 'Update').\n\nOption 2 (Instant WebAPK): Open Chrome or Brave on your Android phone, tap the 3 vertical dots (⋮) menu, and tap 'Install app' or 'Add to Home screen' for an instant app experience."
       }
     ]
   }
@@ -403,7 +403,7 @@ export default function SupportPage() {
       {/* ========================================================================= */}
       <footer className="border-t border-zinc-800/80 pt-8 text-center space-y-3 font-mono text-xs text-zinc-500">
         <p>
-          Blindside Dynasty Support & Documentation Hub • App Version 1.0.0
+          Blindside Dynasty Support & Documentation Hub • App Version 1.1.0 (APK v1.1 Release)
         </p>
         <p className="text-[11px] text-zinc-600">
           Disclaimer: Blindside Dynasty is an independent fantasy sports analytics platform. Not affiliated with the NFL or Sleeper.
