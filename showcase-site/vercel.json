@@ -2,7 +2,29 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/BlindsideDynasty-v1.1.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/BlindsideDynasty.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/downloads/BlindsideDynasty.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/WaiverWiretap.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/downloads/WaiverWiretap.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/BlindsideDynasty-1.1.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" },
+    { "source": "/downloads/BlindsideDynasty-1.1.apk", "destination": "/downloads/BlindsideDynasty-v1.1.apk" }
+  ],
   "headers": [
+    {
+      "source": "/(.*)\\.apk",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.android.package-archive"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

@@ -31,6 +31,7 @@ Data Dumps/
 *.apk
 !frontend/public/downloads/*.apk
 !frontend/public/*.apk
+!showcase-site/downloads/*.apk
 
 .vercel
 
