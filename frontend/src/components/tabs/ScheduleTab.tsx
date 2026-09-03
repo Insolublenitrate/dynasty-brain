@@ -13,14 +13,20 @@ import { PositionPill } from '@/components/ui/TacticalVisualAids';
 import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 import MetricExplainer from '@/components/ui/MetricExplainer';
 
-export default function ScheduleTab() {
+export default function ScheduleTab({ initialViewMode = 'slate' }: { initialViewMode?: 'slate' | 'franchise' | 'allplay' } = {}) {
   const { leagueId, leagueName, platform } = useLeague();
   const { currentTheme } = useTheme();
 
   const [loading, setLoading] = useState(true);
   const [scheduleData, setScheduleData] = useState<any>(null);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
-  const [viewMode, setViewMode] = useState<'slate' | 'franchise' | 'allplay'>('slate');
+  const [viewMode, setViewMode] = useState<'slate' | 'franchise' | 'allplay'>(initialViewMode);
+
+  useEffect(() => {
+    if (initialViewMode) {
+      setViewMode(initialViewMode);
+    }
+  }, [initialViewMode]);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(null);
   
   // Expanded box score modal / drawer

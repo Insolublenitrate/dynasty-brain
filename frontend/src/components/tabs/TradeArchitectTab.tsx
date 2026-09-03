@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, ArrowRightLeft, UserPlus, X, Briefcase, Sparkles, Scale, Ticket, Plus } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
@@ -27,6 +28,10 @@ const COMMON_PICKS = [
 
 export default function TradeArchitectTab() {
   const { currentTheme } = useTheme();
+  const searchParams = useSearchParams();
+  const prefillPlayerName = searchParams?.get('player_name') || searchParams?.get('player');
+  const prefillPlayerId = searchParams?.get('player_id');
+
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +39,30 @@ export default function TradeArchitectTab() {
   const [teamA, setTeamA] = useState<TradeAsset[]>([]);
   const [teamB, setTeamB] = useState<TradeAsset[]>([]);
   const [addingTo, setAddingTo] = useState<'A' | 'B'>('A');
+
+  useEffect(() => {
+    if (!data || data.length === 0) return;
+    if (prefillPlayerId || prefillPlayerName) {
+      const match = data.find(p => 
+        (prefillPlayerId && String(p.player_id) === String(prefillPlayerId)) ||
+        (prefillPlayerName && p.player_name?.toLowerCase() === prefillPlayerName.toLowerCase())
+      );
+      if (match) {
+        const asset: TradeAsset = {
+          id: `p-${match.player_id}`,
+          name: match.player_name,
+          subtitle: `${match.position} • ${match.recent_team || 'FA'}`,
+          type: 'player',
+          value: match.ppg || 0,
+          meta: match,
+        };
+        setTeamB(prev => {
+          if (!prev.find(a => a.id === asset.id)) return [...prev, asset];
+          return prev;
+        });
+      }
+    }
+  }, [data, prefillPlayerId, prefillPlayerName]);
 
   useEffect(() => {
     async function fetchData() {

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Target, Search, Activity, Crosshair, Briefcase, ArrowRightLeft, 
   AlertTriangle, Swords, Trophy, Crown, Dices, Layers, CalendarDays, Radio, BarChart3, Coins, TrendingUp,
-  Users, Database, GraduationCap, Radar
+  Users, Database, GraduationCap, Radar, Flame
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -29,6 +29,7 @@ import RookieAnalyzerTab from '@/components/tabs/RookieAnalyzerTab';
 import TopPerformersTab from '@/components/tabs/TopPerformersTab';
 import PlayerCompareTab from '@/components/tabs/PlayerCompareTab';
 import CrossReferenceTab from '@/components/tabs/CrossReferenceTab';
+import TradePartnerTab from '@/components/tabs/TradePartnerTab';
 
 function DynastyRoomContent() {
   const { leagueId, leagueName, isLoading: isLeagueLoading } = useLeague();
@@ -42,10 +43,11 @@ function DynastyRoomContent() {
   const [activeArena, setActiveArena] = useState(arenaParam);
 
   // Sub-tab selectors for multi-module arenas
-  const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'teams' | 'studio' | 'bounties'>((subParam as any) || 'action');
+  const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'diagnostics'>((subParam as any) || 'action');
+  const [matchupsSub, setMatchupsSub] = useState<'slate' | 'simulator' | 'rivalries' | 'allplay'>((subParam as any) || 'slate');
   const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'crossref' | 'compare'>((subParam as any) || 'analyzer');
-  const [powerSub, setPowerSub] = useState<'matrix' | 'tiers' | 'rivalries' | 'records' | 'simulator'>('matrix');
-  const [tradeSub, setTradeSub] = useState<'architect' | 'team' | 'autopsy' | 'trends'>((subParam as any) || 'architect');
+  const [powerSub, setPowerSub] = useState<'tiers' | 'matrix' | 'records' | 'bounties' | 'studio'>((subParam as any) || 'tiers');
+  const [tradeSub, setTradeSub] = useState<'architect' | 'partners' | 'ledger' | 'autopsy'>((subParam as any) || 'architect');
 
   useEffect(() => {
     if (arenaParam && arenaParam !== activeArena) {
@@ -145,7 +147,7 @@ function DynastyRoomContent() {
 
           {/* Contextual Sub-View Segmented Controls (Full Width Grid on Mobile - Zero Scrolling) */}
           {activeArena === 'command' && (
-            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="grid grid-cols-3 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
               <button
                 onClick={() => setCommandSub('action')}
                 className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
@@ -167,33 +169,14 @@ function DynastyRoomContent() {
                 <span className="truncate">Roster</span>
               </button>
               <button
-                onClick={() => setCommandSub('teams')}
+                onClick={() => setCommandSub('diagnostics')}
                 className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  commandSub === 'teams' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                  commandSub === 'diagnostics' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
-                style={commandSub === 'teams' ? { color: currentTheme.primary } : {}}
+                style={commandSub === 'diagnostics' ? { color: currentTheme.primary } : {}}
               >
-                <Search size={13} className="shrink-0" />
-                <span className="truncate">Teams</span>
-              </button>
-              <button
-                onClick={() => setCommandSub('studio')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  commandSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-                style={commandSub === 'studio' ? { color: currentTheme.primary } : {}}
-              >
-                <Radio size={13} className="shrink-0" />
-                <span className="truncate">Studio</span>
-              </button>
-              <button
-                onClick={() => setCommandSub('bounties')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-black transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  commandSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md' : 'text-emerald-400 hover:text-emerald-300'
-                }`}
-              >
-                <Coins size={13} className="shrink-0 text-emerald-400" />
-                <span className="truncate">Bounties</span>
+                <Activity size={13} className="shrink-0" />
+                <span className="truncate">Diagnostics</span>
               </button>
             </div>
           )}
@@ -253,52 +236,101 @@ function DynastyRoomContent() {
             </div>
           )}
 
+          {activeArena === 'matchups' && (
+            <div className="grid grid-cols-4 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
+              <button
+                onClick={() => setMatchupsSub('slate')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  matchupsSub === 'slate' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={matchupsSub === 'slate' ? { color: currentTheme.primary } : {}}
+              >
+                <CalendarDays size={13} className="shrink-0" />
+                <span className="truncate">Slate</span>
+              </button>
+              <button
+                onClick={() => setMatchupsSub('simulator')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  matchupsSub === 'simulator' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={matchupsSub === 'simulator' ? { color: currentTheme.primary } : {}}
+              >
+                <Swords size={13} className="shrink-0" />
+                <span className="truncate">Simulator</span>
+              </button>
+              <button
+                onClick={() => setMatchupsSub('rivalries')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  matchupsSub === 'rivalries' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={matchupsSub === 'rivalries' ? { color: currentTheme.primary } : {}}
+              >
+                <Flame size={13} className="shrink-0" />
+                <span className="truncate">Rivalries</span>
+              </button>
+              <button
+                onClick={() => setMatchupsSub('allplay')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  matchupsSub === 'allplay' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={matchupsSub === 'allplay' ? { color: currentTheme.primary } : {}}
+              >
+                <Layers size={13} className="shrink-0" />
+                <span className="truncate">All-Play</span>
+              </button>
+            </div>
+          )}
+
           {activeArena === 'power' && (
             <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
               <button
-                onClick={() => setPowerSub('matrix')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center text-center ${
-                  powerSub === 'matrix' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-                style={powerSub === 'matrix' ? { color: currentTheme.primary } : {}}
-              >
-                <span className="truncate">Matrix</span>
-              </button>
-              <button
                 onClick={() => setPowerSub('tiers')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center text-center ${
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
                   powerSub === 'tiers' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'tiers' ? { color: currentTheme.primary } : {}}
               >
+                <Crown size={13} className="shrink-0" />
                 <span className="truncate">Tiers</span>
               </button>
               <button
-                onClick={() => setPowerSub('rivalries')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center text-center ${
-                  powerSub === 'rivalries' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                onClick={() => setPowerSub('matrix')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  powerSub === 'matrix' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
-                style={powerSub === 'rivalries' ? { color: currentTheme.primary } : {}}
+                style={powerSub === 'matrix' ? { color: currentTheme.primary } : {}}
               >
-                <span className="truncate">Rivals</span>
+                <Target size={13} className="shrink-0" />
+                <span className="truncate">Matrix</span>
               </button>
               <button
                 onClick={() => setPowerSub('records')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center text-center ${
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
                   powerSub === 'records' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
                 style={powerSub === 'records' ? { color: currentTheme.primary } : {}}
               >
+                <Trophy size={13} className="shrink-0" />
                 <span className="truncate">Records</span>
               </button>
               <button
-                onClick={() => setPowerSub('simulator')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center justify-center text-center ${
-                  powerSub === 'simulator' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                onClick={() => setPowerSub('bounties')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  powerSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 shadow-md font-black' : 'text-emerald-400 hover:text-emerald-300'
                 }`}
-                style={powerSub === 'simulator' ? { color: currentTheme.primary } : {}}
               >
-                <span className="truncate">Sim</span>
+                <Coins size={13} className="shrink-0 text-emerald-400" />
+                <span className="truncate">Bounties</span>
+              </button>
+              <button
+                onClick={() => setPowerSub('studio')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  powerSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={powerSub === 'studio' ? { color: currentTheme.primary } : {}}
+              >
+                <Radio size={13} className="shrink-0" />
+                <span className="truncate">Studio</span>
               </button>
             </div>
           )}
@@ -316,14 +348,24 @@ function DynastyRoomContent() {
                 <span className="truncate">Architect</span>
               </button>
               <button
-                onClick={() => setTradeSub('team')}
+                onClick={() => setTradeSub('partners')}
                 className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  tradeSub === 'team' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                  tradeSub === 'partners' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
-                style={tradeSub === 'team' ? { color: currentTheme.primary } : {}}
+                style={tradeSub === 'partners' ? { color: currentTheme.primary } : {}}
               >
-                <Search size={13} className="shrink-0" />
-                <span className="truncate">Teams</span>
+                <Users size={13} className="shrink-0" />
+                <span className="truncate">Partners</span>
+              </button>
+              <button
+                onClick={() => setTradeSub('ledger')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  tradeSub === 'ledger' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={tradeSub === 'ledger' ? { color: currentTheme.primary } : {}}
+              >
+                <TrendingUp size={13} className="shrink-0" />
+                <span className="truncate">Ledger</span>
               </button>
               <button
                 onClick={() => setTradeSub('autopsy')}
@@ -334,16 +376,6 @@ function DynastyRoomContent() {
               >
                 <ArrowRightLeft size={13} className="shrink-0" />
                 <span className="truncate">Autopsy</span>
-              </button>
-              <button
-                onClick={() => setTradeSub('trends')}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
-                  tradeSub === 'trends' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-                style={tradeSub === 'trends' ? { color: currentTheme.primary } : {}}
-              >
-                <TrendingUp size={13} className="shrink-0" />
-                <span className="truncate">Trends</span>
               </button>
             </div>
           )}
@@ -358,9 +390,7 @@ function DynastyRoomContent() {
           <div>
             {commandSub === 'action' && <ActionCenterTab />}
             {commandSub === 'roster' && <RosterIntelTab />}
-            {commandSub === 'teams' && <TeamAnalyzerTab />}
-            {commandSub === 'studio' && <StudioTab />}
-            {commandSub === 'bounties' && <BountyVaultTab />}
+            {commandSub === 'diagnostics' && <TeamAnalyzerTab />}
           </div>
         )}
 
@@ -375,27 +405,34 @@ function DynastyRoomContent() {
           </div>
         )}
 
-        {/* Arena 2: Matchups & Schedule */}
-        {activeArena === 'matchups' && <ScheduleTab />}
-
-        {/* Arena 3: Power & League */}
-        {activeArena === 'power' && (
+        {/* Arena 3: Matchups */}
+        {activeArena === 'matchups' && (
           <div>
-            {powerSub === 'matrix' && <MatrixTab />}
-            {powerSub === 'tiers' && <PowerRankingsTab />}
-            {powerSub === 'rivalries' && <RivalriesTab />}
-            {powerSub === 'records' && <RecordBookTab />}
-            {powerSub === 'simulator' && <MatchupSimulatorTab />}
+            {matchupsSub === 'slate' && <ScheduleTab initialViewMode="slate" />}
+            {matchupsSub === 'simulator' && <MatchupSimulatorTab />}
+            {matchupsSub === 'rivalries' && <RivalriesTab />}
+            {matchupsSub === 'allplay' && <ScheduleTab initialViewMode="allplay" />}
           </div>
         )}
 
-        {/* Arena 4: Trade Hub */}
+        {/* Arena 4: Power & League */}
+        {activeArena === 'power' && (
+          <div>
+            {powerSub === 'tiers' && <PowerRankingsTab />}
+            {powerSub === 'matrix' && <MatrixTab />}
+            {powerSub === 'records' && <RecordBookTab />}
+            {powerSub === 'bounties' && <BountyVaultTab />}
+            {powerSub === 'studio' && <StudioTab />}
+          </div>
+        )}
+
+        {/* Arena 5: Trade Hub */}
         {activeArena === 'trade' && (
           <div>
             {tradeSub === 'architect' && <TradeArchitectTab />}
-            {tradeSub === 'team' && <TeamAnalyzerTab />}
+            {tradeSub === 'partners' && <TradePartnerTab onSelectPartner={(rosterId) => setTradeSub('architect')} />}
+            {tradeSub === 'ledger' && <TradedPlayersTab />}
             {tradeSub === 'autopsy' && <AutopsyTab />}
-            {tradeSub === 'trends' && <TradedPlayersTab />}
           </div>
         )}
       </div>

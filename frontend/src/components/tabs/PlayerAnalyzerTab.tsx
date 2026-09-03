@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
-import { Activity, Search, AlertTriangle, Sparkles, Filter } from 'lucide-react';
+import { Activity, Search, AlertTriangle, Sparkles, Filter, ArrowRightLeft } from 'lucide-react';
 import SeasonSelector from '@/components/SeasonSelector';
 import { LiveMetricCard } from '@/components/LiveMetricCard';
 import { clsx, type ClassValue } from "clsx";
@@ -407,12 +407,23 @@ export default function PlayerAnalyzerTab() {
                   </span>
                 </div>
               </div>
-              <button 
-                className="h-8 w-8 rounded-full bg-zinc-800 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 transition-colors font-bold"
-                onClick={() => setSelectedPlayer(null)}
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    window.location.href = `/dynasty-room?arena=trade&sub=architect&player_id=${selectedPlayer.player_id}&player_name=${encodeURIComponent(selectedPlayer.player_name)}`;
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/40 text-xs font-mono font-bold transition-all flex items-center gap-1.5"
+                >
+                  <ArrowRightLeft size={14} />
+                  <span>Offer in Trade</span>
+                </button>
+                <button 
+                  className="h-8 w-8 rounded-full bg-zinc-800 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 transition-colors font-bold"
+                  onClick={() => setSelectedPlayer(null)}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             
             {/* Stats Summary Grid */}
