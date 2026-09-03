@@ -27,7 +27,7 @@ export default function Sidebar() {
       {/* Mobile Header */}
       <div className="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-40">
         <h1 className="text-xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
-          The Waiver Wiretap
+          Blindside Dynasty
         </h1>
         <button onClick={() => setIsOpen(!isOpen)} className="text-slate-400 hover:text-white p-2">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ export default function Sidebar() {
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-full transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 hidden md:block">
           <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent tracking-tighter">
-            The Waiver Wiretap
+            Blindside Dynasty
           </h1>
           <p className="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">A KBD Product</p>
         </div>

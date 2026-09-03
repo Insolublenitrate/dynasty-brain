@@ -77,7 +77,7 @@ const FAQS = [
       },
       {
         q: "How do I install Blindside Dynasty on Android?",
-        a: "1. Open Chrome or Brave on your Android phone.\n2. Tap the 'Get App' button in the top navigation bar (or tap the 3 vertical dots ⋮ menu).\n3. Tap 'Install app' or 'Add to Home screen' to generate a standalone Android WebAPK."
+        a: "You have two easy options:\n\nOption 1 (Direct Native APK): Tap 'Get App' or visit our download link to download BlindsideDynasty.apk directly. Tap the downloaded file in your notification bar and select 'Install'.\n\nOption 2 (Instant WebAPK): Open Chrome or Brave on your Android phone, tap the 3 vertical dots (⋮) menu, and tap 'Install app' or 'Add to Home screen' for an instant app experience."
       }
     ]
   }

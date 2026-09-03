@@ -5,7 +5,7 @@
 
 ## 📁 Marketing Asset Library Overview
 
-All high-res marketing images and animated GIF clips are stored in `/marketing/` and live at `https://waiverwiretap.kindofabigdill.com/marketing/`:
+All high-res marketing images and animated GIF clips are stored in `/marketing/` and live at `https://ffdashboard.kindofabigdill.world/marketing/`:
 
 | Asset Name | Format | Dimensions | Best For | Description |
 | :--- | :--- | :--- | :--- | :--- |
@@ -74,10 +74,10 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 **Tweet 6 (The Call to Action):**
 > Test drive the full 12-team demo in your browser right now—**zero login, zero download, zero credit card required**:
 > 
-> 🎮 https://waiverwiretap.kindofabigdill.com/demo.html
+> 🎮 https://ffdashboard.kindofabigdill.world/demo.html
 > 
 > Or connect your Sleeper league free:
-> 🔗 https://waiverwiretap.kindofabigdill.com
+> 🔗 https://ffdashboard.kindofabigdill.world
 
 ---
 
@@ -102,7 +102,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 > 
 > We wanted everyone to be able to test it without needing to log in or create an account, so we put a complete 12-team sample league right in the browser:
 > 
-> 🎮 **Live Interactive Demo:** https://waiverwiretap.kindofabigdill.com/demo.html
+> 🎮 **Live Interactive Demo:** https://ffdashboard.kindofabigdill.world/demo.html
 > 
 > Would love your feedback on the metrics and what other features you’d want to see added!
 
@@ -121,7 +121,7 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 > - **Works on Mobile & Desktop**: Progressive Web App that installs to your iPhone or Android home screen with zero App Store friction.
 > 
 > Check out the live sandbox demo here (no login required):
-> 👉 https://waiverwiretap.kindofabigdill.com/demo.html
+> 👉 https://ffdashboard.kindofabigdill.world/demo.html
 
 ---
 
@@ -129,11 +129,11 @@ All high-res marketing images and animated GIF clips are stored in `/marketing/`
 
 ### Option A: The Playful Challenge (For your personal league chat)
 > *"Hey boys, I just plugged our league into this new Dynasty War Room tool (Blindside Dynasty). It turns out half of you are in the 'Rebuilding Valley' and don't even know it 💀 Check out the interactive demo with Coach Madden AI roasting rosters:*  
-> 👉 https://waiverwiretap.kindofabigdill.com/demo.html"
+> 👉 https://ffdashboard.kindofabigdill.world/demo.html"
 
 ### Option B: The Trade Bait Bait (For targeting trade partners)
 > *"If anyone wants to see where their team actually ranks without schedule luck messing with the standings, check out this 100-index radar chart. I’m shopping wide receivers for draft picks if anyone wants to get out of the Sacko bracket:*  
-> 👉 https://waiverwiretap.kindofabigdill.com"
+> 👉 https://ffdashboard.kindofabigdill.world"
 
 ---
 
@@ -152,10 +152,10 @@ Hey @everyone! If you manage dynasty or redraft fantasy football teams, check ou
 • **Multi-Platform Sync:** Instant sync for Sleeper, ESPN & Yahoo leagues.
 
 🎮 **Try the Full In-Browser Demo (Zero Login Required):**
-https://waiverwiretap.kindofabigdill.com/demo.html
+https://ffdashboard.kindofabigdill.world/demo.html
 
 🌐 **Main Showcase & League Sync:**
-https://waiverwiretap.kindofabigdill.com
+https://ffdashboard.kindofabigdill.world
 ```
 
 ---
@@ -169,18 +169,18 @@ https://waiverwiretap.kindofabigdill.com
 | **0:00 - 0:05** | Quick zoom-in on `promo-power-matrix.gif` or mobile screen showing "Rebuilding Valley" | *"You think your fantasy football team is a contender because you're 4-1? Let me show you why you're about to miss the playoffs."* |
 | **0:05 - 0:12** | Tap into the **True Power Matrix** on `demo.html` showing Max PF vs Schedule Luck | *"Standard standings lie because of schedule luck. This True Power Matrix calculates your actual optimal points for combined with draft capital."* |
 | **0:12 - 0:20** | Show **Positional Radar** & tap on **Coach Madden AI** with sound wave pulsing | *"Then Coach Madden AI scans your entire roster and literally speaks to tell you exactly who to sell before they fall off a cliff."* |
-| **0:20 - 0:30** | Show `waiverwiretap.kindofabigdill.com/demo.html` in browser | *"You can test drive the entire war room right now with zero login or credit card. Link in bio to test the live demo!"* |
+| **0:20 - 0:30** | Show `ffdashboard.kindofabigdill.world/demo.html` in browser | *"You can test drive the entire war room right now with zero login or credit card. Link in bio to test the live demo!"* |
 
 ---
 
 ## 🔗 Direct Asset URLs for 1-Click Sharing
-- 🖼️ **Twitter Header Banner (1500×500)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-banner-twitter.png`
-- 🤖 **Madden AI Animated Clip (GIF)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-madden-ai.gif`
-- 🎯 **Positional Radar Animated Clip (GIF)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-positional-radar.gif`
-- ⚡ **Power Matrix Animated Clip (GIF)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-power-matrix.gif`
-- 🎲 **Matchup Simulator Animated Clip (GIF)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-matchup-simulator.gif`
-- 📱 **Square Madden Feed Card (1080×1080)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-square-madden.png`
-- 📊 **Square Matrix Feed Card (1080×1080)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-square-matrix.png`
-- 🎯 **Square Radar Feed Card (1080×1080)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-square-radar.png`
-- 🏆 **Square Sacko Feed Card (1080×1080)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-square-sacko.png`
-- 📲 **Vertical Story / Reels Graphic (1080×1920)**: `https://waiverwiretap.kindofabigdill.com/marketing/promo-story-9x16.png`
+- 🖼️ **Twitter Header Banner (1500×500)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-banner-twitter.png`
+- 🤖 **Madden AI Animated Clip (GIF)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-madden-ai.gif`
+- 🎯 **Positional Radar Animated Clip (GIF)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-positional-radar.gif`
+- ⚡ **Power Matrix Animated Clip (GIF)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-power-matrix.gif`
+- 🎲 **Matchup Simulator Animated Clip (GIF)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-matchup-simulator.gif`
+- 📱 **Square Madden Feed Card (1080×1080)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-square-madden.png`
+- 📊 **Square Matrix Feed Card (1080×1080)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-square-matrix.png`
+- 🎯 **Square Radar Feed Card (1080×1080)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-square-radar.png`
+- 🏆 **Square Sacko Feed Card (1080×1080)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-square-sacko.png`
+- 📲 **Vertical Story / Reels Graphic (1080×1920)**: `https://ffdashboard.kindofabigdill.world/marketing/promo-story-9x16.png`

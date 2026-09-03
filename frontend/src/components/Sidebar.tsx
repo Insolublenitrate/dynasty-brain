@@ -24,10 +24,10 @@ export default function Sidebar() {
     <div className="hidden md:flex flex-col w-64 h-full bg-card border-r border-border">
       <div className="p-6">
         <h1 className="text-2xl font-black bg-gradient-to-r from-neon-orange via-neon-green to-neon-blue bg-clip-text text-transparent tracking-tighter">
-          Dynasty Brain
+          Blindside Dynasty
         </h1>
         <p className="text-[10px] text-muted-foreground font-semibold tracking-widest uppercase mt-1">
-          V3 Premium Analytics
+          Tactical War Room
         </p>
       </div>
 

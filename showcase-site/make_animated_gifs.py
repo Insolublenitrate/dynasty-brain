@@ -121,7 +121,7 @@ def make_madden_gif():
         # Bottom Bar
         draw.line([(margin + 20, margin + 360), (w - margin - 20, margin + 360)], fill="#223326", width=1)
         draw.text((margin + 20, margin + 382), "QUANT DYNASTY WAR ROOM", fill="#22c55e", font=get_font(12, True))
-        draw.text((w - margin - 250, margin + 382), "waiverwiretap.kindofabigdill.com", fill="#f97316", font=get_font(12, True))
+        draw.text((w - margin - 250, margin + 382), "ffdashboard.kindofabigdill.world", fill="#f97316", font=get_font(12, True))
 
         frames.append(img)
 
@@ -240,7 +240,7 @@ def make_radar_gif():
         # Footer
         draw.line([(margin + 20, margin + 360), (w - margin - 20, margin + 360)], fill="#1a2f26", width=1)
         draw.text((margin + 20, margin + 382), "BENCHMARK: 100 = EXACT LEAGUE AVERAGE", fill="#22d3ee", font=get_font(12, True))
-        draw.text((w - margin - 250, margin + 382), "waiverwiretap.kindofabigdill.com", fill="#f97316", font=get_font(12, True))
+        draw.text((w - margin - 250, margin + 382), "ffdashboard.kindofabigdill.world", fill="#f97316", font=get_font(12, True))
 
         frames.append(img)
 
@@ -316,7 +316,7 @@ def make_matrix_gif():
         # Footer
         draw.line([(margin + 20, margin + 360), (w - margin - 20, margin + 360)], fill="#251b33", width=1)
         draw.text((margin + 20, margin + 382), "70% MAX PF · 30% DRAFT CAPITAL WEIGHT", fill="#c084fc", font=get_font(12, True))
-        draw.text((w - margin - 250, margin + 382), "waiverwiretap.kindofabigdill.com", fill="#f97316", font=get_font(12, True))
+        draw.text((w - margin - 250, margin + 382), "ffdashboard.kindofabigdill.world", fill="#f97316", font=get_font(12, True))
 
         frames.append(img)
 
@@ -404,7 +404,7 @@ def make_sim_gif():
         # Footer
         draw.line([(margin + 20, margin + 360), (w - margin - 20, margin + 360)], fill="#1a2f22", width=1)
         draw.text((margin + 20, margin + 382), "SIMULATES WEATHER, INJURY & TD VARIANCE", fill="#22c55e", font=get_font(12, True))
-        draw.text((w - margin - 250, margin + 382), "waiverwiretap.kindofabigdill.com", fill="#f97316", font=get_font(12, True))
+        draw.text((w - margin - 250, margin + 382), "ffdashboard.kindofabigdill.world", fill="#f97316", font=get_font(12, True))
 
         frames.append(img)
 

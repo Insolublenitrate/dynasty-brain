@@ -636,27 +636,52 @@ export default function LandingPage() {
           </div>
 
           {/* Android Card */}
-          <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-5 space-y-2.5">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm font-sans">
-              <Smartphone size={18} />
-              <span>Android (WebAPK / PWA)</span>
+          <div className="bg-zinc-950/80 border border-emerald-500/30 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm font-sans">
+                  <Smartphone size={18} />
+                  <span>Android (Native APK & WebAPK)</span>
+                </div>
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase">
+                  Available Now
+                </span>
+              </div>
+              <p className="text-zinc-400 text-[11px] font-sans leading-relaxed">
+                Install the high-performance native Android app or add directly to home screen via Chrome/Brave.
+              </p>
             </div>
-            <p className="text-zinc-400 text-[11px] font-sans">
-              1. Open Chrome/Brave on Android<br />
-              2. Tap <strong>"Get App"</strong> or the <strong>3-dots menu (⋮)</strong><br />
-              3. Tap <strong>"Install app"</strong> for instant full-screen app
-            </p>
+
+            <div className="pt-2">
+              <a
+                href="/downloads/BlindsideDynasty.apk"
+                download="BlindsideDynasty.apk"
+                className="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+              >
+                <Download size={14} />
+                <span>Download APK (Direct Install)</span>
+              </a>
+            </div>
           </div>
 
         </div>
 
-        <div className="pt-4">
-          <button
-            onClick={() => setIsInstallModalOpen(true)}
-            className="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(16,185,129,0.35)] inline-flex items-center gap-2"
+        <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/downloads/BlindsideDynasty.apk"
+            download="BlindsideDynasty.apk"
+            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(16,185,129,0.35)] inline-flex items-center gap-2"
           >
             <Download size={18} />
-            <span>Open Download & Install Guide</span>
+            <span>Download Android APK (Direct)</span>
+          </a>
+
+          <button
+            onClick={() => setIsInstallModalOpen(true)}
+            className="px-6 py-3.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700 text-white font-bold text-sm uppercase tracking-wider transition-all shadow-xl inline-flex items-center gap-2"
+          >
+            <Smartphone size={18} className="text-amber-400" />
+            <span>Open Install Guide (iOS & Android)</span>
           </button>
         </div>
       </section>

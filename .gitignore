@@ -29,6 +29,8 @@ Data Dumps/
 
 # Binaries & APKs
 *.apk
+!frontend/public/downloads/*.apk
+!frontend/public/*.apk
 
 .vercel
 

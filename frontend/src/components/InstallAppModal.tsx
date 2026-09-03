@@ -138,25 +138,57 @@ export default function InstallAppModal({ isOpen, onClose }: InstallAppModalProp
         {/* ANDROID CONTENT */}
         {activePlatform === "android" && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <button
-              onClick={handleInstallClick}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(249,115,22,0.35)] flex items-center justify-center gap-2.5"
-            >
-              <Download size={18} />
-              <span>Install App on Android Home Screen</span>
-            </button>
-
-            <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-2.5 font-mono text-xs text-zinc-300">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
-                Manual 2-Step Android Install:
-              </span>
-              <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">1</span>
-                <span>Tap the browser menu <strong>(3 vertical dots)</strong> in Chrome / Brave.</span>
+            {/* Primary: Direct APK Sideload Download */}
+            <div className="bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 rounded-2xl border border-emerald-500/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                  <Smartphone size={13} /> Option 1: Native Android App (.APK)
+                </span>
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase">
+                  Direct Download
+                </span>
               </div>
-              <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-zinc-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">2</span>
-                <span>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+
+              <a
+                href="/downloads/BlindsideDynasty.apk"
+                download="BlindsideDynasty.apk"
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2.5 group"
+              >
+                <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
+                <span>Download Android APK (27.8 MB)</span>
+              </a>
+
+              <div className="space-y-1.5 text-[11px] font-mono text-zinc-400 pt-1">
+                <div className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0 mt-0.5">1</span>
+                  <span>Tap <strong>"Download Android APK"</strong> above.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[9px] flex-shrink-0 mt-0.5">2</span>
+                  <span>When downloaded, tap the file in your notification bar and select <strong>"Install"</strong>.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Secondary: Instant Chrome WebAPK (PWA) */}
+            <div className="bg-zinc-950/90 rounded-2xl p-4 border border-zinc-800 space-y-3 font-mono text-xs text-zinc-300">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+                  <Flame size={12} /> Option 2: Instant Chrome WebAPK
+                </span>
+                <span className="text-[9px] text-zinc-500 uppercase">Zero APK File</span>
+              </div>
+
+              <button
+                onClick={handleInstallClick}
+                className="w-full py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs uppercase tracking-wider transition-all border border-zinc-700 flex items-center justify-center gap-2"
+              >
+                <Download size={15} className="text-amber-400" />
+                <span>Add to Home Screen (Instant PWA)</span>
+              </button>
+
+              <div className="text-[11px] text-zinc-400 space-y-1 pt-1">
+                <p>Or tap the <strong>3 vertical dots (⋮)</strong> in Chrome / Brave &rarr; select <strong>"Install app"</strong>.</p>
               </div>
             </div>
           </div>
