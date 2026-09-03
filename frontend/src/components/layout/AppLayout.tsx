@@ -1,13 +1,24 @@
 "use client";
 
 import React, { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import TopNav from "@/components/TopNav";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import PlaybookBackground from "@/components/PlaybookBackground";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const { carbonEnabled, playbookEnabled } = useTheme();
+  const isSplash = pathname === "/";
+
+  if (isSplash) {
+    return (
+      <div className="min-h-screen w-full max-w-[100vw] overflow-hidden bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center relative select-none">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col ${carbonEnabled ? 'bg-carbon-mesh' : 'bg-zinc-950'} text-zinc-100 transition-colors relative selection:bg-orange-500/30`}>
