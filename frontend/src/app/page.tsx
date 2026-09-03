@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import PlaybookLogo from "@/components/PlaybookLogo";
 import { useTheme } from "@/context/ThemeContext";
 
-export default function AppSplashScreen() {
+function SplashContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isFrozen = searchParams?.get("freeze") === "true";
   const { currentTheme } = useTheme();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("INITIALIZING TACTICAL PROTOCOLS...");
@@ -15,7 +17,7 @@ export default function AppSplashScreen() {
   const navigatedRef = useRef(false);
 
   const navigateToCommand = () => {
-    if (navigatedRef.current) return;
+    if (navigatedRef.current || isFrozen) return;
     navigatedRef.current = true;
     setIsFadingOut(true);
     setTimeout(() => {
@@ -24,6 +26,12 @@ export default function AppSplashScreen() {
   };
 
   useEffect(() => {
+    if (isFrozen) {
+      setProgress(75);
+      setStatusText("COMPILING ACTION CENTER COCKPIT...");
+      return;
+    }
+
     const startTime = Date.now();
     const duration = 1200; // 1.2 second fast snappy splash
 
@@ -181,5 +189,13 @@ export default function AppSplashScreen() {
         Sleeper • ESPN • Yahoo Dynasty Management
       </footer>
     </main>
+  );
+}
+
+export default function AppSplashScreen() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 bg-zinc-950" />}>
+      <SplashContent />
+    </Suspense>
   );
 }
