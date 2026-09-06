@@ -12,8 +12,11 @@ type LeagueContextType = {
   leagueId: string | null;
   platform: LeaguePlatform;
   leagueName: string | null;
+  myRosterId: number | null;
+  leagueRosters: any[];
   setLeagueId: (id: string, platform?: LeaguePlatform, name?: string) => void;
   setPlatform: (platform: LeaguePlatform) => void;
+  setMyRosterId: (rosterId: number) => void;
   isLoading: boolean;
 };
 
@@ -21,8 +24,11 @@ const LeagueContext = createContext<LeagueContextType>({
   leagueId: DEFAULT_LEAGUE_ID,
   platform: DEFAULT_PLATFORM,
   leagueName: null,
+  myRosterId: null,
+  leagueRosters: [],
   setLeagueId: () => {},
   setPlatform: () => {},
+  setMyRosterId: () => {},
   isLoading: false,
 });
 
@@ -30,12 +36,15 @@ export function LeagueProvider({ children }: { children: React.ReactNode }) {
   const [leagueId, setLeagueIdState] = useState<string>(DEFAULT_LEAGUE_ID);
   const [platform, setPlatformState] = useState<LeaguePlatform>(DEFAULT_PLATFORM);
   const [leagueName, setLeagueName] = useState<string | null>(null);
+  const [myRosterId, setMyRosterIdState] = useState<number | null>(null);
+  const [leagueRosters, setLeagueRosters] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem('dynasty_league_id');
     const storedPlatform = (localStorage.getItem('dynasty_platform') as LeaguePlatform) || DEFAULT_PLATFORM;
     const storedName = localStorage.getItem('dynasty_league_name');
+    const storedRosterId = localStorage.getItem('dynasty_my_roster_id');
 
     const activeLeagueId = stored || DEFAULT_LEAGUE_ID;
     const activePlatform = storedPlatform || DEFAULT_PLATFORM;
@@ -43,6 +52,7 @@ export function LeagueProvider({ children }: { children: React.ReactNode }) {
     setLeagueIdState(activeLeagueId);
     setPlatformState(activePlatform);
     if (storedName) setLeagueName(storedName);
+    if (storedRosterId) setMyRosterIdState(Number(storedRosterId));
 
     const verifyAndIngest = async (id: string, plat: LeaguePlatform) => {
       try {
@@ -50,6 +60,18 @@ export function LeagueProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch(`${apiUrl}/api/quant/matrix?league_id=${id}`);
         const data = await res.json();
         
+        if (Array.isArray(data) && data.length > 0) {
+          setLeagueRosters(data);
+          // If no stored roster id or not in list, auto-detect or pick first
+          if (!storedRosterId) {
+            const detected = data.find((r: any) => r.team_name?.toLowerCase().includes('insolublenitrate')) || data[0];
+            if (detected) {
+              setMyRosterIdState(detected.roster_id);
+              localStorage.setItem('dynasty_my_roster_id', String(detected.roster_id));
+            }
+          }
+        }
+
         // If empty, trigger platform ingestion
         if (data.error && data.error.includes("No rosters found")) {
           console.log(`Ingesting ${plat} league data for ${id}...`);
@@ -89,8 +111,23 @@ export function LeagueProvider({ children }: { children: React.ReactNode }) {
     setPlatformState(newPlatform);
   };
 
+  const setMyRosterId = (rosterId: number) => {
+    localStorage.setItem('dynasty_my_roster_id', String(rosterId));
+    setMyRosterIdState(rosterId);
+  };
+
   return (
-    <LeagueContext.Provider value={{ leagueId, platform, leagueName, setLeagueId, setPlatform, isLoading }}>
+    <LeagueContext.Provider value={{ 
+      leagueId, 
+      platform, 
+      leagueName, 
+      myRosterId, 
+      leagueRosters, 
+      setLeagueId, 
+      setPlatform, 
+      setMyRosterId, 
+      isLoading 
+    }}>
       {children}
     </LeagueContext.Provider>
   );

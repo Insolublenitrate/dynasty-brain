@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -15,14 +15,15 @@ interface TradePartnerTabProps {
 }
 
 export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProps) {
-  const { leagueId, leagueName } = useLeague();
+  const { leagueId, leagueName, myRosterId: globalRosterId, setMyRosterId: setGlobalRosterId } = useLeague();
   const { currentTheme } = useTheme();
 
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState<any[]>([]);
   const [selectedPhase, setSelectedPhase] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [myRosterId, setMyRosterId] = useState<number | null>(null);
+
+  const myRosterId = globalRosterId || (teams.length > 0 ? teams[0].roster_id : 1);
 
   useEffect(() => {
     if (!leagueId) return;
@@ -36,9 +37,6 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
           const data = await res.json();
           if (Array.isArray(data)) {
             setTeams(data);
-            if (data.length > 0) {
-              setMyRosterId(data[0].roster_id);
-            }
           }
         }
       } catch (err) {
@@ -148,7 +146,7 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
             <span className="text-[11px] font-mono text-zinc-400 font-bold">YOUR TEAM:</span>
             <select
               value={myRosterId || ''}
-              onChange={(e) => setMyRosterId(Number(e.target.value))}
+              onChange={(e) => setGlobalRosterId(Number(e.target.value))}
               className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
             >
               {teams.map(t => (

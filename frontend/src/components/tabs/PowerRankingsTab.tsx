@@ -10,11 +10,12 @@ import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function PowerRankingsTab() {
-  const { leagueId } = useLeague();
+  const { leagueId, myRosterId } = useLeague();
   const { currentTheme } = useTheme();
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFormula, setShowFormula] = useState(false);
+  const [tierFilter, setTierFilter] = useState<'ALL' | 'CONTENDER' | 'BUBBLE' | 'REBUILD'>('ALL');
   const [tiersParent] = useAutoAnimate();
 
   useEffect(() => {
@@ -135,9 +136,39 @@ export default function PowerRankingsTab() {
         </div>
       )}
 
+      {/* Quick Tier Filters */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        {[
+          { id: 'ALL', label: 'All Tiers' },
+          { id: 'CONTENDER', label: 'Contenders (S/A)' },
+          { id: 'BUBBLE', label: 'Playoff Bubble (B)' },
+          { id: 'REBUILD', label: 'Rebuilders (C/D)' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setTierFilter(f.id as any)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 border ${
+              tierFilter === f.id
+                ? 'bg-zinc-800 text-white shadow-md border-zinc-600'
+                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border-zinc-800'
+            }`}
+            style={tierFilter === f.id ? { color: currentTheme.primary, borderColor: currentTheme.primary } : {}}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {/* Tier Groupings */}
       <div ref={tiersParent} className="space-y-6">
-        {tiers.map((tierName: any) => {
+        {tiers
+          .filter((tierName: any) => {
+            if (tierFilter === 'CONTENDER') return tierName.includes('Tier S') || tierName.includes('Tier A');
+            if (tierFilter === 'BUBBLE') return tierName.includes('Tier B');
+            if (tierFilter === 'REBUILD') return tierName.includes('Tier C') || tierName.includes('Tier D') || tierName.includes('Rebuild');
+            return true;
+          })
+          .map((tierName: any) => {
           const tierTeams = power_rankings.filter((t: any) => t.tier === tierName);
           const tierColor = tierTeams[0]?.tier_color || '#a855f7';
 
@@ -155,11 +186,24 @@ export default function PowerRankingsTab() {
 
               {/* Teams in Tier */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tierTeams.map((team: any) => (
+                {tierTeams.map((team: any) => {
+                  const isMyTeam = team.roster_id === myRosterId;
+                  return (
                   <div 
                     key={team.roster_id}
-                    className="bg-zinc-950/90 border border-zinc-800 rounded-xl p-4 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-md"
+                    className={`bg-zinc-950/90 rounded-xl p-4 flex flex-col justify-between transition-all shadow-md relative ${
+                      isMyTeam ? 'border-2 shadow-2xl' : 'border border-zinc-800 hover:border-zinc-700'
+                    }`}
+                    style={isMyTeam ? { borderColor: currentTheme.primary, boxShadow: `0 0 15px ${currentTheme.glow}` } : {}}
                   >
+                    {isMyTeam && (
+                      <span 
+                        className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase text-zinc-950 shadow-md"
+                        style={{ backgroundColor: currentTheme.primary }}
+                      >
+                        ★ YOUR FRANCHISE
+                      </span>
+                    )}
                     <div>
                       {/* Top Bar */}
                       <div className="flex items-center justify-between gap-3 mb-3">
@@ -223,7 +267,8 @@ export default function PowerRankingsTab() {
                       <span>Cap Equity: {team.future_capital_score?.toFixed(0)}</span>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
             </div>

@@ -13,13 +13,19 @@ import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 import MetricExplainer from '@/components/ui/MetricExplainer';
 
 export default function RosterIntelTab() {
-  const { leagueId } = useLeague();
+  const { leagueId, myRosterId, setMyRosterId } = useLeague();
   const { currentTheme } = useTheme();
   const [rostersList, setRostersList] = useState<any[]>([]);
-  const [selectedRosterId, setSelectedRosterId] = useState<number>(1);
+  const [selectedRosterId, setSelectedRosterId] = useState<number>(myRosterId || 1);
   const [rosterData, setRosterData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [benchFilter, setBenchFilter] = useState<'ALL' | 'QB' | 'RB' | 'WR' | 'TE' | 'TAXI' | 'IR'>('ALL');
+
+  useEffect(() => {
+    if (myRosterId) {
+      setSelectedRosterId(myRosterId);
+    }
+  }, [myRosterId]);
 
   useEffect(() => {
     if (!leagueId) return;
@@ -31,7 +37,9 @@ export default function RosterIntelTab() {
           const mData = await res.json();
           if (Array.isArray(mData) && mData.length > 0) {
             setRostersList(mData);
-            setSelectedRosterId(mData[0].roster_id);
+            if (!myRosterId) {
+              setSelectedRosterId(mData[0].roster_id);
+            }
           }
         }
       } catch (err) {
@@ -39,7 +47,7 @@ export default function RosterIntelTab() {
       }
     }
     fetchRosterList();
-  }, [leagueId]);
+  }, [leagueId, myRosterId]);
 
   useEffect(() => {
     if (!leagueId || !selectedRosterId) return;

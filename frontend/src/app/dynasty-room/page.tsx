@@ -430,7 +430,14 @@ function DynastyRoomContent() {
         {activeArena === 'trade' && (
           <div>
             {tradeSub === 'architect' && <TradeArchitectTab />}
-            {tradeSub === 'partners' && <TradePartnerTab onSelectPartner={(rosterId) => setTradeSub('architect')} />}
+            {tradeSub === 'partners' && (
+              <TradePartnerTab 
+                onSelectPartner={(rosterId) => {
+                  router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${rosterId}`, { scroll: false });
+                  setTradeSub('architect');
+                }} 
+              />
+            )}
             {tradeSub === 'ledger' && <TradedPlayersTab />}
             {tradeSub === 'autopsy' && <AutopsyTab />}
           </div>

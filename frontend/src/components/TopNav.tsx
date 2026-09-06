@@ -20,7 +20,7 @@ function TopNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentArena = searchParams.get("arena") || "command";
-  const { leagueName, leagueId } = useLeague();
+  const { leagueName, leagueId, myRosterId, setMyRosterId, leagueRosters } = useLeague();
   const { currentTheme } = useTheme();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -28,6 +28,9 @@ function TopNavInner() {
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
+  const [isFranchiseMenuOpen, setIsFranchiseMenuOpen] = useState(false);
+
+  const activeRoster = leagueRosters.find((r: any) => r.roster_id === myRosterId) || leagueRosters[0];
 
   // Auto-launch tour for first-time visitors
   useEffect(() => {
@@ -82,10 +85,10 @@ function TopNavInner() {
 
   return (
     <>
-      <header className="bg-zinc-950 border-b border-zinc-800/90 sticky top-0 z-40 w-full max-w-[100vw] overflow-x-hidden shadow-md">
+      <header className="bg-zinc-950 border-b border-zinc-800/90 sticky top-0 z-40 w-full max-w-[100vw] shadow-md">
         <div className="max-w-[1440px] mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
           
-          {/* Left: Logo + League Pill */}
+          {/* Left: Logo + League Pill + Franchise Switcher */}
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
             <Link href="/dynasty-room" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity min-w-0">
               <PlaybookLogo size={28} animated={true} />
@@ -94,13 +97,94 @@ function TopNavInner() {
                   BLINDSIDE <span style={{ color: currentTheme.primary, textShadow: `0 0 8px ${currentTheme.glow}` }}>DYNASTY</span>
                 </span>
                 {leagueName && (
-                  <span className="text-[9px] sm:text-[10px] font-mono text-zinc-400 truncate max-w-[85px] sm:max-w-[200px] mt-0.5 flex items-center gap-1">
+                  <span className="text-[9px] sm:text-[10px] font-mono text-zinc-400 truncate max-w-[85px] sm:max-w-[160px] mt-0.5 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block shrink-0" />
                     <span className="truncate">{leagueName}</span>
                   </span>
                 )}
               </div>
             </Link>
+
+            {/* Active Franchise Pill & Quick Switcher */}
+            {leagueRosters.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setIsFranchiseMenuOpen(!isFranchiseMenuOpen)}
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-200 transition-all shadow-sm"
+                  title="Switch Active Franchise"
+                >
+                  <div className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-600 flex items-center justify-center overflow-hidden shrink-0">
+                    {activeRoster?.avatar ? (
+                      <img src={`https://sleepercdn.com/avatars/${activeRoster.avatar}`} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <Crown size={11} style={{ color: currentTheme.primary }} />
+                    )}
+                  </div>
+                  <div className="hidden sm:flex flex-col items-start text-left min-w-0">
+                    <span className="text-[11px] font-black font-mono text-white truncate max-w-[110px]">
+                      {activeRoster?.team_name || "My Franchise"}
+                    </span>
+                    {activeRoster?.lifecycle_state && (
+                      <span className="text-[8.5px] font-mono text-amber-400 font-bold leading-none truncate max-w-[110px]">
+                        {activeRoster.lifecycle_state}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown size={11} className={`text-zinc-400 transition-transform ${isFranchiseMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {isFranchiseMenuOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40 bg-black/20" 
+                      onClick={() => setIsFranchiseMenuOpen(false)} 
+                    />
+                    <div className="absolute left-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-zinc-950/98 backdrop-blur-2xl border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                      <div className="px-3 py-1.5 text-[10px] font-mono font-black uppercase text-zinc-400 tracking-wider border-b border-zinc-800/80 flex justify-between items-center">
+                        <span>Select Your Franchise</span>
+                        <span className="text-zinc-600">{leagueRosters.length} Teams</span>
+                      </div>
+                    {leagueRosters.map((team: any) => {
+                      const isSelected = team.roster_id === (myRosterId || activeRoster?.roster_id);
+                      return (
+                        <button
+                          key={team.roster_id}
+                          onClick={() => {
+                            setMyRosterId(team.roster_id);
+                            setIsFranchiseMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
+                            isSelected 
+                              ? "bg-zinc-800/90 border border-zinc-700 text-white font-bold shadow-sm" 
+                              : "hover:bg-zinc-900 text-zinc-300 hover:text-white"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center overflow-hidden shrink-0">
+                              {team.avatar ? (
+                                <img src={`https://sleepercdn.com/avatars/${team.avatar}`} alt="avatar" className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-[10px] font-mono font-bold text-zinc-400">#{team.roster_id}</span>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-mono font-bold truncate text-white">{team.team_name}</p>
+                              <p className="text-[10px] font-mono text-zinc-400 truncate">
+                                {team.lifecycle_state || `Rank #${team.roster_id}`} {team.max_pf ? `• ${Math.round(team.max_pf)} Max PF` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: currentTheme.primary }} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+            )}
           </div>
           
           {/* Center Navigation Links (Desktop 5 Arenas) */}

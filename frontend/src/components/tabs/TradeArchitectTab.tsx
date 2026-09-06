@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Search, ArrowRightLeft, UserPlus, X, Briefcase, Sparkles, Scale, Ticket, Plus } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLeague } from '@/context/LeagueContext';
 import { getApiUrl } from '@/config/api';
 
 interface TradeAsset {
@@ -17,21 +18,28 @@ interface TradeAsset {
 }
 
 const COMMON_PICKS = [
-  { name: '2025 Early 1st', value: 18.0, subtitle: 'Top 4 Projected' },
-  { name: '2025 Mid 1st', value: 14.5, subtitle: 'Pick 1.05 - 1.08' },
-  { name: '2025 Late 1st', value: 11.5, subtitle: 'Pick 1.09 - 1.12' },
-  { name: '2025 2nd Round', value: 8.0, subtitle: 'Round 2' },
-  { name: '2025 3rd Round', value: 4.5, subtitle: 'Round 3' },
-  { name: '2026 1st Round', value: 13.5, subtitle: 'Future Capital' },
-  { name: '2026 2nd Round', value: 7.0, subtitle: 'Future Capital' },
-  { name: '2027 1st Round', value: 12.5, subtitle: 'Future Capital' },
+  { name: '2026 Early 1st', value: 18.5, subtitle: 'Top 4 Projected' },
+  { name: '2026 Mid 1st', value: 15.0, subtitle: 'Pick 1.05 - 1.08' },
+  { name: '2026 Late 1st', value: 12.0, subtitle: 'Pick 1.09 - 1.12' },
+  { name: '2026 2nd Round', value: 8.5, subtitle: 'Round 2' },
+  { name: '2026 3rd Round', value: 4.5, subtitle: 'Round 3' },
+  { name: '2027 1st Round', value: 14.0, subtitle: 'Future Capital' },
+  { name: '2027 2nd Round', value: 7.5, subtitle: 'Future Capital' },
+  { name: '2028 1st Round', value: 13.0, subtitle: 'Future Capital' },
+  { name: '2028 2nd Round', value: 6.5, subtitle: 'Future Capital' },
 ];
 
 export default function TradeArchitectTab() {
   const { currentTheme } = useTheme();
+  const { myRosterId, leagueRosters } = useLeague();
   const searchParams = useSearchParams();
   const prefillPlayerName = searchParams?.get('player_name') || searchParams?.get('player');
   const prefillPlayerId = searchParams?.get('player_id');
+  const partnerRosterParam = searchParams?.get('partner_roster') || searchParams?.get('partner');
+
+  const myTeam = leagueRosters.find((r: any) => r.roster_id === myRosterId) || leagueRosters[0];
+  const partnerTeam = leagueRosters.find((r: any) => String(r.roster_id) === String(partnerRosterParam)) || 
+    leagueRosters.find((r: any) => r.roster_id !== myTeam?.roster_id);
 
   const [teamAParent] = useAutoAnimate();
   const [teamBParent] = useAutoAnimate();
@@ -158,7 +166,13 @@ export default function TradeArchitectTab() {
           {/* TEAM A */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="text-lg font-bold" style={{ color: currentTheme.primary }}>Team A Receives</h3>
+              <div>
+                <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: currentTheme.primary }}>
+                  <span>{myTeam?.team_name || "Team A"}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-normal">Receives</span>
+                </h3>
+                <span className="text-[11px] font-mono text-zinc-500">Your Franchise</span>
+              </div>
               <span 
                 className="px-3 py-1 rounded-full text-xs font-mono font-bold border shadow-sm"
                 style={{ backgroundColor: currentTheme.subtle, color: currentTheme.primary, borderColor: currentTheme.border }}
@@ -170,7 +184,7 @@ export default function TradeArchitectTab() {
             <div ref={teamAParent} className="space-y-2 min-h-[160px]">
               {teamA.length === 0 && (
                 <div className="h-full flex items-center justify-center text-zinc-500 text-xs font-semibold uppercase tracking-wider border-2 border-dashed border-zinc-800 rounded-xl p-8">
-                  No assets added to Team A
+                  No assets added to {myTeam?.team_name || "Team A"}
                 </div>
               )}
               {teamA.map(a => (
@@ -205,14 +219,20 @@ export default function TradeArchitectTab() {
               }`}
               style={addingTo === 'A' ? { borderColor: currentTheme.border, color: currentTheme.primary } : {}}
             >
-              <Plus size={16} /> Add Asset to Team A
+              <Plus size={16} /> Add Asset for {myTeam?.team_name || "Team A"}
             </button>
           </div>
 
           {/* TEAM B */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="text-lg font-bold text-cyan-400">Team B Receives</h3>
+              <div>
+                <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                  <span>{partnerTeam?.team_name || "Team B"}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-normal">Receives</span>
+                </h3>
+                <span className="text-[11px] font-mono text-zinc-500">Trade Partner</span>
+              </div>
               <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
                 {valB.toFixed(1)} PPG Value
               </span>
@@ -221,7 +241,7 @@ export default function TradeArchitectTab() {
             <div ref={teamBParent} className="space-y-2 min-h-[160px]">
               {teamB.length === 0 && (
                 <div className="h-full flex items-center justify-center text-zinc-500 text-xs font-semibold uppercase tracking-wider border-2 border-dashed border-zinc-800 rounded-xl p-8">
-                  No assets added to Team B
+                  No assets added to {partnerTeam?.team_name || "Team B"}
                 </div>
               )}
               {teamB.map(a => (
