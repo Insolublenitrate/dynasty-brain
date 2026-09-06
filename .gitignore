@@ -35,3 +35,6 @@ Data Dumps/
 
 .vercel
 
+
+# Vendored marketing skills ship a CSV template (see .claude/MARKETING-SKILLS.md)
+!.claude/**/*.csv
