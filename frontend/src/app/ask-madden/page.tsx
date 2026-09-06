@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Search, Sparkles, Volume2, VolumeX, Mic, MicOff, Flame, HelpCircle, ArrowRight, Trophy, RefreshCw, CheckCircle2, ChevronRight } from "lucide-react";
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TelestratorChalkboard from '@/components/madden/TelestratorChalkboard';
 
 const QUICK_PROMPTS = [
   { label: "Trade Evaluation", query: "Should I trade away a veteran wide receiver for two future 1st-round draft picks?" },
@@ -18,6 +20,7 @@ const QUICK_PROMPTS = [
 export default function AskMaddenPage() {
   const { leagueId } = useLeague();
   const { currentTheme } = useTheme();
+  const [responseParent] = useAutoAnimate();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any | null>(null);
@@ -262,66 +265,60 @@ export default function AskMaddenPage() {
       </div>
 
       {/* Madden Tactical Response Card */}
-      {result && (
-        <div className="max-w-3xl mx-auto space-y-4 animate-in fade-in duration-300">
-          
-          <div className="bg-zinc-900/90 backdrop-blur-md border-2 border-amber-400/60 rounded-3xl p-5 sm:p-8 shadow-[0_0_40px_rgba(251,191,36,0.15)] relative overflow-hidden space-y-6 playbook-chalk-grid">
+      <div ref={responseParent}>
+        {result && (
+          <div className="max-w-3xl mx-auto space-y-4 animate-in fade-in duration-300">
             
-            {/* Telestrator Chalkboard Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-xl shadow-md">
-                  JM
+            <div className="bg-zinc-900/90 backdrop-blur-md border-2 border-amber-400/60 rounded-3xl p-5 sm:p-8 shadow-[0_0_40px_rgba(251,191,36,0.15)] relative overflow-hidden space-y-6 playbook-chalk-grid">
+              
+              {/* Telestrator Chalkboard Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500 text-zinc-950 flex items-center justify-center font-black text-xl shadow-md">
+                    JM
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-white italic tracking-tight font-coach">
+                      COACH MADDEN'S VERDICT
+                    </h3>
+                    <p className="text-[10px] font-mono text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                      Live Broadcast • Telestrator Breakdown
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-black text-white italic tracking-tight font-coach">
-                    COACH MADDEN'S VERDICT
-                  </h3>
-                  <p className="text-[10px] font-mono text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    Live Broadcast • Telestrator Breakdown
-                  </p>
-                </div>
+
+                {/* Voice Speech Synthesis Toggle */}
+                <button
+                  onClick={() => speakMadden(result.answer)}
+                  className={`px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center gap-2 shadow-md ${
+                    isSpeaking 
+                      ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse' 
+                      : 'bg-zinc-950 border-amber-400/50 text-amber-400 hover:bg-amber-500/10'
+                  }`}
+                >
+                  {isSpeaking ? (
+                    <>
+                      <VolumeX size={15} />
+                      <span>Mute Madden</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 size={15} />
+                      <span>Listen to Madden</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              {/* Voice Speech Synthesis Toggle */}
-              <button
-                onClick={() => speakMadden(result.answer)}
-                className={`px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all flex items-center gap-2 shadow-md ${
-                  isSpeaking 
-                    ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse' 
-                    : 'bg-zinc-950 border-amber-400/50 text-amber-400 hover:bg-amber-500/10'
-                }`}
-              >
-                {isSpeaking ? (
-                  <>
-                    <VolumeX size={15} />
-                    <span>Mute Madden</span>
-                  </>
-                ) : (
-                  <>
-                    <Volume2 size={15} />
-                    <span>Listen to Madden</span>
-                  </>
-                )}
-              </button>
-            </div>
+              {/* Interactive Coach Madden Telestrator Chalkboard */}
+              <TelestratorChalkboard 
+                telestratorText={result.telestrator || "BOOM! Big yellow circle around the trenches!"}
+                className="my-2"
+              />
 
-            {/* Telestrator Callout Box (Coach Whiteboard Marker) */}
-            <div className="bg-zinc-950/90 border border-amber-400/30 rounded-2xl p-4 font-mono text-xs text-amber-300 leading-relaxed shadow-inner">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-500 font-mono">
-                  TELESTRATOR CHALK BREAKDOWN:
-                </span>
-                <span className="font-coach text-xs text-amber-400 tracking-wider">X & O SCHEME</span>
-              </div>
-              <div className="font-coach text-sm text-amber-200 leading-snug">
-                {result.telestrator || "[TELESTRATOR: Big yellow circle around the trenches]"}
-              </div>
-            </div>
-
-            {/* Main Response Body */}
-            <div className="text-zinc-200 text-sm sm:text-base leading-relaxed space-y-4 font-sans whitespace-pre-line">
+              {/* Main Response Body */}
+              <div className="text-zinc-200 text-sm sm:text-base leading-relaxed space-y-4 font-sans whitespace-pre-line">
               {result.answer}
             </div>
 
@@ -354,6 +351,7 @@ export default function AskMaddenPage() {
 
         </div>
       )}
+      </div>
 
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Search, ArrowRightLeft, UserPlus, X, Briefcase, Sparkles, Scale, Ticket, Plus } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
@@ -31,6 +32,10 @@ export default function TradeArchitectTab() {
   const searchParams = useSearchParams();
   const prefillPlayerName = searchParams?.get('player_name') || searchParams?.get('player');
   const prefillPlayerId = searchParams?.get('player_id');
+
+  const [teamAParent] = useAutoAnimate();
+  const [teamBParent] = useAutoAnimate();
+  const [searchParent] = useAutoAnimate();
 
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,7 +167,7 @@ export default function TradeArchitectTab() {
               </span>
             </div>
             
-            <div className="space-y-2 min-h-[160px]">
+            <div ref={teamAParent} className="space-y-2 min-h-[160px]">
               {teamA.length === 0 && (
                 <div className="h-full flex items-center justify-center text-zinc-500 text-xs font-semibold uppercase tracking-wider border-2 border-dashed border-zinc-800 rounded-xl p-8">
                   No assets added to Team A
@@ -213,7 +218,7 @@ export default function TradeArchitectTab() {
               </span>
             </div>
             
-            <div className="space-y-2 min-h-[160px]">
+            <div ref={teamBParent} className="space-y-2 min-h-[160px]">
               {teamB.length === 0 && (
                 <div className="h-full flex items-center justify-center text-zinc-500 text-xs font-semibold uppercase tracking-wider border-2 border-dashed border-zinc-800 rounded-xl p-8">
                   No assets added to Team B
@@ -319,7 +324,7 @@ export default function TradeArchitectTab() {
               className="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all shadow-inner"
             />
             {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl overflow-hidden z-20">
+              <div ref={searchParent} className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl overflow-hidden z-20">
                 {searchResults.map(p => (
                   <button
                     key={p.player_id}

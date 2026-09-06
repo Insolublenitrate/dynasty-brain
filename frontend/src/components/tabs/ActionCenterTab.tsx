@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { AlertTriangle, TrendingUp, Info, Target, Sparkles, ArrowUpRight, Radio, MessageSquare } from "lucide-react";
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -11,6 +12,7 @@ export default function ActionCenterTab() {
   const { leagueId, isLoading } = useLeague();
   const { currentTheme } = useTheme();
   const router = useRouter();
+  const [actionFeedParent] = useAutoAnimate();
 
   const [matrixData, setMatrixData] = useState<any[]>([]);
   const [seasonOutlook, setSeasonOutlook] = useState<any>(null);
@@ -197,7 +199,7 @@ export default function ActionCenterTab() {
           <span>Market Opportunities & Action Items</span>
         </h3>
         
-        <div className="space-y-4">
+        <div ref={actionFeedParent} className="space-y-4">
           {loading ? (
             <div className="text-zinc-500 p-12 text-center bg-zinc-900/40 rounded-2xl border border-zinc-800 animate-pulse font-mono text-sm">
               Analyzing league transactions and points against expected baseline...

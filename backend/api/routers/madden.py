@@ -5,8 +5,11 @@ from typing import Optional, Dict, Any, List
 import json
 import os
 import random
+import re
+import pandas as pd
 from database import SessionLocal, get_db
 from models import Roster, User, DraftPick, League, MatchupHistory, SleeperTransaction, PlayerAdvancedStats
+from quant.draft_depreciation import DraftPick as QuantDraftPick, evaluate_pick_portfolio
 
 try:
     from google import genai
@@ -52,8 +55,8 @@ MADDEN_QUOTES = [
 ]
 
 def build_league_context(league_id: str, session: Session) -> Dict[str, Any]:
-    """Extracts live league standings, rosters, and top scorers to feed Coach Madden."""
-    context = {"league_id": league_id, "teams": [], "records": {}, "recent_trades": []}
+    """Extracts live league standings, rosters, draft capital, and age metrics to feed Coach Madden using Pandas."""
+    context = {"league_id": league_id, "teams": [], "records": {}, "recent_trades": [], "quant_summary": {}}
     
     if not league_id:
         return context
@@ -62,12 +65,29 @@ def build_league_context(league_id: str, session: Session) -> Dict[str, Any]:
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         owner_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
         
+        # Load draft capital per team
+        picks = session.query(DraftPick).filter(DraftPick.league_id == league_id).all()
+        pick_map = {}
+        for p in picks:
+            owner_key = p.owner_id
+            if owner_key not in pick_map:
+                pick_map[owner_key] = []
+            try:
+                yr = int(p.season) if str(p.season).isdigit() else 2026
+                pick_map[owner_key].append(QuantDraftPick(year=yr, round=p.round or 1))
+            except Exception:
+                pass
+
         for r in rosters:
+            q_picks = pick_map.get(r.id, []) or pick_map.get(r.roster_id, [])
+            capital_val = round(evaluate_pick_portfolio(q_picks), 1) if q_picks else 0.0
+
             context["teams"].append({
                 "roster_id": r.roster_id,
                 "name": owner_map.get(r.roster_id),
                 "record": f"{r.wins}-{r.losses}",
                 "fpts": round(r.fpts or 0, 1),
+                "draft_capital": capital_val,
                 "starters_count": len(r.starters or []),
                 "players_count": len(r.players or [])
             })
@@ -84,6 +104,24 @@ def build_league_context(league_id: str, session: Session) -> Dict[str, Any]:
                 r_ids = list(set(t.adds.values()))
                 teams = [owner_map.get(r_id, f"Team {r_id}") for r_id in r_ids]
                 context["recent_trades"].append(f"{', '.join(teams)} (Week {t.week}, {t.season})")
+
+        # ── PANDAS QUANT ENGINE AGGREGATION ────────────────────────────
+        if context["teams"]:
+            df = pd.DataFrame(context["teams"])
+            leader_fpts = df.sort_values(by="fpts", ascending=False).iloc[0]
+            leader_capital = df.sort_values(by="draft_capital", ascending=False).iloc[0]
+            mean_fpts = round(float(df["fpts"].mean()), 1)
+            mean_capital = round(float(df["draft_capital"].mean()), 1)
+
+            context["quant_summary"] = {
+                "top_firepower_team": str(leader_fpts["name"]),
+                "top_firepower_points": float(leader_fpts["fpts"]),
+                "top_capital_team": str(leader_capital["name"]),
+                "top_capital_points": float(leader_capital["draft_capital"]),
+                "league_mean_fpts": mean_fpts,
+                "league_mean_capital": mean_capital,
+                "total_franchises": len(df)
+            }
                 
     except Exception as e:
         print(f"Error building league context for Madden: {e}")
@@ -92,9 +130,10 @@ def build_league_context(league_id: str, session: Session) -> Dict[str, Any]:
 
 
 def heuristic_madden_response(prompt: str, context: Dict[str, Any]) -> Dict[str, Any]:
-    """High-depth fallback engine generating authentic John Madden commentary when offline."""
+    """High-depth fallback engine generating authentic John Madden commentary backed by Pandas quant metrics."""
     prompt_lower = prompt.lower()
     teams = context.get("teams", [])
+    quant = context.get("quant_summary", {})
     top_team = max(teams, key=lambda x: x["fpts"]) if teams else None
     quote = random.choice(MADDEN_QUOTES)
     
@@ -113,7 +152,38 @@ def heuristic_madden_response(prompt: str, context: Dict[str, Any]) -> Dict[str,
         actions = ["Audit replacement level VORP", "Check future draft pick depreciation", "Pull the trigger if getting peak firepower"]
         sentiment = "TACTICAL"
 
-    # 2. Start / Sit Question
+    # 2. Draft Capital & Rebuild Question
+    elif any(w in prompt_lower for w in ["draft", "pick", "capital", "rebuild", "future", "rookie"]):
+        cap_team = quant.get("top_capital_team", "The draft vault leader")
+        cap_pts = quant.get("top_capital_points", "massive")
+        telestrator = "[TELESTRATOR: Circle the future draft picks vault in bright cyan]"
+        answer = (
+            f"BOOM! Draft picks are the lifeblood of a football team! Right now in this league, "
+            f"{cap_team} is hoarding future draft capital ({cap_pts} capital pts)! "
+            f"\n\n{telestrator}\n\n"
+            f"Now here's what people get wrong about rebuilding: YOU DON'T DRAFT TO SIT ON PICKS FOREVER! "
+            f"Picks gain maximum value during rookie draft fever in May and June. When the draft clock is ticking and everyone's drooling over shiny new toys, "
+            f"THAT'S when you flip those picks for established, 23-year-old alpha wideouts! "
+            f"Stack draft capital, let it appreciate, and cash it in to buy yourself a championship! POW!"
+        )
+        actions = ["Identify future 1st round pick hoarders", "Sell picks during rookie draft hype apex", "Target elite under-24 foundation players"]
+        sentiment = "ANALYTICAL"
+
+    # 3. Age Cliff & Veteran Longevity Question
+    elif any(w in prompt_lower for w in ["age", "cliff", "veteran", "old", "retire", "window", "longevity"]):
+        telestrator = "[TELESTRATOR: Red warning slash across the running back depth chart]"
+        answer = (
+            f"POW! The age cliff is undefeated in football! Nobody beats father time, not even the toughest guys in the league! "
+            f"\n\n{telestrator}\n\n"
+            f"When running backs hit age 27 and wide receivers hit 29, the cliff comes fast. One day they're bouncing off tackles, "
+            f"and the next day they're a step slow hitting the hole. "
+            f"If your championship window is open this year, ride 'em till the wheels fall off! "
+            f"But if you're 3-5 or sitting in dynasty purgatory, you sell those veterans 6 months too early rather than 2 years too late! BOOM!"
+        )
+        actions = ["Sell RB 27+ and WR 29+ before market devaluation", "Audit starting lineup average age", "Maximize peak production windows"]
+        sentiment = "VIGILANT"
+
+    # 4. Start / Sit Question
     elif any(w in prompt_lower for w in ["start", "sit", "flex", "lineup", "bench"]):
         telestrator = "[TELESTRATOR: Draw a dotted yellow line straight down the sideline]"
         answer = (
@@ -127,9 +197,9 @@ def heuristic_madden_response(prompt: str, context: Dict[str, Any]) -> Dict[str,
         actions = ["Start the high-touch volume player", "Lock in red zone target shares", "Leave gadget plays on the pine"]
         sentiment = "BULLISH"
 
-    # 3. Team Breakdown / Standings / Who is winning
+    # 5. Team Breakdown / Standings / Who is winning
     elif any(w in prompt_lower for w in ["team", "standings", "best", "win", "champion", "ranking", "tiers"]):
-        leader_str = f"{top_team['name']} ({top_team['fpts']} Max PF)" if top_team else "The league leader"
+        leader_str = f"{quant.get('top_firepower_team', top_team['name'] if top_team else 'The frontrunner')} ({quant.get('top_firepower_points', top_team['fpts'] if top_team else 0)} Max PF)"
         telestrator = "[TELESTRATOR: Circle the top of the standings board in glowing chalk]"
         answer = (
             f"BOOM! Let's talk about the power dynamics in this league! Right now, {leader_str} is setting the pace! "
@@ -142,7 +212,7 @@ def heuristic_madden_response(prompt: str, context: Dict[str, Any]) -> Dict[str,
         actions = ["Inspect Power Matrix quadrants", "Check championship longevity index", "Consolidate depth into elite starters"]
         sentiment = "CHAMPIONSHIP"
 
-    # 4. General / Philosophy / Roasts
+    # 6. General / Philosophy / Roasts
     else:
         telestrator = "[TELESTRATOR: Draw two giant X's colliding at the line of scrimmage]"
         answer = (
@@ -195,11 +265,13 @@ def ask_madden(req: AskMaddenRequest):
                 
                 text = response.text
                 quote = random.choice(MADDEN_QUOTES)
+                tel_match = re.search(r"\[TELESTRATOR:\s*([^\]]+)\]", text, re.IGNORECASE)
+                telestrator = f"[TELESTRATOR: {tel_match.group(1)}]" if tel_match else "[TELESTRATOR: Draw big yellow circle around the trenches]"
                 
                 return {
                     "answer": text,
                     "quote": quote,
-                    "telestrator": "[TELESTRATOR: Big yellow circle on the play]",
+                    "telestrator": telestrator,
                     "suggested_actions": ["Execute Madden Playbook", "Check Lineup Matchup", "Review Trade Ledger"],
                     "sentiment": "BOOM"
                 }

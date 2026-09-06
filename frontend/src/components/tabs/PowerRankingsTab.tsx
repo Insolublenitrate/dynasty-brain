@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Crown, Sparkles, Shield, TrendingUp, Zap, Clock, Trophy, AlertTriangle, Layers, Info, HelpCircle } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -14,6 +15,7 @@ export default function PowerRankingsTab() {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFormula, setShowFormula] = useState(false);
+  const [tiersParent] = useAutoAnimate();
 
   useEffect(() => {
     if (!leagueId) return;
@@ -134,7 +136,7 @@ export default function PowerRankingsTab() {
       )}
 
       {/* Tier Groupings */}
-      <div className="space-y-6">
+      <div ref={tiersParent} className="space-y-6">
         {tiers.map((tierName: any) => {
           const tierTeams = power_rankings.filter((t: any) => t.tier === tierName);
           const tierColor = tierTeams[0]?.tier_color || '#a855f7';
