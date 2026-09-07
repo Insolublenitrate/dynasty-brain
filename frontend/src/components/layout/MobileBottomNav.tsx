@@ -22,8 +22,8 @@ function MobileBottomNavInner() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full max-w-[100vw] overflow-x-hidden bg-zinc-950/95 backdrop-blur-2xl border-t border-zinc-800/90 shadow-[0_-8px_30px_rgba(0,0,0,0.8)] pb-safe">
-      <div className="flex items-center justify-around h-16 px-1 max-w-[100vw]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full max-w-full overflow-hidden bg-zinc-950/95 backdrop-blur-2xl border-t border-zinc-800/90 shadow-[0_-8px_30px_rgba(0,0,0,0.8)] pb-safe">
+      <div className="flex items-center justify-around h-16 px-1 w-full max-w-full overflow-hidden">
         {NAV_ITEMS.map((item) => {
           let isActive = false;
           if (item.id === "players") {

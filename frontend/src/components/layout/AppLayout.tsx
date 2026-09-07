@@ -14,14 +14,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   if (isSplash) {
     return (
-      <div className="min-h-screen w-full max-w-[100vw] overflow-hidden bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center relative select-none">
+      <div className="min-h-screen w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center relative select-none">
         {children}
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col ${
+    <div className={`min-h-screen w-full max-w-full overflow-x-hidden flex flex-col ${
       cleanMode 
         ? 'bg-[#09090b] clean-view' 
         : (carbonEnabled ? 'bg-carbon-mesh' : 'bg-zinc-950')
@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       {!cleanMode && playbookEnabled && <PlaybookBackground />}
       
       <TopNav />
-      <main className="flex-1 flex flex-col w-full max-w-[100vw] min-w-0 pb-28 sm:pb-16 relative">
+      <main className="flex-1 flex flex-col w-full max-w-full min-w-0 pb-28 sm:pb-16 relative overflow-x-hidden">
         <div className="w-full max-w-[1440px] mx-auto px-2.5 sm:px-6 lg:px-8 pt-0 sm:pt-2 flex-1 flex flex-col min-w-0">
           {children}
         </div>

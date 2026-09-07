@@ -90,7 +90,7 @@ function DynastyRoomContent() {
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-5rem)]">
+    <div className="flex flex-col min-h-[calc(100vh-5rem)] w-full max-w-full overflow-x-hidden">
       
       {/* ── STICKY ARENA CONTROLLER & SUB-NAV (SEAMLESS FLUSH DOCK WITH ZERO DEAD SPACE) ────────────── */}
       <div className={`${activeArena === 'matchups' ? 'hidden sm:block' : 'block'} -mx-2.5 sm:-mx-6 lg:-mx-8 px-2.5 sm:px-6 lg:px-8 border-b border-zinc-800/90 bg-zinc-950 sticky top-14 sm:top-16 z-30 py-1.5 sm:py-2 shadow-xl`}>
@@ -494,8 +494,8 @@ function DynastyRoomContent() {
       </div>
 
       {/* ── PERSISTENT TICKER (Mobile Aware Spacing - Zero Overflow) ────────────────────── */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 w-full max-w-[100vw] overflow-hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/90 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.7)]">
-        <div className="flex items-stretch h-8 sm:h-9 max-w-[100vw] overflow-hidden">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 w-full max-w-full overflow-hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/90 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.7)]">
+        <div className="flex items-stretch h-8 sm:h-9 w-full max-w-full overflow-hidden">
           <div 
             className="text-zinc-950 font-black italic px-3 sm:px-4 flex items-center justify-center gap-1.5 z-20 shadow-md text-[11px] sm:text-xs tracking-wider shrink-0"
             style={{ backgroundColor: currentTheme.primary }}
