@@ -195,23 +195,20 @@
   }
 
   const platformBtns = document.querySelectorAll('.platform-btn');
+  const desktopGuide = document.getElementById('guide-desktop');
   const androidGuide = document.getElementById('guide-android');
   const iosGuide = document.getElementById('guide-ios');
 
-  if (platformBtns.length && androidGuide && iosGuide) {
+  if (platformBtns.length) {
     platformBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
         const platform = this.getAttribute('data-platform');
         platformBtns.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
 
-        if (platform === 'android') {
-          androidGuide.style.display = 'flex';
-          iosGuide.style.display = 'none';
-        } else {
-          androidGuide.style.display = 'none';
-          iosGuide.style.display = 'flex';
-        }
+        if (desktopGuide) desktopGuide.style.display = platform === 'desktop' ? 'flex' : 'none';
+        if (androidGuide) androidGuide.style.display = platform === 'android' ? 'flex' : 'none';
+        if (iosGuide) iosGuide.style.display = platform === 'ios' ? 'flex' : 'none';
       });
     });
   }
@@ -320,6 +317,57 @@
         submitBtn.disabled = false;
         submitBtn.textContent = 'Join War Room';
       }, 600);
+    });
+  }
+
+  // 9. Interactive War Room Syndicate Access Request Form
+  const accessForm = document.getElementById('access-form');
+  const accessSuccessBox = document.getElementById('access-success-box');
+  const accessSubmitBtn = document.getElementById('access-submit-btn');
+
+  if (accessForm && accessSuccessBox) {
+    accessForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      const name = (document.getElementById('access-name')?.value || '').trim();
+      const email = (document.getElementById('access-email')?.value || '').trim();
+      const platform = document.getElementById('access-platform')?.value || 'Sleeper';
+      const leagueId = (document.getElementById('access-league-id')?.value || '').trim();
+      const format = document.getElementById('access-format')?.value || '';
+      const goal = document.getElementById('access-goal')?.value || '';
+      const notes = (document.getElementById('access-notes')?.value || '').trim();
+
+      if (!name || !email) return;
+
+      if (accessSubmitBtn) {
+        accessSubmitBtn.disabled = true;
+        accessSubmitBtn.innerHTML = '<span>Transmitting Syndicate Application…</span>';
+      }
+
+      const subject = encodeURIComponent(`Blindside Dynasty Syndicate Access Request - ${name} (${platform})`);
+      const body = encodeURIComponent(
+        `WAR ROOM SYNDICATE ACCESS APPLICATION\n` +
+        `----------------------------------------\n` +
+        `Manager / Handle: ${name}\n` +
+        `Email: ${email}\n` +
+        `Platform: ${platform}\n` +
+        `League ID / URL: ${leagueId}\n` +
+        `Roster Format: ${format}\n` +
+        `Primary Dynasty Goal: ${goal}\n` +
+        `Notes / Bylaws: ${notes || 'N/A'}\n\n` +
+        `Please provision our league sync pass.`
+      );
+      const mailtoUrl = `mailto:bigdillengineering@gmail.com?subject=${subject}&body=${body}`;
+
+      setTimeout(() => {
+        accessForm.style.display = 'none';
+        accessSuccessBox.style.display = 'block';
+        const msgEl = document.getElementById('access-success-msg');
+        if (msgEl) {
+          msgEl.innerHTML = `Welcome to the syndicate, <strong>${name}</strong>! Your application for <strong>${platform}</strong> (${format}) has been logged. Our engineering team will calibrate your league endpoints and deliver your credentials to <strong>${email}</strong> within 24 hours.<br/><br/><a href="${mailtoUrl}" class="btn btn-turf" style="display:inline-flex; margin-top:0.75rem; padding:0.6rem 1.25rem; font-size:0.85rem; text-decoration:none;">Open in Mail Client to Confirm →</a>`;
+        }
+        accessSuccessBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 700);
     });
   }
 

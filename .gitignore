@@ -27,11 +27,16 @@ Data Dumps/
 .vscode/
 .idea/
 
-# Binaries & APKs
+# Binaries, APKs & Executables
 *.apk
 !frontend/public/downloads/*.apk
 !frontend/public/*.apk
 !showcase-site/downloads/*.apk
+
+*.exe
+desktop/dist/
+desktop/node_modules/
+desktop/out/
 
 .vercel
 

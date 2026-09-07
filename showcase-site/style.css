@@ -1887,3 +1887,358 @@ footer {
   .download-cta-bar .btn { width: 100%; min-height: 48px; }
   .install-hub-card, .qr-scan-card { padding: 1rem 0.75rem; }
 }
+
+/* ── The 5 Dynasty War Room Pillars ────────────────────────── */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.75rem;
+  margin-top: 2.5rem;
+}
+
+.pillar-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--kbd-border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--theme-border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--theme-subtle);
+}
+
+.pillar-card-header {
+  padding: 1.5rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pillar-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pillar-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--theme-subtle);
+  color: var(--theme-primary);
+  border: 1px solid var(--theme-border);
+}
+
+.pillar-cliff-alert {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.pillar-card h3 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.pillar-card p.pillar-desc {
+  font-size: 0.88rem;
+  color: var(--kbd-smoke);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pillar-preview {
+  margin: 0 1.25rem 1.25rem;
+  background: #09090b;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.pillar-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pillar-card:hover .pillar-preview img {
+  transform: scale(1.02);
+}
+
+.pillar-feature-list {
+  list-style: none;
+  padding: 0 1.5rem 1.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.84rem;
+  color: #d4d4d8;
+}
+
+.pillar-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+.pillar-feature-list li::before {
+  content: '⚡';
+  color: var(--theme-primary);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+/* ── Clean Mode Side-by-Side Showcase ────────────────────────── */
+.clean-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.clean-mode-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--kbd-border);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.clean-mode-card.clean-variant {
+  background: #09090b;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.clean-mode-img {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clean-mode-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Request Access / VIP Syndicate Section ────────────────── */
+#access {
+  padding: 5rem 0;
+  position: relative;
+  background: linear-gradient(180deg, rgba(9,9,11,0.6) 0%, rgba(18,18,21,0.95) 100%);
+}
+
+.access-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 2.5rem;
+  align-items: start;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .access-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.access-info-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--theme-border);
+  border-radius: 20px;
+  padding: 2.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px var(--theme-subtle);
+}
+
+.access-info-card h3 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0 0 1rem;
+  color: #FFFFFF;
+}
+
+.access-info-card p {
+  color: var(--kbd-smoke);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.access-perks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.access-perks li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: #e4e4e7;
+  font-weight: 600;
+}
+
+.access-perks li svg {
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+.access-direct-contact {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-size: 0.84rem;
+  color: var(--kbd-smoke);
+}
+
+.access-direct-contact a {
+  color: var(--theme-primary);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.access-form-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--kbd-border);
+  border-radius: 20px;
+  padding: 2.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.access-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .access-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.access-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.access-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.access-form-group label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.access-form-group input,
+.access-form-group select,
+.access-form-group textarea {
+  background: #09090b;
+  border: 1px solid var(--kbd-border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.access-form-group input:focus,
+.access-form-group select:focus,
+.access-form-group textarea:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px var(--theme-subtle);
+}
+
+.access-submit-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 900;
+  border-radius: 12px;
+  background: var(--theme-primary);
+  color: #09090b;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.access-submit-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+
+.access-success-box {
+  display: none;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1.5px solid rgba(34, 197, 94, 0.4);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  color: #4ade80;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+
+/* ── Desktop Application Badges & Hub ────────────────────────── */
+.desktop-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
