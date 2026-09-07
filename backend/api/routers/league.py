@@ -898,7 +898,7 @@ def get_power_rankings(league_id: str):
         eval_year = int(curr_season) if curr_season.isdigit() else 2026
         
         # 1. Fetch dynamic Starter Firepower (Max PF) for each team
-        max_pfs, starter_ppgs = compute_roster_firepower_and_max_pf(
+        max_pfs, starter_ppgs, *pos_powers_tuple = compute_roster_firepower_and_max_pf(
             session, league_id, curr_season, rosters, sp_cache, espn_to_sleeper
         )
 

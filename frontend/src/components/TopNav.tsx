@@ -249,69 +249,46 @@ function TopNavInner() {
             </div>
           </nav>
 
-          {/* Right Actions: Clean/Stadium View Switcher, Field Guide, Tour, Get App, Settings */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* View Mode Toggle: Stadium vs Clean */}
-            <button
-              onClick={() => setCleanMode(!cleanMode)}
-              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl border transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm ${
-                cleanMode
-                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/50 shadow-sm'
-                  : 'bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700/80 text-zinc-300 hover:text-white'
-              }`}
-              title={cleanMode ? "Current: Clean Minimalist View (Click for Stadium Playbook)" : "Current: Stadium Playbook View (Click for Clean Minimalist)"}
-            >
-              {cleanMode ? (
-                <>
-                  <Sparkles size={13} className="text-teal-400" />
-                  <span className="hidden sm:inline font-black">Clean</span>
-                </>
-              ) : (
-                <>
-                  <Layers size={13} className="text-zinc-400" />
-                  <span className="hidden sm:inline">Stadium</span>
-                </>
-              )}
-            </button>
-
-            {/* Quick Tour Button */}
+          {/* Right Actions: Clean mobile layout with Settings, plus Tour & Field Guide on tablet/desktop */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Quick Tour Button - visible on tablet/desktop */}
             <button
               onClick={() => setIsTourOpen(true)}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Launch Guided War Room Tour"
             >
               <Compass size={14} style={{ color: currentTheme.primary }} />
-              <span className="hidden sm:inline">Tour</span>
+              <span>Tour</span>
             </button>
 
-            {/* Field Guide Glossary Button */}
+            {/* Field Guide Glossary Button - visible on desktop */}
             <button
               onClick={() => setIsGlossaryOpen(true)}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="hidden md:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Open Tactical Metric Field Guide"
             >
               <BookOpen size={14} className="text-amber-400" />
-              <span className="hidden md:inline">Field Guide</span>
+              <span>Field Guide</span>
             </button>
 
-            {/* Mobile App Download Button */}
+            {/* Mobile App Download Button - visible on wide screens */}
             <button
               onClick={() => setIsInstallModalOpen(true)}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-zinc-900/90 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="hidden xl:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Download & Install Mobile App"
             >
               <Smartphone size={14} className="text-emerald-400" />
-              <span className="hidden xl:inline">Get App</span>
+              <span>Get App</span>
             </button>
 
-            {/* Settings Button */}
+            {/* Settings Button - Always clean & accessible */}
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold"
-              title="League & Theme Settings"
+              className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              title="Settings & Themes"
             >
               <Settings size={15} className="transition-transform hover:rotate-45" />
-              <span className="hidden 2xl:inline text-zinc-300">Settings</span>
+              <span className="hidden sm:inline">Settings</span>
             </button>
           </div>
         </div>

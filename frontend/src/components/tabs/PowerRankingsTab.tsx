@@ -14,36 +14,66 @@ export default function PowerRankingsTab() {
   const { currentTheme } = useTheme();
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showFormula, setShowFormula] = useState(false);
   const [tierFilter, setTierFilter] = useState<'ALL' | 'CONTENDER' | 'BUBBLE' | 'REBUILD'>('ALL');
   const [tiersParent] = useAutoAnimate();
 
-  useEffect(() => {
+  const fetchRankings = async () => {
     if (!leagueId) return;
-
-    async function fetchRankings() {
-      setLoading(true);
-      try {
-        const apiUrl = getApiUrl();
-        const res = await fetch(`${apiUrl}/api/quant/power-rankings/${leagueId}`);
-        if (res.ok) {
-          const json = await res.json();
+    setLoading(true);
+    setError(null);
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/api/quant/power-rankings/${leagueId}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && !json.error && Array.isArray(json.power_rankings)) {
           setData(json);
+        } else {
+          setError(json?.error || "Unable to synthesize power rankings for this league.");
         }
-      } catch (err) {
-        console.error("Failed to fetch power rankings:", err);
-      } finally {
-        setLoading(false);
+      } else {
+        setError(`Failed to fetch power rankings (HTTP ${res.status}).`);
       }
+    } catch (err: any) {
+      console.error("Failed to fetch power rankings:", err);
+      setError("Network error connecting to quant engine.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchRankings();
   }, [leagueId]);
 
-  if (loading || !data) {
+  if (loading) {
     return (
       <div className="flex flex-col justify-center items-center py-24 space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: currentTheme.primary }}></div>
         <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest animate-pulse">Synthesizing Dynasty Power Tiers...</p>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex flex-col justify-center items-center py-20 space-y-4 text-center px-4">
+        <div className="p-3 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400">
+          <AlertTriangle size={28} />
+        </div>
+        <div className="space-y-1 max-w-md">
+          <h3 className="text-base font-bold text-white">Power Rankings Unavailable</h3>
+          <p className="text-xs font-mono text-zinc-400">{error || "No power tier data could be calculated for this league."}</p>
+        </div>
+        <button
+          onClick={fetchRankings}
+          className="px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all shadow-md"
+          style={{ backgroundColor: currentTheme.primary, color: '#000' }}
+        >
+          Retry Calculation
+        </button>
       </div>
     );
   }
