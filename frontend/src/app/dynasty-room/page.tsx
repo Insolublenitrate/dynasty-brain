@@ -48,6 +48,7 @@ function DynastyRoomContent() {
   const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'crossref' | 'compare'>((subParam as any) || 'analyzer');
   const [powerSub, setPowerSub] = useState<'tiers' | 'matrix' | 'records' | 'bounties' | 'studio'>((subParam as any) || 'tiers');
   const [tradeSub, setTradeSub] = useState<'architect' | 'partners' | 'ledger' | 'autopsy'>((subParam as any) || 'architect');
+  const [selectedAutopsyTradeId, setSelectedAutopsyTradeId] = useState<string | null>(searchParams.get('trade_id') || null);
 
   useEffect(() => {
     if (arenaParam && arenaParam !== activeArena) {
@@ -438,8 +439,20 @@ function DynastyRoomContent() {
                 }} 
               />
             )}
-            {tradeSub === 'ledger' && <TradedPlayersTab />}
-            {tradeSub === 'autopsy' && <AutopsyTab />}
+            {tradeSub === 'ledger' && (
+              <TradedPlayersTab 
+                onSelectTradeForAutopsy={(tradeId) => {
+                  setSelectedAutopsyTradeId(tradeId);
+                  setTradeSub('autopsy');
+                  router.push(`/dynasty-room?arena=trade&sub=autopsy&trade_id=${tradeId}`, { scroll: false });
+                }}
+              />
+            )}
+            {tradeSub === 'autopsy' && (
+              <AutopsyTab 
+                selectedTrade={selectedAutopsyTradeId || undefined} 
+              />
+            )}
           </div>
         )}
       </div>

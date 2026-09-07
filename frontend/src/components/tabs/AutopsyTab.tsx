@@ -60,6 +60,12 @@ export default function AutopsyTab({
     fetchInitialTrades();
   }, [leagueId, initialAutopsy, initialTrades]);
 
+  useEffect(() => {
+    if (initialSelectedTrade && initialSelectedTrade !== selectedTrade) {
+      onTradeChange(initialSelectedTrade);
+    }
+  }, [initialSelectedTrade]);
+
   const onTradeChange = async (transactionId: string) => {
     setSelectedTrade(transactionId);
     if (initialHandleSelect) {
@@ -167,7 +173,7 @@ export default function AutopsyTab({
             <option value="">-- Most Recent Trade --</option>
             {tradesList.map(t => (
               <option key={t.transaction_id} value={t.transaction_id}>
-                {t.date}: {t.teams.join(' / ')}
+                {t.date}: {Array.isArray(t.teams) ? t.teams.join(' / ') : `${t.team_a?.name || 'Team A'} ⇄ ${t.team_b?.name || 'Team B'}`}
               </option>
             ))}
           </select>

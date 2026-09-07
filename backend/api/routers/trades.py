@@ -17,25 +17,129 @@ def get_trades(league_id: str):
     session = SessionLocal()
     try:
         from models import SleeperTransaction, Roster
+        import requests
+        
         trades = session.query(SleeperTransaction).filter(
             SleeperTransaction.league_id == league_id,
             SleeperTransaction.type == 'trade',
             SleeperTransaction.status == 'complete'
-        ).order_by(SleeperTransaction.season.desc(), SleeperTransaction.week.desc()).limit(20).all()
+        ).order_by(SleeperTransaction.season.desc(), SleeperTransaction.week.desc()).limit(60).all()
         
         rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
         owner_name_map = {r.roster_id: (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}") for r in rosters}
+        avatar_map = {r.roster_id: (r.user.avatar if r.user and r.user.avatar else None) for r in rosters}
+        
+        if 'SLEEPER_PLAYERS_CACHE' not in globals() or not globals()['SLEEPER_PLAYERS_CACHE']:
+            try:
+                resp = requests.get("https://api.sleeper.app/v1/players/nfl", timeout=4)
+                if resp.status_code == 200:
+                    globals()['SLEEPER_PLAYERS_CACHE'] = resp.json()
+                else:
+                    globals()['SLEEPER_PLAYERS_CACHE'] = {}
+            except Exception:
+                globals()['SLEEPER_PLAYERS_CACHE'] = {}
+        sp_cache = globals().get('SLEEPER_PLAYERS_CACHE', {})
+        
+        def get_player_data(pid):
+            p = sp_cache.get(str(pid), {})
+            p_name = f"{p.get('first_name', '')} {p.get('last_name', '')}".strip() or f"Player {pid}"
+            return {
+                "id": str(pid),
+                "name": p_name,
+                "position": p.get("position", "FLEX"),
+                "team": p.get("team", "NFL"),
+                "type": "player"
+            }
         
         results = []
         for t in trades:
+            consenters = list(t.consenter_roster_ids or [])
+            roster_ids = []
             if t.adds:
-                r_ids = list(set(t.adds.values()))
-                teams = [owner_name_map.get(r_id, f"Team {r_id}") for r_id in r_ids]
-                results.append({
-                    "transaction_id": t.id,
-                    "date": f"Week {t.week}, {t.season}",
-                    "teams": teams
-                })
+                roster_ids.extend([int(v) for v in t.adds.values() if str(v).isdigit()])
+            if t.drops:
+                roster_ids.extend([int(v) for v in t.drops.values() if str(v).isdigit()])
+            if t.draft_picks:
+                for dp in t.draft_picks:
+                    if dp.get('owner_id') and str(dp.get('owner_id')).isdigit():
+                        roster_ids.append(int(dp['owner_id']))
+                    if dp.get('previous_owner_id') and str(dp.get('previous_owner_id')).isdigit():
+                        roster_ids.append(int(dp['previous_owner_id']))
+            
+            unique_rosters = []
+            for r_id in (consenters + roster_ids):
+                if r_id not in unique_rosters and r_id in owner_name_map:
+                    unique_rosters.append(r_id)
+                    
+            if len(unique_rosters) < 2:
+                # If only one team found, fallback to next roster
+                if len(unique_rosters) == 1:
+                    other = next((r.roster_id for r in rosters if r.roster_id != unique_rosters[0]), None)
+                    if other: unique_rosters.append(other)
+                else:
+                    continue
+                
+            t_a = unique_rosters[0]
+            t_b = unique_rosters[1]
+            
+            a_assets = []
+            b_assets = []
+            
+            if t.adds:
+                for pid, recv_r in t.adds.items():
+                    recv_r_id = int(recv_r) if str(recv_r).isdigit() else 1
+                    p_data = get_player_data(pid)
+                    if recv_r_id == t_a:
+                        a_assets.append(p_data)
+                    elif recv_r_id == t_b:
+                        b_assets.append(p_data)
+                    else:
+                        # Multi-team deal attribution
+                        a_assets.append(p_data)
+                        
+            if t.draft_picks:
+                for dp in t.draft_picks:
+                    recv_r_id = int(dp.get('owner_id')) if dp.get('owner_id') and str(dp.get('owner_id')).isdigit() else None
+                    pick_asset = {
+                        "id": f"pick-{dp.get('season')}-{dp.get('round')}",
+                        "name": f"{dp.get('season')} Round {dp.get('round')} Pick",
+                        "position": "PICK",
+                        "team": "DRAFT",
+                        "type": "draft_pick"
+                    }
+                    if recv_r_id == t_a:
+                        a_assets.append(pick_asset)
+                    elif recv_r_id == t_b:
+                        b_assets.append(pick_asset)
+                    else:
+                        b_assets.append(pick_asset)
+            
+            # Format clean date label
+            week_label = f"Week {t.week}" if t.week and int(t.week) > 0 else "Offseason"
+            date_label = f"{t.season} {week_label}"
+            
+            results.append({
+                "transaction_id": t.id,
+                "date": date_label,
+                "season": t.season,
+                "week": t.week or 0,
+                "all_roster_ids": [t_a, t_b],
+                "teams": [owner_name_map.get(t_a, f"Team {t_a}"), owner_name_map.get(t_b, f"Team {t_b}")],
+                "team_a": {
+                    "roster_id": t_a,
+                    "name": owner_name_map.get(t_a, f"Team {t_a}"),
+                    "avatar": avatar_map.get(t_a),
+                    "received": a_assets,
+                    "received_assets": a_assets
+                },
+                "team_b": {
+                    "roster_id": t_b,
+                    "name": owner_name_map.get(t_b, f"Team {t_b}"),
+                    "avatar": avatar_map.get(t_b),
+                    "received": b_assets,
+                    "received_assets": b_assets
+                }
+            })
         return results
     finally:
         session.close()

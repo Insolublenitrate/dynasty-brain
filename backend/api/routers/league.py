@@ -219,6 +219,7 @@ def compute_roster_firepower_and_max_pf(session, league_id, curr_season, rosters
 
     computed_max_pfs = {}
     starter_ppgs = {}
+    pos_raw = {}
 
     for r in rosters:
         player_ids = r.players or []
@@ -259,7 +260,31 @@ def compute_roster_firepower_and_max_pf(session, league_id, curr_season, rosters
         computed_max_pfs[r.roster_id] = season_max_pf
         starter_ppgs[r.roster_id] = weekly_ppg
 
-    return computed_max_pfs, starter_ppgs
+        # Track positional firepower for trade synergy matching
+        qb_total = round(sum(p["ppg"] for p in qbs[:2]), 1) if qbs else 15.0
+        rb_total = round(sum(p["ppg"] for p in rbs[:3]), 1) if rbs else 20.0
+        wr_total = round(sum(p["ppg"] for p in wrs[:4]), 1) if wrs else 25.0
+        te_total = round(sum(p["ppg"] for p in tes[:2]), 1) if tes else 8.0
+        pos_raw[r.roster_id] = {
+            "QB": qb_total,
+            "RB": rb_total,
+            "WR": wr_total,
+            "TE": te_total
+        }
+
+    # Normalize positional power (35-95 index) across league
+    pos_powers = {}
+    for pos_key in ["QB", "RB", "WR", "TE"]:
+        all_vals = [pos_raw[rid][pos_key] for rid in pos_raw]
+        min_v = min(all_vals) if all_vals else 10.0
+        max_v = max(all_vals) if all_vals else 50.0
+        val_range = max(max_v - min_v, 1.0)
+        for rid in pos_raw:
+            if rid not in pos_powers:
+                pos_powers[rid] = {}
+            pos_powers[rid][f"{pos_key.lower()}_power"] = round(35.0 + ((pos_raw[rid][pos_key] - min_v) / val_range) * 55.0, 1)
+
+    return computed_max_pfs, starter_ppgs, pos_powers
 
 
 @router.get("/api/quant/matrix")
@@ -280,20 +305,35 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
         curr_season = str(league.season if league and league.season else "2026")
         eval_year = int(curr_season) if curr_season.isdigit() else 2026
         
-        # 1. Fetch dynamic Starter Firepower (Max PF) for each team
-        max_pfs, starter_ppgs = compute_roster_firepower_and_max_pf(
+        # 1. Fetch dynamic Starter Firepower (Max PF) and Positional Ratings
+        max_pfs, starter_ppgs, *pos_powers_tuple = compute_roster_firepower_and_max_pf(
             session, league_id, curr_season, rosters, sp_cache, espn_to_sleeper
         )
+        pos_powers = pos_powers_tuple[0] if pos_powers_tuple else {}
+
+        # 2. Pre-calculate league ranges for normalized Win-Now and Future scores
+        all_pfs = [max_pfs.get(r.roster_id, 2600.0) for r in rosters]
+        min_pf = min(all_pfs) if all_pfs else 2400.0
+        max_pf_val = max(all_pfs) if all_pfs else 3100.0
+        pf_range = max(max_pf_val - min_pf, 1.0)
+
+        raw_cap_map = {}
+        for r in rosters:
+            picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
+            quant_picks = [QuantDraftPick(year=int(p.season) if str(p.season).isdigit() else eval_year + 1, round=p.round) for p in picks]
+            raw_cap_map[r.roster_id] = evaluate_pick_portfolio(quant_picks, current_year=eval_year)
+            
+        all_caps = list(raw_cap_map.values())
+        min_cap = min(all_caps) if all_caps else 15000.0
+        max_cap = max(all_caps) if all_caps else 25000.0
+        cap_range = max(max_cap - min_cap, 1.0)
 
         data = []
         for r in rosters:
             owner_name = (r.settings.get("team_name") if r.settings and isinstance(r.settings, dict) and r.settings.get("team_name") else None) or (r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}")
             avatar = (r.settings.get("avatar") if r.settings and isinstance(r.settings, dict) and r.settings.get("avatar") else None) or (r.user.avatar if r.user else None)
             
-            # Get picks owned by this roster
-            picks = session.query(DraftPick).filter(DraftPick.owner_id == r.id).all()
-            quant_picks = [QuantDraftPick(year=int(p.season) if str(p.season).isdigit() else eval_year + 1, round=p.round) for p in picks]
-            future_capital_score = evaluate_pick_portfolio(quant_picks, current_year=eval_year)
+            future_capital_score = raw_cap_map.get(r.roster_id, 18000.0)
             
             player_ids = r.players or []
             ages = []
@@ -313,10 +353,16 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
             # Power Index (70% Max PF optimal ceiling, 30% actual pts)
             power_index = round((max_pf * 0.7) + (actual_pts * 0.3), 1)
             
+            # Normalized Win-Now and Future Draft scores (0-100 scale)
+            win_now_score = round(35.0 + ((max_pf - min_pf) / pf_range) * 60.0, 1)
+            future_score = round(35.0 + ((future_capital_score - min_cap) / cap_range) * 60.0, 1)
+            
             # Dynasty Health Score (0-100 scale)
             age_normalized = max(0, min(100, (29.0 - age_score) * 20))
             capital_normalized = min(100, (future_capital_score / 20000.0) * 100)
             health_score = round((age_normalized * 0.4) + (capital_normalized * 0.6), 1)
+            
+            team_pos = pos_powers.get(r.roster_id, {})
             
             data.append({
                 "roster_id": r.roster_id,
@@ -328,6 +374,12 @@ def get_power_matrix(league_id: str = "1312567432052760576"):
                 "point_differential": point_differential,
                 "roster_age_score": age_score,
                 "future_capital_score": future_capital_score,
+                "win_now_score": win_now_score,
+                "future_score": future_score,
+                "qb_power": team_pos.get("qb_power", 55.0),
+                "rb_power": team_pos.get("rb_power", 55.0),
+                "wr_power": team_pos.get("wr_power", 55.0),
+                "te_power": team_pos.get("te_power", 55.0),
                 "power_index": power_index,
                 "health_score": health_score,
                 "avatar": avatar

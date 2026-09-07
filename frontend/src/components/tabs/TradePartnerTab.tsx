@@ -52,62 +52,119 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
   // Derive my team's profile
   const myTeam = teams.find(t => t.roster_id === myRosterId) || teams[0];
 
-  // Calculate synergy matches for all other teams
+  // Calculate diverse, mathematically grounded synergy matches
   const partnerMatches = teams
     .filter(t => t.roster_id !== myTeam?.roster_id)
     .map(team => {
-      // Compare win now vs future value
-      const myWinNow = myTeam?.win_now_score || 50;
-      const myFuture = myTeam?.future_score || 50;
-      const teamWinNow = team?.win_now_score || 50;
-      const teamFuture = team?.future_score || 50;
+      const myWinNow = Number(myTeam?.win_now_score ?? 50);
+      const myFuture = Number(myTeam?.future_score ?? 50);
+      const myQb = Number(myTeam?.qb_power ?? 60);
+      const myRb = Number(myTeam?.rb_power ?? 60);
+      const myWr = Number(myTeam?.wr_power ?? 60);
+      const myTe = Number(myTeam?.te_power ?? 60);
+      const myState = myTeam?.lifecycle_state || 'Balanced';
 
-      // Rebuilder vs Contender synergy is highest
+      const teamWinNow = Number(team?.win_now_score ?? 50);
+      const teamFuture = Number(team?.future_score ?? 50);
+      const teamQb = Number(team?.qb_power ?? 60);
+      const teamRb = Number(team?.rb_power ?? 60);
+      const teamWr = Number(team?.wr_power ?? 60);
+      const teamTe = Number(team?.te_power ?? 60);
+      const teamState = team?.lifecycle_state || 'Balanced';
+
       let synergyScore = 70;
-      let synergyReason = "Balanced Roster Synergy";
-      let partnerType = "Neutral";
-
-      if (myWinNow > 65 && teamFuture > 60) {
-        synergyScore = 94;
-        synergyReason = "Contender (You) ↔ Rebuilder (Them): High Draft Pick & Youth Trade Alignment";
-        partnerType = "Rebuilder / Future Seller";
-      } else if (myWinNow < 50 && teamWinNow > 65) {
-        synergyScore = 96;
-        synergyReason = "Rebuilder (You) ↔ Contender (Them): Sell your aging vets for their young assets";
-        partnerType = "Win-Now Buyer";
-      } else if (Math.abs(myWinNow - teamWinNow) > 20) {
-        synergyScore = 88;
-        synergyReason = "Divergent Timeline: High probability of mutually beneficial value transfer";
-        partnerType = "Timeline Divergence";
-      } else {
-        synergyScore = 76;
-        synergyReason = "Lateral Positional Swap: Opportunity to trade depth for starter upgrades";
-        partnerType = "Tier Competitor";
-      }
+      let synergyReason = "Lateral Positional Swap: Opportunity to trade depth for starter upgrades";
+      let partnerType = "Tier Competitor";
+      let badgeColor = "zinc";
 
       // Positional strengths & needs
+      const posScores = [
+        { pos: 'QB', power: teamQb },
+        { pos: 'RB', power: teamRb },
+        { pos: 'WR', power: teamWr },
+        { pos: 'TE', power: teamTe }
+      ].sort((a, b) => b.power - a.power);
+
       const strengths: string[] = [];
       const needs: string[] = [];
 
-      if (team.qb_power && team.qb_power > 60) strengths.push('QB');
-      else if (team.qb_power && team.qb_power < 40) needs.push('QB');
+      posScores.forEach(p => {
+        if (p.power >= 66) strengths.push(p.pos);
+        else if (p.power <= 58) needs.push(p.pos);
+      });
 
-      if (team.rb_power && team.rb_power > 60) strengths.push('RB');
-      else if (team.rb_power && team.rb_power < 40) needs.push('RB');
+      if (strengths.length === 0) strengths.push(posScores[0].pos);
+      if (teamFuture < 50 && !needs.includes('Draft Capital')) needs.push('Draft Capital');
+      if (teamFuture >= 75 && !strengths.includes('Draft Capital')) strengths.push('Draft Capital');
+      if (needs.length === 0) needs.push(posScores[posScores.length - 1].pos);
 
-      if (team.wr_power && team.wr_power > 60) strengths.push('WR');
-      else if (team.wr_power && team.wr_power < 40) needs.push('WR');
+      // Check for direct complementary positional needs
+      const hasRbDeficit = myRb < 62 && teamRb >= 68;
+      const hasWrDeficit = myWr < 62 && teamWr >= 68;
+      const hasQbDeficit = myQb < 62 && teamQb >= 68;
+      const hasTeDeficit = myTe < 62 && teamTe >= 68;
+      const complementaryPositions = (hasRbDeficit ? 1 : 0) + (hasWrDeficit ? 1 : 0) + (hasQbDeficit ? 1 : 0) + (hasTeDeficit ? 1 : 0);
 
-      if (team.te_power && team.te_power > 60) strengths.push('TE');
-      else if (team.te_power && team.te_power < 40) needs.push('TE');
+      // Archetype 1: Rebuilder (You) ↔ Win-Now Contender (Them)
+      if (myWinNow <= 65 && teamWinNow >= 72) {
+        const delta = teamWinNow - myWinNow;
+        synergyScore = Math.min(98, Math.round(91 + (delta / 8)));
+        partnerType = "Win-Now Buyer";
+        badgeColor = "emerald";
+        synergyReason = `Championship Buyer: ${team.team_name} boasts top starter firepower (${Math.round(team.max_pf || 3000)} Max PF) and urgently seeks immediate points. Ideal target to sell high-scoring veterans for 2026/2027 draft capital.`;
+      }
+      // Archetype 2: Contender (You) ↔ Rebuilder / Future Seller (Them)
+      else if (myWinNow >= 72 && teamFuture >= 70) {
+        const delta = teamFuture - 50;
+        synergyScore = Math.min(97, Math.round(90 + (delta / 7)));
+        partnerType = "Future Seller";
+        badgeColor = "teal";
+        synergyReason = `Rookie Capital Seller: ${team.team_name} holds an active rebuilding portfolio (${Math.round((team.future_capital_score || 20000) / 1000)}k pick equity). Trade your bench depth or fringe starters to acquire premium future draft assets.`;
+      }
+      // Archetype 3: Direct Positional Counterpart (Mutual need resolution)
+      else if (complementaryPositions >= 2 || (complementaryPositions >= 1 && Math.abs(myWinNow - teamWinNow) < 25)) {
+        synergyScore = Math.min(93, Math.round(85 + (complementaryPositions * 4)));
+        partnerType = "Positional Counterpart";
+        badgeColor = "cyan";
+        const matchPos = hasRbDeficit ? 'RB' : hasWrDeficit ? 'WR' : hasTeDeficit ? 'TE' : 'QB';
+        synergyReason = `Positional Need Alignment: Their surplus at ${matchPos} directly solves your roster deficit, while your asset liquidity matches their team requirements.`;
+      }
+      // Archetype 4: Juggernaut / Purgatory Consolidation
+      else if (teamState === 'Purgatory' || myState === 'Purgatory') {
+        synergyScore = 84;
+        partnerType = "Retool Partner";
+        badgeColor = "amber";
+        synergyReason = `Structural Retool Match: ${team.team_name} is in a strategic crossroads. Explore multi-asset package deals to consolidate into top-tier weekly cornerstones.`;
+      }
+      // Archetype 5: Juggernaut ↔ Contender Power Clash
+      else if (myWinNow >= 70 && teamWinNow >= 70) {
+        synergyScore = Math.max(54, Math.round(68 - Math.abs(teamWinNow - myWinNow) / 3));
+        partnerType = "Tier Competitor";
+        badgeColor = "rose";
+        synergyReason = `Championship Rival: Both franchises are vying for the current season title. High friction on starter trades. Target lateral bye-week swaps or injured stashes.`;
+      }
+      // Archetype 6: Rebuilder ↔ Rebuilder
+      else if (myWinNow < 65 && teamWinNow < 65) {
+        synergyScore = Math.max(56, Math.round(66 + (teamFuture > 70 ? 6 : 0)));
+        partnerType = "Draft Competitor";
+        badgeColor = "zinc";
+        synergyReason = `Parallel Rebuild: Both teams are competing for draft slot positioning. Explore lateral rookie-for-rookie swaps or tier-down pick splits.`;
+      }
+      else {
+        synergyScore = Math.round(72 + ((teamWinNow + teamFuture) % 9));
+        partnerType = "Market Partner";
+        badgeColor = "zinc";
+        synergyReason = `Balanced Dynasty Fit: Moderate trade synergy across roster age (${team.roster_age_score || 25.5} yrs) and starter production.`;
+      }
 
       return {
         ...team,
         synergyScore,
         synergyReason,
         partnerType,
-        strengths: strengths.length > 0 ? strengths : ['Balanced Depth'],
-        needs: needs.length > 0 ? needs : ['Draft Capital'],
+        badgeColor,
+        strengths,
+        needs,
       };
     })
     .sort((a, b) => b.synergyScore - a.synergyScore);
@@ -119,7 +176,8 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
     
     const matchesPhase = selectedPhase === 'ALL' || 
       (selectedPhase === 'BUYER' && p.partnerType.includes('Buyer')) ||
-      (selectedPhase === 'SELLER' && p.partnerType.includes('Seller')) ||
+      (selectedPhase === 'SELLER' && (p.partnerType.includes('Seller') || p.partnerType.includes('Draft'))) ||
+      (selectedPhase === 'POSITION' && p.partnerType.includes('Positional')) ||
       (selectedPhase === 'HIGH' && p.synergyScore >= 85);
 
     return matchesSearch && matchesPhase;
@@ -221,11 +279,21 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
               >
                 <div>
                   {/* Top Bar: Synergy Pill */}
-                  <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center justify-between gap-2 mb-2">
                     <span 
                       className={`text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border ${
-                        isTopSynergy 
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                        partner.partnerType === 'Win-Now Buyer'
+                          ? 'bg-purple-500/15 text-purple-400 border-purple-500/30'
+                          : partner.partnerType === 'Future Seller'
+                          ? 'bg-teal-500/15 text-teal-400 border-teal-500/30'
+                          : partner.partnerType === 'Positional Counterpart'
+                          ? 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
+                          : partner.partnerType === 'Retool Partner'
+                          ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                          : partner.partnerType === 'Tier Competitor'
+                          ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                          : isTopSynergy 
+                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
                           : 'bg-zinc-800 text-zinc-300 border-zinc-700'
                       }`}
                     >
@@ -238,7 +306,7 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                     </div>
                   </div>
 
-                  {/* Team Title */}
+                  {/* Team Title & Owner */}
                   <h3 className="text-base font-black text-white group-hover:text-zinc-100 transition-colors truncate">
                     {partner.team_name || `Roster ${partner.roster_id}`}
                   </h3>
@@ -246,8 +314,26 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                     {partner.owner_name ? `@${partner.owner_name}` : 'League Rival'}
                   </p>
 
+                  {/* Franchise Vitals */}
+                  <div className="grid grid-cols-3 gap-1.5 mt-2.5 bg-zinc-950/80 p-2 rounded-xl border border-zinc-800/80 text-center font-mono">
+                    <div>
+                      <span className="text-[9px] text-zinc-500 font-bold block">WIN-NOW</span>
+                      <span className="text-xs font-black text-purple-400">{partner.win_now_score || 50}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-zinc-500 font-bold block">FUTURE</span>
+                      <span className="text-xs font-black text-teal-400">{partner.future_score || 50}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-zinc-500 font-bold block">MAX PF</span>
+                      <span className="text-xs font-black text-emerald-400">
+                        {Math.round(partner.max_pf || 0) > 0 ? Math.round(partner.max_pf).toLocaleString() : '—'}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Rationale Brief */}
-                  <div className="mt-3 bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-800/80 text-[11px] text-zinc-300 leading-relaxed">
+                  <div className="mt-2.5 bg-zinc-950/90 p-2.5 rounded-xl border border-zinc-800/80 text-[11px] text-zinc-300 leading-relaxed">
                     {partner.synergyReason}
                   </div>
 
