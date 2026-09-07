@@ -189,47 +189,50 @@ export default function PlayerAnalyzerTab() {
   const yprrLeader = yprrReceivers[0];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 h-full flex flex-col animate-in fade-in duration-500 pb-8">
+    <div className="max-w-7xl mx-auto space-y-2.5 sm:space-y-4 h-full flex flex-col animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-3 sm:pb-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3 uppercase italic">
-              <Activity className="text-cyan-400" size={32} /> Player Analyzer
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 sm:gap-4 border-b border-zinc-800/80 pb-2.5 sm:pb-3.5">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <h1 className="text-base sm:text-2xl font-black tracking-tight text-white flex items-center gap-2 uppercase italic font-display">
+              <Activity className="text-cyan-400 shrink-0" size={20} />
+              <span>Player Analyzer</span>
             </h1>
             {!loading && !errorMsg && (
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase bg-zinc-900 text-cyan-400 border border-zinc-800 px-3 py-1 rounded-full shadow-inner">
-                {enrichedData.length} PLAYERS LOADED
+              <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase bg-zinc-900 text-cyan-400 border border-zinc-800 px-2 py-0.5 rounded-full shadow-inner">
+                {enrichedData.length} PLAYERS
               </span>
             )}
+            <div className="sm:hidden">
+              <SeasonSelector currentSeason={seasonYear} onSeasonChange={setSeasonYear} />
+            </div>
           </div>
-          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1 mb-4">
+          <p className="hidden sm:block text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
             Advanced EPA, VORP, Volume Tracking, and Qualified Metric Leaderboards
           </p>
-          <SeasonSelector currentSeason={seasonYear} onSeasonChange={setSeasonYear} />
+          <div className="hidden sm:block mt-2">
+            <SeasonSelector currentSeason={seasonYear} onSeasonChange={setSeasonYear} />
+          </div>
         </div>
 
-        {/* Player Search Bar */}
-        <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 sm:p-4 w-full md:w-80 relative z-50 shadow-xl">
-          <div className="flex justify-between items-center mb-1.5">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Player Search</label>
-          </div>
+        {/* Player Search Bar (Compact, Direct) */}
+        <div className="w-full sm:w-72 relative z-40">
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-2.5 text-zinc-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input 
               type="text" 
-              placeholder="Search by player name..."
+              placeholder="Search player..."
               value={searchInput}
               onChange={(e) => {
                 setSearchInput(e.target.value);
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+              className="w-full bg-zinc-950/90 border border-zinc-800 hover:border-zinc-700 rounded-xl pl-8 pr-3 py-1.5 sm:py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
             />
             {showSuggestions && searchInput && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50">
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50">
                 {enrichedData
                   .filter(p => p.player_name.toLowerCase().includes(searchInput.toLowerCase()))
                   .slice(0, 8)
@@ -241,7 +244,7 @@ export default function PlayerAnalyzerTab() {
                         setSearchInput(p.player_name);
                         setShowSuggestions(false);
                       }}
-                      className="px-4 py-2.5 hover:bg-zinc-900 cursor-pointer border-b border-zinc-900 last:border-0 flex justify-between items-center text-xs"
+                      className="px-3 py-2 hover:bg-zinc-900 cursor-pointer border-b border-zinc-900 last:border-0 flex justify-between items-center text-xs"
                     >
                       <span className="font-bold text-white">{p.player_name}</span>
                       <span className="font-mono text-zinc-400 text-[10px]">{p.position} • {p.recent_team}</span>

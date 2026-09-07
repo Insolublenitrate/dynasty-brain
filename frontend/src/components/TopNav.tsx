@@ -13,6 +13,7 @@ import InstallAppModal from "@/components/InstallAppModal";
 import TacticalGlossaryModal from "@/components/TacticalGlossaryModal";
 import WarRoomTour from "@/components/WarRoomTour";
 import PlaybookLogo from "@/components/PlaybookLogo";
+import SpotlightSearchModal from "@/components/SpotlightSearchModal";
 import { useTheme } from "@/context/ThemeContext";
 import { useLeague } from "@/context/LeagueContext";
 
@@ -29,6 +30,19 @@ function TopNavInner() {
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const [isFranchiseMenuOpen, setIsFranchiseMenuOpen] = useState(false);
+  const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
+
+  // Global keyboard shortcut for Spotlight Search (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSpotlightOpen(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const activeRoster = leagueRosters.find((r: any) => r.roster_id === myRosterId) || leagueRosters[0];
 
@@ -89,8 +103,8 @@ function TopNavInner() {
         <div className="max-w-[1440px] mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
           
           {/* Left: Logo + League Pill + Franchise Switcher */}
-          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
-            <Link href="/dynasty-room" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <Link href="/dynasty-room" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity">
               <PlaybookLogo size={28} animated={true} />
               <div className="flex flex-col min-w-0">
                 <span className="text-xs sm:text-lg font-black text-white italic tracking-wider font-sans leading-none whitespace-nowrap">
@@ -188,7 +202,7 @@ function TopNavInner() {
           </div>
           
           {/* Center Navigation Links (Desktop 5 Arenas) */}
-          <nav className="hidden lg:flex items-center gap-1.5 bg-zinc-900/60 p-1 rounded-xl border border-zinc-800/80 shadow-inner">
+          <nav className="hidden xl:flex items-center gap-1 bg-zinc-900/60 p-1 rounded-xl border border-zinc-800/80 shadow-inner shrink-0">
             {mainArenas.map((item) => {
               const active = isArenaActive(item);
               const Icon = item.icon;
@@ -196,14 +210,14 @@ function TopNavInner() {
                 <Link 
                   key={item.id} 
                   href={item.href} 
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all whitespace-nowrap ${
                     active 
                       ? "bg-zinc-800 text-white shadow-md border border-zinc-700" 
                       : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40"
                   }`}
                   style={active ? { color: currentTheme.primary } : {}}
                 >
-                  <Icon size={14} className={active ? "stroke-[2.5]" : "stroke-[1.75]"} />
+                  <Icon size={13} className={active ? "stroke-[2.5]" : "stroke-[1.75]"} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -251,20 +265,31 @@ function TopNavInner() {
 
           {/* Right Actions: Clean mobile layout with Settings, plus Tour & Field Guide on tablet/desktop */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Quick Tour Button - visible on tablet/desktop */}
+            {/* Spotlight Universal Command Search */}
+            <button
+              onClick={() => setIsSpotlightOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-300 hover:text-white transition-all text-xs font-mono font-bold shadow-sm"
+              title="Universal Search (Ctrl+K)"
+            >
+              <Search size={14} style={{ color: currentTheme.primary }} />
+              <span className="hidden sm:inline">Search</span>
+              <span className="hidden lg:inline text-[9px] px-1 rounded bg-zinc-800 border border-zinc-700 text-zinc-400">⌘K</span>
+            </button>
+
+            {/* Quick Tour Button - visible on wide screens */}
             <button
               onClick={() => setIsTourOpen(true)}
-              className="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="hidden 2xl:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Launch Guided War Room Tour"
             >
               <Compass size={14} style={{ color: currentTheme.primary }} />
               <span>Tour</span>
             </button>
 
-            {/* Field Guide Glossary Button - visible on desktop */}
+            {/* Field Guide Glossary Button - visible on wide screens */}
             <button
               onClick={() => setIsGlossaryOpen(true)}
-              className="hidden md:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
+              className="hidden 2xl:flex px-2.5 py-1.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-300 hover:text-white transition-all items-center gap-1.5 text-xs font-mono font-bold shadow-sm"
               title="Open Tactical Metric Field Guide"
             >
               <BookOpen size={14} className="text-amber-400" />
@@ -320,6 +345,12 @@ function TopNavInner() {
       <InstallAppModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
+      />
+
+      {/* Universal Spotlight Search Modal */}
+      <SpotlightSearchModal
+        isOpen={isSpotlightOpen}
+        onClose={() => setIsSpotlightOpen(false)}
       />
     </>
   );

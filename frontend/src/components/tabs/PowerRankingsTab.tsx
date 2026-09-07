@@ -84,7 +84,7 @@ export default function PowerRankingsTab() {
   const tiers = Array.from(new Set(power_rankings.map((t: any) => t.tier)));
 
   return (
-    <div className="space-y-3.5 sm:space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
       <TacticalBriefingCard
@@ -114,13 +114,25 @@ export default function PowerRankingsTab() {
       />
 
       {/* Header & Methodology Toggle */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
-            <Crown size={28} style={{ color: currentTheme.primary }} /> DYNASTY POWER TIERS & BUILD METAS
-            <MetricExplainer term="z_score" size="sm" />
-          </h2>
-          <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1 flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-b border-zinc-800/80 pb-2 sm:pb-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="text-base sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2 font-display">
+              <Crown size={20} className="sm:w-7 sm:h-7 shrink-0" style={{ color: currentTheme.primary }} /> 
+              <span>POWER TIERS</span>
+              <MetricExplainer term="z_score" size="xs" />
+            </h2>
+            <div className="sm:hidden">
+              <button
+                onClick={() => setShowFormula(!showFormula)}
+                className="px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono font-bold transition-all flex items-center gap-1 shadow-sm"
+              >
+                <HelpCircle size={12} style={{ color: currentTheme.primary }} />
+                <span>{showFormula ? "Hide" : "Methodology"}</span>
+              </button>
+            </div>
+          </div>
+          <p className="hidden sm:flex text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-0.5 items-center gap-2">
             <span>Standardized Quant Model (Starter Power + Future Draft Capital)</span>
             <MetricExplainer term="archetype" size="xs" />
           </p>
@@ -128,18 +140,18 @@ export default function PowerRankingsTab() {
 
         <button
           onClick={() => setShowFormula(!showFormula)}
-          className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 text-xs font-bold transition-all flex items-center gap-2 shadow-md"
+          className="hidden sm:flex px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 text-xs font-bold transition-all items-center gap-2 shadow-md shrink-0"
         >
-          <HelpCircle size={15} style={{ color: currentTheme.primary }} />
+          <HelpCircle size={14} style={{ color: currentTheme.primary }} />
           <span>{showFormula ? "Hide Methodology" : "How Tiers Are Calculated"}</span>
         </button>
       </div>
 
       {/* Methodology Explainer Card (Expandable) */}
       {showFormula && (
-        <div className="bg-zinc-900/90 border border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3 animate-in fade-in duration-300">
-          <div className="flex items-center gap-2 text-white font-bold text-sm">
-            <Info size={18} style={{ color: currentTheme.primary }} />
+        <div className="bg-zinc-900/90 border border-zinc-700 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-2xl space-y-2.5 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 text-white font-bold text-xs sm:text-sm">
+            <Info size={16} style={{ color: currentTheme.primary }} />
             <span>Mathematical Tiering & Power Score Methodology</span>
           </div>
 
@@ -147,37 +159,37 @@ export default function PowerRankingsTab() {
             The Dynasty Power Model normalizes all teams against league-wide statistical distributions ($Z$-scores) centered on a <strong>0–100 scale</strong> where <strong>50.0 is the exact league median</strong>.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
-            <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-              <span className="text-purple-400 font-bold block mb-1">70% Starter Firepower (Max PF)</span>
-              <p className="text-zinc-400 text-[11px] font-sans">Active season Max PF (optimal points potential) measuring true weekly starting lineup ceiling.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 font-mono text-xs">
+            <div className="bg-zinc-950 p-2.5 sm:p-3 rounded-xl border border-zinc-800">
+              <span className="text-purple-400 font-bold block mb-0.5 text-xs">70% Starter Firepower (Max PF)</span>
+              <p className="text-zinc-400 text-[10.5px] font-sans">Active season Max PF (optimal points potential) measuring true weekly starting lineup ceiling.</p>
             </div>
-            <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-              <span className="text-emerald-400 font-bold block mb-1">30% Draft Capital Equity</span>
-              <p className="text-zinc-400 text-[11px] font-sans">Total value of multi-year draft pick inventory evaluated via Time-Value-of-Money depreciation.</p>
+            <div className="bg-zinc-950 p-2.5 sm:p-3 rounded-xl border border-zinc-800">
+              <span className="text-emerald-400 font-bold block mb-0.5 text-xs">30% Draft Capital Equity</span>
+              <p className="text-zinc-400 text-[10.5px] font-sans">Total value of multi-year draft pick inventory evaluated via Time-Value-of-Money depreciation.</p>
             </div>
           </div>
 
-          <div className="pt-2 text-[11px] text-zinc-400 font-mono flex flex-wrap gap-4">
-            <span>• League Mean Max PF: <strong>{league_benchmarks.mean_max_pf || 2677} pts</strong></span>
-            <span>• League Mean Capital: <strong>{league_benchmarks.mean_capital || 15800} pts</strong></span>
+          <div className="pt-1 text-[10px] sm:text-[11px] text-zinc-400 font-mono flex flex-wrap gap-3">
+            <span>• Mean Max PF: <strong>{league_benchmarks.mean_max_pf || 2677} pts</strong></span>
+            <span>• Mean Capital: <strong>{league_benchmarks.mean_capital || 15800} pts</strong></span>
             <span>• 1.0 Z-Score $\approx$ 15 Rating Points</span>
           </div>
         </div>
       )}
 
       {/* Quick Tier Filters */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
         {[
           { id: 'ALL', label: 'All Tiers' },
           { id: 'CONTENDER', label: 'Contenders (S/A)' },
-          { id: 'BUBBLE', label: 'Playoff Bubble (B)' },
-          { id: 'REBUILD', label: 'Rebuilders (C/D)' },
+          { id: 'BUBBLE', label: 'Bubble (B)' },
+          { id: 'REBUILD', label: 'Rebuild (C/D)' },
         ].map((f) => (
           <button
             key={f.id}
             onClick={() => setTierFilter(f.id as any)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 border ${
+            className={`px-2.5 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all shrink-0 border ${
               tierFilter === f.id
                 ? 'bg-zinc-800 text-white shadow-md border-zinc-600'
                 : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border-zinc-800'
@@ -190,7 +202,7 @@ export default function PowerRankingsTab() {
       </div>
 
       {/* Tier Groupings */}
-      <div ref={tiersParent} className="space-y-6">
+      <div ref={tiersParent} className="space-y-3.5 sm:space-y-5">
         {tiers
           .filter((tierName: any) => {
             if (tierFilter === 'CONTENDER') return tierName.includes('Tier S') || tierName.includes('Tier A');

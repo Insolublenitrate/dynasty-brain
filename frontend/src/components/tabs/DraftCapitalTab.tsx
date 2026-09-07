@@ -116,7 +116,7 @@ export default function DraftCapitalTab({ onSelectTeamForTrade }: DraftCapitalTa
   };
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── TACTICAL BRIEFING CARD ─────────────────────────────────────────── */}
       <TacticalBriefingCard

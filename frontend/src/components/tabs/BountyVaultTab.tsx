@@ -233,7 +233,7 @@ function BountyVaultTabInner() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
       <TacticalBriefingCard

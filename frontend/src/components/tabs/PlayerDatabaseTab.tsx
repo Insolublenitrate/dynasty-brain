@@ -67,13 +67,13 @@ export default function PlayerDatabaseTab() {
   }, [data, searchTerm, positionFilter, sortConfig]);
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 sm:gap-4 border-b border-zinc-800/80 pb-2 sm:pb-3">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-3">
-            <Database size={28} style={{ color: currentTheme.primary }} /> PLAYER DATABASE
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2 font-display">
+            <Database size={20} className="sm:w-7 sm:h-7 shrink-0" style={{ color: currentTheme.primary }} /> <span>PLAYER DATABASE</span>
           </h2>
           <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
             Explore and query advanced player stats, efficiency ratings, and usage splits.

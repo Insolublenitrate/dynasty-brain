@@ -137,20 +137,20 @@ export default function RookieAnalyzerTab() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 pb-12">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 border-b border-zinc-800/80 pb-2.5 sm:pb-3.5">
           <div>
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-400 via-teal-500 to-amber-500 bg-clip-text text-transparent flex items-center gap-3">
-                <GraduationCap size={32} className="text-emerald-500" />
-                Rookie Big Board
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-emerald-400 via-teal-500 to-amber-500 bg-clip-text text-transparent flex items-center gap-2 font-display">
+                <GraduationCap size={20} className="sm:w-7 sm:h-7 text-emerald-500 shrink-0" />
+                <span>Rookie Big Board</span>
               </h1>
               <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
             </div>
-            <p className="text-zinc-400 mt-2">Deep dive into NCAA college production, athletic profiles, and draft analytics.</p>
+            <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">Deep dive into NCAA college production, athletic profiles, and draft analytics.</p>
           </div>
           
           <div className="w-full md:w-80">

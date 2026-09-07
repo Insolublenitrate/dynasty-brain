@@ -286,7 +286,7 @@ export default function ActionCenterTab() {
   const ExecIcon = executiveVerdict.icon;
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── DYNASTY MANAGER PLAYBOOK GUIDE ─────────────────────────────────── */}
       <TacticalBriefingCard
@@ -316,48 +316,48 @@ export default function ActionCenterTab() {
       />
 
       {/* ── 1. DYNASTY EXECUTIVE HORIZON COCKPIT ────────────────────────────── */}
-      <div className="bg-gradient-to-b from-zinc-900/95 via-zinc-900/80 to-zinc-950 border border-zinc-800 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+      <div className="bg-gradient-to-b from-zinc-900/95 via-zinc-900/80 to-zinc-950 border border-zinc-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl pointer-events-none opacity-15" style={{ background: currentTheme.primary }} />
         
         {/* Franchise Header Row */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-5 border-b border-zinc-800/80 relative z-10">
-          <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-950 border border-zinc-700 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 sm:pb-4 border-b border-zinc-800/80 relative z-10">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-700 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
               {myRoster?.avatar ? (
                 <img src={`https://sleepercdn.com/avatars/${myRoster.avatar}`} alt="avatar" className="w-full h-full object-cover" />
               ) : (
-                <ShieldCheck size={28} style={{ color: currentTheme.primary }} />
+                <ShieldCheck size={24} className="sm:w-7 sm:h-7" style={{ color: currentTheme.primary }} />
               )}
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-black text-white italic tracking-tight font-display">
+                <h1 className="text-lg sm:text-2xl font-black text-white italic tracking-tight font-display truncate">
                   {myRoster?.team_name || "Franchise War Room"}
                 </h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${windowMeta.badgeBg}`}>
+                <span className={`px-2 py-0.2 rounded-full text-[9px] sm:text-[10px] font-mono font-bold border ${windowMeta.badgeBg}`}>
                   {windowMeta.status}
                 </span>
                 <MetricExplainer term="archetype" size="xs" />
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mt-1 flex-wrap">
-                <Clock size={13} className={windowMeta.color} />
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono text-zinc-400 mt-0.5 flex-wrap">
+                <Clock size={12} className={windowMeta.color} />
                 <span className="font-bold text-zinc-300">{windowMeta.window}</span>
                 <span className="text-zinc-600">•</span>
-                <span>Power Index: <strong className="text-white">{myRoster?.power_index ? Math.round(myRoster.power_index) : 2500}</strong></span>
+                <span>Power: <strong className="text-white">{myRoster?.power_index ? Math.round(myRoster.power_index) : 2500}</strong></span>
                 <span className="text-zinc-600">•</span>
-                <span className="text-emerald-400 font-bold">Starter Firepower Rank #{starterRank}</span>
+                <span className="text-emerald-400 font-bold">Firepower #{starterRank}</span>
               </div>
             </div>
           </div>
 
           {/* Franchise Switcher Dropdown */}
-          <div className="relative w-full md:w-auto">
+          <div className="relative w-full sm:w-auto shrink-0">
             <button
               onClick={() => setIsTeamSwitcherOpen(!isTeamSwitcherOpen)}
-              className="w-full md:w-auto flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-700/80 hover:border-zinc-500 text-zinc-300 text-xs font-mono font-bold transition-all shadow-sm"
+              className="w-full sm:w-auto flex items-center justify-between gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-950/80 border border-zinc-700/80 hover:border-zinc-500 text-zinc-300 text-[11px] sm:text-xs font-mono font-bold transition-all shadow-sm"
             >
-              <span>Change Franchise Focus</span>
-              <ChevronDown size={14} className={`transition-transform ${isTeamSwitcherOpen ? "rotate-180" : ""}`} />
+              <span>Change Franchise</span>
+              <ChevronDown size={13} className={`transition-transform ${isTeamSwitcherOpen ? "rotate-180" : ""}`} />
             </button>
 
             {isTeamSwitcherOpen && (
@@ -388,109 +388,109 @@ export default function ActionCenterTab() {
         </div>
 
         {/* Executive Verdict Tactical Callout Banner */}
-        <div className={`mt-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r ${executiveVerdict.bg} border ${executiveVerdict.border} shadow-lg relative overflow-hidden`}>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black uppercase tracking-wider border w-fit ${executiveVerdict.badgeColor}`}>
-              <ExecIcon size={12} className={executiveVerdict.iconColor} />
+        <div className={`mt-2.5 sm:mt-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${executiveVerdict.bg} border ${executiveVerdict.border} shadow-lg relative overflow-hidden`}>
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[9px] sm:text-[10px] font-black uppercase tracking-wider border w-fit ${executiveVerdict.badgeColor}`}>
+              <ExecIcon size={11} className={executiveVerdict.iconColor} />
               <span>{executiveVerdict.badge}</span>
             </span>
-            <span className="text-[10px] font-mono text-zinc-400">Tactical Bottom Line</span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-400">Tactical Bottom Line</span>
           </div>
-          <h3 className="text-sm sm:text-base font-bold text-white font-display leading-snug">
+          <h3 className="text-xs sm:text-sm font-bold text-white font-display leading-snug">
             {executiveVerdict.headline}
           </h3>
-          <p className="text-xs text-zinc-300 mt-1 font-sans leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-zinc-300 mt-0.5 font-sans leading-relaxed">
             {executiveVerdict.summary}
           </p>
-          <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-start gap-2 text-xs font-mono text-amber-300/90">
-            <ArrowRight size={13} className="shrink-0 mt-0.5 text-amber-400" />
+          <div className="mt-2 pt-2 border-t border-zinc-800/80 flex items-start gap-1.5 text-[11px] sm:text-xs font-mono text-amber-300/90">
+            <ArrowRight size={12} className="shrink-0 mt-0.5 text-amber-400" />
             <span><strong className="text-white">Recommended Move:</strong> {executiveVerdict.action}</span>
           </div>
         </div>
 
         {/* 4 Quant Vital Signs (Clear Dynasty Translations) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 mt-2.5 sm:mt-4">
           {/* 1. Starter Firepower */}
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-inner flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Starter Firepower</span>
-                <Zap size={14} className="text-amber-400" />
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9.5px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Starter Firepower</span>
+                <Zap size={13} className="text-amber-400" />
               </div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+              <div className="text-lg sm:text-2xl font-black font-mono text-white">
                 {myRoster?.starter_ppg ? `${myRoster.starter_ppg.toFixed(1)}` : '155.0'}
                 <span className="text-xs text-zinc-500 font-sans font-normal ml-1">PPG</span>
               </div>
             </div>
-            <div className="mt-2 pt-1.5 border-t border-zinc-900">
-              <div className="flex items-center justify-between text-[10px] font-mono">
+            <div className="mt-1.5 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-mono">
                 <span className="text-emerald-400 font-bold">Rank #{starterRank} of {matrixData.length || 12}</span>
                 <span className="text-zinc-500">Starters</span>
               </div>
-              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Average starting lineup score. Wins playoff matchups.</p>
+              <p className="text-[9px] sm:text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Average starting lineup score. Wins playoff matchups.</p>
             </div>
           </div>
 
           {/* 2. Draft War Chest */}
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-inner flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Draft War Chest</span>
-                <Coins size={14} className="text-emerald-400" />
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9.5px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Draft War Chest</span>
+                <Coins size={13} className="text-emerald-400" />
               </div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">
+              <div className="text-lg sm:text-2xl font-black font-mono text-emerald-400">
                 {futureFirstsCount}
                 <span className="text-xs text-zinc-400 font-sans font-normal ml-1">Future 1sts</span>
               </div>
             </div>
-            <div className="mt-2 pt-1.5 border-t border-zinc-900">
-              <div className="flex items-center justify-between text-[10px] font-mono">
+            <div className="mt-1.5 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-mono">
                 <span className="text-zinc-300 font-bold">{Math.round((myRoster?.future_capital_score || 21000) / 1000)}k Pts</span>
                 <span className="text-emerald-400">Liquid</span>
               </div>
-              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Liquid currency. Appreciates leading to rookie draft.</p>
+              <p className="text-[9px] sm:text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Liquid currency. Appreciates leading to draft.</p>
             </div>
           </div>
 
           {/* 3. Roster Mean Age */}
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-inner flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Roster Mean Age</span>
-                <Clock size={14} className="text-cyan-400" />
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9.5px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Roster Mean Age</span>
+                <Clock size={13} className="text-cyan-400" />
               </div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+              <div className="text-lg sm:text-2xl font-black font-mono text-white">
                 {myRoster?.roster_age_score ? `${myRoster.roster_age_score.toFixed(1)}` : '25.4'}
                 <span className="text-xs text-zinc-500 font-sans font-normal ml-1">yrs</span>
               </div>
             </div>
-            <div className="mt-2 pt-1.5 border-t border-zinc-900">
-              <div className="flex items-center justify-between text-[10px] font-mono">
+            <div className="mt-1.5 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-mono">
                 <span className="text-cyan-400 font-bold">{myRoster?.roster_age_score && myRoster.roster_age_score < 26 ? 'Young Core' : 'Aging Core'}</span>
                 <span className="text-zinc-500">RB 27 / WR 30</span>
               </div>
-              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Cliff alert: RBs drop sharply at 27, WRs at 30.</p>
+              <p className="text-[9px] sm:text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Cliff alert: RBs drop at 27, WRs at 30.</p>
             </div>
           </div>
 
           {/* 4. Optimal Ceiling (Max PF) */}
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-inner flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Optimal Ceiling</span>
-                <Target size={14} style={{ color: currentTheme.primary }} />
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9.5px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Optimal Ceiling</span>
+                <Target size={13} style={{ color: currentTheme.primary }} />
               </div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+              <div className="text-lg sm:text-2xl font-black font-mono text-white">
                 {myRoster?.max_pf ? Math.round(myRoster.max_pf).toLocaleString() : '2,800'}
                 <span className="text-xs text-zinc-500 font-sans font-normal ml-1">Max PF</span>
               </div>
             </div>
-            <div className="mt-2 pt-1.5 border-t border-zinc-900">
-              <div className="flex items-center justify-between text-[10px] font-mono">
+            <div className="mt-1.5 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-mono">
                 <span className="text-white font-bold">Draft Slot #{maxPfRank}</span>
                 <span className="text-zinc-500">True Power</span>
               </div>
-              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Best possible lineup points. Determines rookie draft slot.</p>
+              <p className="text-[9px] sm:text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Best possible points. Sets rookie draft slot.</p>
             </div>
           </div>
         </div>

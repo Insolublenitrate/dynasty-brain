@@ -32,12 +32,38 @@ export default function TacticalBriefingCard({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className={`bg-zinc-950/80 border border-zinc-800/90 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 ${className}`}>
-      {/* Header Bar */}
+    <div className={`bg-zinc-950/80 border border-zinc-800/90 rounded-xl sm:rounded-2xl overflow-hidden shadow-md transition-all duration-300 ${className}`}>
+      {/* Mobile Compact Trigger Bar (<sm) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-3 text-left hover:bg-zinc-900/40 transition-colors"
+        className="w-full sm:hidden px-3 py-2 flex items-center justify-between gap-2 text-left hover:bg-zinc-900/40 transition-colors"
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          <div 
+            className="w-5 h-5 rounded-lg flex items-center justify-center shrink-0 border border-zinc-800 bg-zinc-900 shadow-inner"
+            style={{ color: currentTheme.primary }}
+          >
+            <Compass size={12} />
+          </div>
+          <span className="text-[10px] font-mono font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-zinc-800 border border-zinc-700/60 text-zinc-300 shrink-0">
+            GUIDE
+          </span>
+          <span className="text-[11px] font-bold text-zinc-200 truncate">
+            {title}
+          </span>
+        </div>
+        <div className="flex items-center gap-1 shrink-0 text-[10px] font-mono font-bold text-zinc-400">
+          <span>{isOpen ? "Close" : "Open"}</span>
+          {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </div>
+      </button>
+
+      {/* Desktop / Tablet Rich Bar (>=sm) */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full hidden sm:flex px-5 py-3.5 items-center justify-between gap-3 text-left hover:bg-zinc-900/40 transition-colors"
       >
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div 
@@ -64,7 +90,7 @@ export default function TacticalBriefingCard({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0 text-xs font-mono font-bold text-zinc-400">
-          <span className="hidden sm:inline text-[11px] text-zinc-400">
+          <span className="text-[11px] text-zinc-400">
             {isOpen ? "Collapse Guide" : "Read Guide"}
           </span>
           {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -73,8 +99,8 @@ export default function TacticalBriefingCard({
 
       {/* Collapsible Content */}
       {isOpen && (
-        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1 border-t border-zinc-800/60 bg-zinc-900/30 animate-in fade-in duration-200">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+        <div className="px-3 pb-3 sm:px-5 sm:pb-5 pt-1 border-t border-zinc-800/60 bg-zinc-900/30 animate-in fade-in duration-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 pt-1.5 sm:pt-2">
             {points.map((pt, idx) => {
               const Icon = pt.icon || Target;
               return (

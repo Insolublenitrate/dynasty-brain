@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Users, ArrowRightLeft, Sparkles, TrendingUp, ShieldAlert, 
   CheckCircle2, ArrowRight, Zap, Target, Search, Filter,
@@ -16,6 +17,7 @@ interface TradePartnerTabProps {
 }
 
 export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProps) {
+  const router = useRouter();
   const { leagueId, leagueName, myRosterId: globalRosterId, setMyRosterId: setGlobalRosterId } = useLeague();
   const { currentTheme } = useTheme();
 
@@ -186,14 +188,14 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
   });
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
-            <ArrowRightLeft size={26} style={{ color: currentTheme.primary }} />
-            SMART TRADE PARTNER FINDER
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2">
+            <ArrowRightLeft size={20} className="sm:w-6 sm:h-6 shrink-0" style={{ color: currentTheme.primary }} />
+            <span>TRADE PARTNER FINDER</span>
           </h2>
           <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
             Algorithmic matchmaking based on franchise timelines, roster surpluses, and positional deficits
@@ -418,12 +420,12 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
-                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                            router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=win_now`);
                           }}
-                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                          className="w-full py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
-                          Load Blueprint into Architect →
+                          <Sparkles size={12} />
+                          <span>✨ Auto-Build Blueprint in Architect →</span>
                         </button>
                       </div>
 
@@ -439,12 +441,12 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
-                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                            router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=need_swap`);
                           }}
-                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                          className="w-full py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
-                          Load Blueprint into Architect →
+                          <Sparkles size={12} />
+                          <span>✨ Auto-Build Blueprint in Architect →</span>
                         </button>
                       </div>
 
@@ -460,12 +462,12 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
-                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                            router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=consolidation`);
                           }}
-                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                          className="w-full py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
-                          Load Blueprint into Architect →
+                          <Sparkles size={12} />
+                          <span>✨ Auto-Build Blueprint in Architect →</span>
                         </button>
                       </div>
                     </div>

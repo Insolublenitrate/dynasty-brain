@@ -71,13 +71,13 @@ export default function RivalriesTab() {
     .sort((a: any, b: any) => b.win_pct - a.win_pct);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 sm:gap-4 border-b border-zinc-800/80 pb-2 sm:pb-3">
         <div>
-          <h2 className="text-2xl md:text-3xl font-display font-black text-white tracking-tight flex items-center gap-2.5">
-            <Swords size={28} style={{ color: currentTheme.primary }} /> RIVALRIES & ALL-PLAY MATRIX
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-black text-white tracking-tight flex items-center gap-2">
+            <Swords size={20} className="sm:w-7 sm:h-7 shrink-0" style={{ color: currentTheme.primary }} /> <span>RIVALRIES & ALL-PLAY MATRIX</span>
           </h2>
           <p className="text-zinc-400 text-xs font-mono tracking-wider uppercase mt-1">
             Lifetime Head-to-Head Records, True-Skill All-Play Standings & Revenge Game Alerts

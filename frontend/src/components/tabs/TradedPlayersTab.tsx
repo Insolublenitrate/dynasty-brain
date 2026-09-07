@@ -172,7 +172,7 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── HEADER JUMBOTRON ──────────────────────────────────── */}
       <div className="bg-gradient-to-r from-teal-950/50 via-zinc-900/90 to-emerald-950/40 border border-teal-500/30 rounded-3xl p-4 sm:p-6 lg:p-7 shadow-2xl relative overflow-hidden backdrop-blur-xl">

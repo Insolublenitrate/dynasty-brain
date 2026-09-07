@@ -72,13 +72,13 @@ export default function MatchupSimulatorTab() {
   const { team_a, team_b, spread, favored_team, histogram = [], positional_edges = [] } = simResult || {};
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 sm:gap-4 border-b border-zinc-800/80 pb-2 sm:pb-3">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2.5">
-            <Dices size={28} style={{ color: currentTheme.primary }} /> MONTE CARLO MATCHUP SIMULATOR
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-white italic tracking-tight flex items-center gap-2 font-display">
+            <Dices size={20} className="sm:w-7 sm:h-7 shrink-0" style={{ color: currentTheme.primary }} /> <span>MATCHUP SIMULATOR</span>
           </h2>
           <p className="text-zinc-400 text-xs font-semibold tracking-wider uppercase mt-1">
             10,000 Game Tale-of-the-Tape Simulation & Volatility Ceiling/Floor Projections

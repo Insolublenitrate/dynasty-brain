@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ShieldAlert, Activity, Info, AlertTriangle, TrendingUp, 
   Search, Users, Crown, Zap, Sparkles, CheckCircle2, ChevronRight,
-  Flame, Award, Layers, Target, Coins, ShieldCheck
+  Flame, Award, Layers, Target, Coins, ShieldCheck, ArrowRightLeft,
+  Copy, X, Check, Briefcase
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -19,7 +21,43 @@ export default function RosterIntelTab() {
   const [selectedRosterId, setSelectedRosterId] = useState<number>(myRosterId || 1);
   const [rosterData, setRosterData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
   const [benchFilter, setBenchFilter] = useState<'ALL' | 'QB' | 'RB' | 'WR' | 'TE' | 'TAXI' | 'IR' | 'CLOGGERS' | 'HANDCUFFS'>('ALL');
+  const [shoppingPlayer, setShoppingPlayer] = useState<any | null>(null);
+  const [shopCopySuccess, setShopCopySuccess] = useState(false);
+
+  // Compute top contender buyers for the shopped player
+  const potentialBuyers = useMemo(() => {
+    if (!shoppingPlayer || !rostersList.length) return [];
+    const pos = shoppingPlayer.position;
+    return rostersList
+      .filter((t: any) => t.roster_id !== selectedRosterId)
+      .map((t: any) => {
+        let posScore = 60;
+        if (pos === 'QB') posScore = t.qb_power ?? 60;
+        else if (pos === 'RB') posScore = t.rb_power ?? 60;
+        else if (pos === 'WR') posScore = t.wr_power ?? 60;
+        else if (pos === 'TE') posScore = t.te_power ?? 60;
+
+        const isContender = (t.win_now_score ?? 50) >= 65 || t.lifecycle_state === 'All-In Contender';
+        const hasPosNeed = posScore <= 62;
+        
+        let priority = 50;
+        if (isContender && hasPosNeed) priority = 95;
+        else if (isContender) priority = 85;
+        else if (hasPosNeed) priority = 75;
+
+        return {
+          ...t,
+          posScore,
+          isContender,
+          hasPosNeed,
+          priority
+        };
+      })
+      .sort((a, b) => b.priority - a.priority)
+      .slice(0, 3);
+  }, [shoppingPlayer, rostersList, selectedRosterId]);
 
   useEffect(() => {
     if (myRosterId) {
@@ -140,7 +178,7 @@ export default function RosterIntelTab() {
   }
 
   return (
-    <div className="space-y-3.5 sm:space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-2.5 sm:space-y-4 animate-in fade-in duration-300">
       
       {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
       <TacticalBriefingCard
@@ -170,35 +208,35 @@ export default function RosterIntelTab() {
       />
 
       {/* ── FRANCHISE COMMAND HEADER & SELECTOR ──────────────────────── */}
-      <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+      <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-10" style={{ background: currentTheme.primary }} />
         
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative z-10">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 sm:gap-4 relative z-10">
           
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-zinc-950 border border-zinc-700/80 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-700/80 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
               {team_info.avatar ? (
                 <img src={team_info.avatar} alt={team_info.team_name} className="w-full h-full object-cover" />
               ) : (
-                <Crown size={28} style={{ color: currentTheme.primary }} />
+                <Crown size={22} className="sm:w-7 sm:h-7" style={{ color: currentTheme.primary }} />
               )}
             </div>
 
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight font-display">
+                <h2 className="text-base sm:text-2xl font-black text-white tracking-tight font-display truncate">
                   {team_info.team_name}
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+                <span className="px-2 py-0.2 rounded-full text-[9px] sm:text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
                   Rank #{team_info.rank} of {team_info.total_teams}
                 </span>
                 <MetricExplainer term="age_cliff" size="xs" />
               </div>
               
-              <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-zinc-400 flex-wrap">
-                <span className="text-white font-bold">{team_info.wins}-{team_info.losses}{team_info.ties ? `-${team_info.ties}` : ''} Record</span>
+              <div className="flex items-center gap-2 mt-0.5 text-[11px] sm:text-xs font-mono text-zinc-400 flex-wrap">
+                <span className="text-white font-bold">{team_info.wins}-{team_info.losses}{team_info.ties ? `-${team_info.ties}` : ''}</span>
                 <span className="text-zinc-600">•</span>
-                <span>{team_info.total_fpts.toLocaleString()} Total FPTS</span>
+                <span>{team_info.total_fpts.toLocaleString()} FPTS</span>
                 <span className="text-zinc-600">•</span>
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   {team_info.starter_total_ppg} Starter PPG <MetricExplainer term="starter_firepower" size="xs" />
@@ -208,10 +246,9 @@ export default function RosterIntelTab() {
           </div>
 
           {/* Team Switcher Selector */}
-          <div className="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-            <span className="text-xs font-mono text-zinc-400 shrink-0">Switch Franchise:</span>
+          <div className="w-full lg:w-auto flex items-center gap-2">
             <select
-              className="bg-zinc-950 border border-zinc-700 text-white rounded-xl px-3.5 py-2 text-xs font-mono font-bold focus:outline-none focus:ring-2 min-w-[220px] shadow-lg cursor-pointer"
+              className="w-full lg:w-auto bg-zinc-950 border border-zinc-700 text-white rounded-xl px-3 py-1.5 text-xs font-mono font-bold focus:outline-none focus:ring-1 min-w-[200px] shadow-sm cursor-pointer"
               value={selectedRosterId}
               onChange={(e) => setSelectedRosterId(Number(e.target.value))}
             >
@@ -391,9 +428,18 @@ export default function RosterIntelTab() {
                         </span>
                       )}
                       {p.age >= (p.position === 'RB' ? 27 : (p.position === 'WR' ? 29 : (p.position === 'TE' ? 31 : 34))) && (
-                        <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-tight shrink-0">
-                          CLIFF WATCH
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-tight shrink-0">
+                            CLIFF WATCH
+                          </span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setShoppingPlayer(p); }}
+                            className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center gap-0.5 cursor-pointer shrink-0"
+                          >
+                            <ArrowRightLeft size={9} />
+                            <span>Shop →</span>
+                          </button>
+                        </div>
                       )}
                     </div>
 
@@ -511,9 +557,18 @@ export default function RosterIntelTab() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <h6 className="text-xs font-bold text-white truncate">{p.name}</h6>
                         {p.clogger_reason && (
-                          <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-black bg-amber-500/25 text-amber-300 border border-amber-500/40">
-                            CLOGGER
-                          </span>
+                          <div className="flex items-center gap-1">
+                            <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-black bg-amber-500/25 text-amber-300 border border-amber-500/40">
+                              CLOGGER
+                            </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setShoppingPlayer(p); }}
+                              className="px-1.5 py-0.2 rounded text-[8px] font-mono font-bold bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center gap-0.5 cursor-pointer"
+                            >
+                              <ArrowRightLeft size={8} />
+                              <span>Shop</span>
+                            </button>
+                          </div>
                         )}
                       </div>
                       <span className="text-[10px] font-mono text-zinc-400 block">
@@ -591,6 +646,124 @@ export default function RosterIntelTab() {
           </div>
         )}
       </div>
+
+      {/* ── SHOPPING PLAYER CONTENDER MATCH MODAL ────────────────── */}
+      {shoppingPlayer && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setShoppingPlayer(null)}
+        >
+          <div 
+            className="w-full max-w-xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-4 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3 border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                  <ArrowRightLeft size={20} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-base font-bold text-white">Shop {shoppingPlayer.name}</h4>
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      MARKET LIQUIDITY
+                    </span>
+                  </div>
+                  <p className="text-xs font-mono text-zinc-400">
+                    {shoppingPlayer.position} • {shoppingPlayer.team} • Age {shoppingPlayer.age} • {shoppingPlayer.ppg} PPG
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShoppingPlayer(null)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-[11px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Users size={13} className="text-emerald-400" />
+                <span>Top 3 Contender Buyer Destinations</span>
+              </div>
+
+              {potentialBuyers.length === 0 ? (
+                <p className="text-xs font-mono text-zinc-500 py-4 text-center">
+                  No active buyers found for this position in the league matrix.
+                </p>
+              ) : (
+                <div className="space-y-2.5">
+                  {potentialBuyers.map((buyer: any) => (
+                    <div 
+                      key={buyer.roster_id}
+                      className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 sm:p-3.5 space-y-2.5 hover:border-zinc-700 transition-all"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="w-6 h-6 rounded-md bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-[10px] font-mono font-bold text-emerald-400 shrink-0">
+                            #{buyer.roster_id}
+                          </span>
+                          <div className="min-w-0">
+                            <span className="text-sm font-bold text-white truncate block">{buyer.team_name}</span>
+                            <span className="text-[10px] font-mono text-zinc-400">
+                              {buyer.owner_name || `Manager ${buyer.roster_id}`} • {buyer.lifecycle_state || 'Contender'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                            {shoppingPlayer.position} Power: {buyer.posScore ?? 60}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-zinc-800/60">
+                        <button
+                          onClick={() => {
+                            setShoppingPlayer(null);
+                            router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${buyer.roster_id}&player_name=${encodeURIComponent(shoppingPlayer.name)}`);
+                          }}
+                          className="w-full sm:flex-1 py-1.5 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shadow-md"
+                        >
+                          <Briefcase size={13} />
+                          <span>Build Trade in Architect →</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            const pitch = `Hey ${buyer.owner_name || buyer.team_name}! Looking at our rosters, I have ${shoppingPlayer.name} (${shoppingPlayer.position}, ${shoppingPlayer.ppg} PPG) available if you want to bolster your ${shoppingPlayer.position} firepower for a championship run. Let me know if you'd be open to talking picks or depth!`;
+                            if (navigator.clipboard) {
+                              navigator.clipboard.writeText(pitch);
+                              setShopCopySuccess(true);
+                              setTimeout(() => setShopCopySuccess(false), 2500);
+                            }
+                          }}
+                          className="w-full sm:w-auto py-1.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0"
+                        >
+                          {shopCopySuccess ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                          <span>{shopCopySuccess ? 'Pitch Copied!' : 'Copy Inquire Pitch'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <span>💡 Trades execute via Sleeper or league platform</span>
+              <button 
+                onClick={() => setShoppingPlayer(null)}
+                className="text-zinc-400 hover:text-white font-bold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
