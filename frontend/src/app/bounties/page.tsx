@@ -7,7 +7,7 @@ export default function BountiesRedirectPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/dynasty-room?arena=command&sub=bounties');
+    router.replace('/dynasty-room?arena=power&sub=bounties');
   }, [router]);
 
   return (

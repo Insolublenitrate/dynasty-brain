@@ -61,11 +61,11 @@ function TopNavInner() {
   }, []);
 
   const mainArenas = [
-    { id: "command", href: "/dynasty-room?arena=command", label: "Command", icon: Target, isDynasty: true },
-    { id: "players", href: "/dynasty-room?arena=players", label: "Players", icon: Users, isDynasty: true },
-    { id: "matchups", href: "/dynasty-room?arena=matchups", label: "Matchups", icon: CalendarDays, isDynasty: true },
-    { id: "power", href: "/dynasty-room?arena=power", label: "Power", icon: Crown, isDynasty: true },
-    { id: "trade", href: "/dynasty-room?arena=trade", label: "Trade", icon: Briefcase, isDynasty: true },
+    { id: "command", href: "/dynasty-room?arena=command&sub=action", label: "Command", icon: Target, isDynasty: true },
+    { id: "players", href: "/dynasty-room?arena=players&sub=analyzer", label: "Players", icon: Users, isDynasty: true },
+    { id: "matchups", href: "/dynasty-room?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynasty: true },
+    { id: "power", href: "/dynasty-room?arena=power&sub=tiers", label: "Power", icon: Crown, isDynasty: true },
+    { id: "trade", href: "/dynasty-room?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynasty: true },
     { id: "madden", href: "/ask-madden", label: "Ask Madden", icon: Sparkles, isDynasty: false },
   ];
 

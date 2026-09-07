@@ -64,8 +64,15 @@ function DynastyRoomContent() {
   useEffect(() => {
     if (arenaParam && arenaParam !== activeArena) {
       setActiveArena(arenaParam);
+      if (!subParam) {
+        if (arenaParam === 'command') setCommandSub('action');
+        if (arenaParam === 'players') setPlayersSub('analyzer');
+        if (arenaParam === 'matchups') setMatchupsSub('slate');
+        if (arenaParam === 'power') setPowerSub('tiers');
+        if (arenaParam === 'trade') setTradeSub('architect');
+      }
     }
-  }, [arenaParam, activeArena]);
+  }, [arenaParam, activeArena, subParam]);
 
   useEffect(() => {
     if (subParam) {
@@ -74,8 +81,15 @@ function DynastyRoomContent() {
       if (['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(subParam)) setPlayersSub(subParam as any);
       if (['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(subParam)) setPowerSub(subParam as any);
       if (['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(subParam)) setTradeSub(subParam as any);
+      // Fallback aliases for backward compatibility
+      if (subParam === 'trends') setTradeSub('ledger');
+      if (subParam === 'bounties' && activeArena === 'command') {
+        setActiveArena('power');
+        setPowerSub('bounties');
+        router.replace('/dynasty-room?arena=power&sub=bounties', { scroll: false });
+      }
     }
-  }, [subParam]);
+  }, [subParam, activeArena, router]);
 
   const handleSubChange = (arena: string, sub: string) => {
     if (arena === 'command') setCommandSub(sub as any);

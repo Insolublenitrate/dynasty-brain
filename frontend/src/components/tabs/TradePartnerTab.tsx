@@ -481,7 +481,7 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                       if (onSelectPartner) {
                         onSelectPartner(partner.roster_id, partner.team_name);
                       } else {
-                        window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                        router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`);
                       }
                     }}
                     className="w-full py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shadow-sm border border-zinc-700 hover:border-zinc-600"

@@ -108,28 +108,39 @@
       }
     }
     .tab-btn {
-      background: transparent;
-      border: none;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--kbd-smoke);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 800;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 0.6rem;
       border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
       gap: 0.4rem;
       transition: all 0.2s;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.25;
     }
     .tab-btn:hover {
       color: #fff;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
     }
     .tab-btn.active {
       color: #fff;
       background: var(--theme-subtle);
       border: 1px solid var(--theme-border);
+      box-shadow: 0 0 12px var(--theme-glow);
+    }
+    @media (max-width: 639px) {
+      .tab-strip-cta {
+        grid-column: 1 / -1;
+      }
     }
     .demo-view-panel {
       display: none;
@@ -173,7 +184,7 @@
       </a>
 
       <ul class="nav-links" id="nav-links">
-        <li><a href="/#power-matrix">Showcase Home</a></li>
+        <li><a href="/">Showcase Home</a></li>
         <li><a href="/#pricing">Pricing ($5 / $25)</a></li>
         <li><a href="/#download">Mobile App</a></li>
         <li><a href="/#sleeper-sync">Multi-Platform Sync</a></li>
@@ -336,7 +347,7 @@
         <button class="tab-btn" data-tab="tab-sim">10,000-Game Matchup Simulator</button>
         <button class="tab-btn" data-tab="tab-players">Player Deep Dive</button>
         <button class="tab-btn" data-tab="tab-records">Podium & Sacko Wall</button>
-        <a href="https://ffdashboard.kindofabigdill.world" target="_blank" class="btn btn-turf" style="margin-left:auto; font-size:0.75rem; padding:0.4rem 0.85rem; border-radius:8px; text-decoration:none;">
+        <a href="https://ffdashboard.kindofabigdill.world" target="_blank" class="btn btn-turf tab-strip-cta" style="font-size:0.75rem; padding:0.4rem 0.85rem; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center;">
           Open Full War Room App →
         </a>
       </div>
@@ -896,7 +907,7 @@
           </div>
 
           <div style="margin-top:1.5rem; text-align:center;">
-            <a href="https://ffdashboard.kindofabigdill.world/dynasty-room" target="_blank" class="btn btn-primary" style="font-size:0.88rem; padding:0.75rem 1.5rem; border-radius:10px; text-decoration:none;">
+            <a href="https://ffdashboard.kindofabigdill.world/dynasty-room?arena=matchups&sub=slate" target="_blank" class="btn btn-primary" style="font-size:0.88rem; padding:0.75rem 1.5rem; border-radius:10px; text-decoration:none;">
               Open Full 18-Week Matchups & Starters Box Score in Live App →
             </a>
           </div>

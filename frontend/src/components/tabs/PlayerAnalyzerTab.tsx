@@ -25,6 +25,7 @@ const REPLACEMENT_LEVELS: Record<string, number> = {
 };
 
 export default function PlayerAnalyzerTab() {
+  const router = useRouter();
   const { currentTheme } = useTheme();
   const [playersData, setPlayersData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -413,7 +414,7 @@ export default function PlayerAnalyzerTab() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    window.location.href = `/dynasty-room?arena=trade&sub=architect&player_id=${selectedPlayer.player_id}&player_name=${encodeURIComponent(selectedPlayer.player_name)}`;
+                    router.push(`/dynasty-room?arena=trade&sub=architect&player_id=${selectedPlayer.player_id}&player_name=${encodeURIComponent(selectedPlayer.player_name)}`);
                   }}
                   className="px-3 py-1.5 rounded-xl bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/40 text-xs font-mono font-bold transition-all flex items-center gap-1.5"
                 >

@@ -119,14 +119,15 @@ function createWindow(port) {
     }
   });
 
-  createApplicationMenu();
+  createApplicationMenu(port);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 }
 
-function createApplicationMenu() {
+function createApplicationMenu(port) {
+  const baseUrl = `http://127.0.0.1:${port}`;
   const template = [
     {
       label: 'War Room',
@@ -134,27 +135,32 @@ function createApplicationMenu() {
         {
           label: 'Dynasty Command Center',
           accelerator: 'CmdOrCtrl+1',
-          click: () => mainWindow && mainWindow.loadURL(http://127.0.0.1:/dynasty-room?arena=command),
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/dynasty-room?arena=command&sub=action`),
         },
         {
           label: 'Players Arena',
           accelerator: 'CmdOrCtrl+2',
-          click: () => mainWindow && mainWindow.loadURL(http://127.0.0.1:/dynasty-room?arena=players),
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/dynasty-room?arena=players&sub=analyzer`),
         },
         {
           label: 'Matchups Arena',
           accelerator: 'CmdOrCtrl+3',
-          click: () => mainWindow && mainWindow.loadURL(http://127.0.0.1:/dynasty-room?arena=matchups),
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/dynasty-room?arena=matchups&sub=slate`),
         },
         {
           label: 'Power Arena',
           accelerator: 'CmdOrCtrl+4',
-          click: () => mainWindow && mainWindow.loadURL(http://127.0.0.1:/dynasty-room?arena=power),
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/dynasty-room?arena=power&sub=tiers`),
+        },
+        {
+          label: 'Trade Hub',
+          accelerator: 'CmdOrCtrl+5',
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/dynasty-room?arena=trade&sub=architect`),
         },
         {
           label: 'Ask Coach Madden AI',
-          accelerator: 'CmdOrCtrl+5',
-          click: () => mainWindow && mainWindow.loadURL(http://127.0.0.1:/ask-madden),
+          accelerator: 'CmdOrCtrl+6',
+          click: () => mainWindow && mainWindow.loadURL(`${baseUrl}/ask-madden`),
         },
         { type: 'separator' },
         {

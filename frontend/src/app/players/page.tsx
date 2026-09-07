@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function PlayersPage() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/dynasty-room?arena=players");
+    router.replace("/dynasty-room?arena=players&sub=analyzer");
   }, [router]);
 
   return (
