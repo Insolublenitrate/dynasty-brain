@@ -274,7 +274,7 @@ export default function CrossReferenceTab() {
       </div>
 
       {subTool === 'headtohead' ? (
-        <PlayerCompareTab />
+        <PlayerCompareTab hideHeader={true} />
       ) : (
         <>
           {/* Controls Container */}

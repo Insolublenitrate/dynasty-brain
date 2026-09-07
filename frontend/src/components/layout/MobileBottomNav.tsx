@@ -13,11 +13,11 @@ function MobileBottomNavInner() {
   const { currentTheme } = useTheme();
 
   const NAV_ITEMS = [
-    { id: "command", href: "/dynasty-room?arena=command", label: "Command", icon: Target, isDynastyTab: true },
-    { id: "players", href: "/dynasty-room?arena=players", label: "Players", icon: Users, isDynastyTab: true },
-    { id: "matchups", href: "/dynasty-room?arena=matchups", label: "Matchups", icon: CalendarDays, isDynastyTab: true },
-    { id: "power", href: "/dynasty-room?arena=power", label: "Power", icon: Crown, isDynastyTab: true },
-    { id: "trade", href: "/dynasty-room?arena=trade", label: "Trade", icon: Briefcase, isDynastyTab: true },
+    { id: "command", href: "/dynasty-room?arena=command&sub=action", label: "Command", icon: Target, isDynastyTab: true },
+    { id: "players", href: "/dynasty-room?arena=players&sub=analyzer", label: "Players", icon: Users, isDynastyTab: true },
+    { id: "matchups", href: "/dynasty-room?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynastyTab: true },
+    { id: "power", href: "/dynasty-room?arena=power&sub=tiers", label: "Power", icon: Crown, isDynastyTab: true },
+    { id: "trade", href: "/dynasty-room?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynastyTab: true },
     { id: "madden", href: "/ask-madden", label: "Madden", icon: Sparkles, isDynastyTab: false },
   ];
 
@@ -47,7 +47,7 @@ function MobileBottomNavInner() {
             <Link
               key={item.id}
               href={item.href}
-              className="flex flex-col items-center justify-center w-full h-full relative py-1 transition-all duration-200"
+              className="flex flex-col items-center justify-center w-full h-full relative py-1 transition-all duration-200 active:scale-95"
             >
               {/* Active Glow Pill */}
               {isActive && (

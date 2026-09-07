@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { 
   Search, X, Target, Crown, CalendarDays, Briefcase, 
   Sparkles, ArrowRight, UserPlus, Users, Flame, BookOpen, 
-  Coins, Scale, Swords, ShieldAlert, Zap
+  Coins, Scale, Swords, ShieldAlert, Zap, Radar, Activity
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
@@ -112,6 +112,22 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       icon: CalendarDays
     },
     {
+      id: "player-analyzer",
+      category: "Tools",
+      title: "Player Analyzer & Archetype Intel",
+      description: "Deep-dive career trajectories, film grades, and valuation",
+      href: "/dynasty-room?arena=players&sub=analyzer",
+      icon: Activity
+    },
+    {
+      id: "cross-ref",
+      category: "Tools",
+      title: "Cross Reference Radar",
+      description: "Direct stat-for-stat visual radar and multi-metric player comparison",
+      href: "/dynasty-room?arena=players&sub=crossref",
+      icon: Radar
+    },
+    {
       id: "monte-carlo",
       category: "Tools",
       title: "Monte Carlo Matchup Simulator",
@@ -207,11 +223,11 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-3 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-3 sm:pt-20 px-2 sm:px-3 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[80vh]"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >

@@ -6,16 +6,17 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import SeasonSelector from '@/components/SeasonSelector';
+import { getApiUrl } from '@/config/api';
 
 const RADAR_METRICS = [
   { key: 'target_rate', label: 'Target Rate', max: 0.35 },
   { key: 'catch_rate', label: 'Catch Rate', max: 1.0 },
   { key: 'yprr_approx', label: 'YPRR', max: 3.5 },
   { key: 'ppg', label: 'PPG', max: 25.0 },
-  { key: 'offense_pct', label: 'Snap %', max: 1.0 },
+  { key: 'offense_pct', label: 'Snap %', max: 100.0 },
 ];
 
-export default function PlayerCompareTab() {
+export default function PlayerCompareTab({ hideHeader = false }: { hideHeader?: boolean } = {}) {
   const { currentTheme } = useTheme();
   const [playersData, setPlayersData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ export default function PlayerCompareTab() {
     async function fetchData() {
       setLoading(true);
       try {
-        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dynasty-brain.onrender.com').replace(/\/+$/, '');
+        const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/api/stats/advanced_player_metrics?year=${seasonYear}`);
         const json = await res.json();
         setPlayersData(json);
@@ -95,16 +96,18 @@ export default function PlayerCompareTab() {
   if (isLeagueLoading) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 h-full flex flex-col">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-          <RadarIcon className="text-amber-500" /> Player Radar
-        </h1>
-        <p className="text-zinc-400 mt-2 mb-4">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
-        <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
-      </div>
+    <div className="max-w-6xl mx-auto space-y-3 sm:space-y-5 h-full flex flex-col">
+      {!hideHeader && (
+        <div>
+          <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <RadarIcon className="text-amber-500" size={24} /> Player Radar
+          </h1>
+          <p className="text-zinc-400 text-xs sm:text-sm mt-1 mb-3">Compare player profiles side-by-side using multi-dimensional radar charts.</p>
+          <SeasonSelector value={seasonYear} onChange={setSeasonYear} />
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl space-y-2">
           <label className="text-sm font-medium text-zinc-400">Player 1 (Blue)</label>
           <div className="relative">
@@ -136,20 +139,20 @@ export default function PlayerCompareTab() {
         </div>
       </div>
 
-      <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-8 min-h-[500px]">
+      <div className="w-full h-[360px] sm:h-[460px] bg-zinc-900 border border-zinc-800 rounded-xl p-2 sm:p-4 relative">
         {loading ? (
           <div className="flex h-full items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
           </div>
         ) : (!player1 || !player2) ? (
-          <div className="flex h-full items-center justify-center text-zinc-500">
+          <div className="flex h-full items-center justify-center text-zinc-500 text-xs sm:text-sm">
             Search for two valid players to display radar chart.
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
               <PolarGrid stroke="#334155" />
-              <PolarAngleAxis dataKey="subject" tick={{fill: '#94a3b8', fontSize: 12}} />
+              <PolarAngleAxis dataKey="subject" tick={{fill: '#94a3b8', fontSize: 11}} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
               <Radar name={player1.player_name} dataKey="A" stroke="#6366f1" fill="#6366f1" fillOpacity={0.3} />
               <Radar name={player2.player_name} dataKey="B" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.3} />
@@ -159,6 +162,54 @@ export default function PlayerCompareTab() {
           </ResponsiveContainer>
         )}
       </div>
+
+      {/* Direct Head-to-Head Stat Comparison Breakdown */}
+      {player1 && player2 && (
+        <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 sm:p-4 shadow-lg">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800">
+            <span className="text-[11px] font-mono font-bold text-indigo-400 truncate max-w-[40%]">
+              {player1.player_name} ({player1.recent_team || 'FA'})
+            </span>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider font-bold">
+              VS
+            </span>
+            <span className="text-[11px] font-mono font-bold text-rose-400 truncate max-w-[40%] text-right">
+              {player2.player_name} ({player2.recent_team || 'FA'})
+            </span>
+          </div>
+
+          <div className="divide-y divide-zinc-800/60 font-mono text-xs">
+            {RADAR_METRICS.map(m => {
+              const val1 = player1[m.key] ?? 0;
+              const val2 = player2[m.key] ?? 0;
+              const isP1Higher = val1 > val2;
+              const isP2Higher = val2 > val1;
+              const formatVal = (v: number) => {
+                if (m.key === 'target_rate' || m.key === 'catch_rate') {
+                  return `${(v * 100).toFixed(1)}%`;
+                }
+                if (m.key === 'offense_pct') {
+                  return `${v.toFixed(1)}%`;
+                }
+                return v.toFixed(2);
+              };
+              return (
+                <div key={m.key} className="py-2 flex items-center justify-between gap-2">
+                  <span className={`w-20 sm:w-28 text-left font-bold ${isP1Higher ? 'text-indigo-400 font-black' : 'text-zinc-400'}`}>
+                    {formatVal(val1)} {isP1Higher && '▲'}
+                  </span>
+                  <span className="text-[11px] text-zinc-300 font-sans text-center flex-1 font-semibold truncate">
+                    {m.label}
+                  </span>
+                  <span className={`w-20 sm:w-28 text-right font-bold ${isP2Higher ? 'text-rose-400 font-black' : 'text-zinc-400'}`}>
+                    {isP2Higher && '▲'} {formatVal(val2)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
