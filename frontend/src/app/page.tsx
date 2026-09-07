@@ -21,7 +21,12 @@ function SplashContent() {
     navigatedRef.current = true;
     setIsFadingOut(true);
     setTimeout(() => {
-      router.replace("/dynasty-room?arena=command");
+      const currentQuery = searchParams ? searchParams.toString() : "";
+      if (currentQuery) {
+        router.replace(`/dynasty-room/?${currentQuery}`);
+      } else {
+        router.replace("/dynasty-room/?arena=command&sub=action");
+      }
     }, 250);
   };
 

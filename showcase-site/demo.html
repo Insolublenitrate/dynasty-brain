@@ -642,9 +642,9 @@
           </div>
 
           <div class="cross-matrix-bar">
-            <button type="button" class="cross-pill active" onclick="setDemoScatter('targets')">Age vs. Target Share</button>
-            <button type="button" class="cross-pill" onclick="setDemoScatter('yprr')">Yards Per Route (YPRR) vs. Snap %</button>
-            <button type="button" class="cross-pill" onclick="setDemoScatter('air')">Air Yards Share vs. Touchdown Rate</button>
+            <button type="button" class="cross-pill active" onclick="setDemoScatter('targets', this)">Age vs. Target Share</button>
+            <button type="button" class="cross-pill" onclick="setDemoScatter('yprr', this)">Yards Per Route (YPRR) vs. Snap %</button>
+            <button type="button" class="cross-pill" onclick="setDemoScatter('air', this)">Air Yards Share vs. Touchdown Rate</button>
           </div>
 
           <div class="matrix-quadrant-grid" style="aspect-ratio: 16/9; position:relative;">
@@ -814,39 +814,39 @@
           </div>
 
           <!-- Weekly Ribbon -->
-          <div style="display:flex; flex-wrap:wrap; gap:0.4rem; padding-bottom:0.75rem; margin-bottom:1.25rem;">
-            <button type="button" class="team-pill active" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 1 (FINAL)</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 2</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 3</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 4</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 5</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 6</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 15 (PLAYOFFS)</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 16 (SEMIS)</button>
-            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;">WEEK 17 (CHAMPIONSHIP)</button>
+          <div id="demo-weeks-ribbon" style="display:flex; flex-wrap:wrap; gap:0.4rem; padding-bottom:0.75rem; margin-bottom:1.25rem;">
+            <button type="button" class="team-pill active" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(1, this)">WEEK 1 (FINAL)</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(2, this)">WEEK 2</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(3, this)">WEEK 3</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(4, this)">WEEK 4</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(5, this)">WEEK 5</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(6, this)">WEEK 6</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(15, this)">WEEK 15 (PLAYOFFS)</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(16, this)">WEEK 16 (SEMIS)</button>
+            <button type="button" class="team-pill" style="padding:0.35rem 0.8rem; font-size:0.75rem; font-family:'JetBrains Mono', monospace;" onclick="selectDemoWeek(17, this)">WEEK 17 (CHAMPIONSHIP)</button>
           </div>
 
           <!-- Weekly Awards Mini Banner -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-bottom:1.5rem;">
+          <div id="demo-weekly-awards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-bottom:1.5rem;">
             <div style="background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:0.85rem 1rem;">
               <span style="font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#eab308; font-weight:800; text-transform:uppercase;">HIGH ROLLER OF THE WEEK</span>
-              <h5 style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">CeeDeez Nutz</h5>
-              <span style="font-size:0.78rem; color:#A1A1AA; font-family:'JetBrains Mono', monospace;">148.60 pts</span>
+              <h5 id="demo-high-team" style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">CeeDeez Nutz</h5>
+              <span id="demo-high-pts" style="font-size:0.78rem; color:#A1A1AA; font-family:'JetBrains Mono', monospace;">148.60 pts</span>
             </div>
             <div style="background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.25); border-radius:12px; padding:0.85rem 1rem;">
               <span style="font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#a855f7; font-weight:800; text-transform:uppercase;">LEAGUE MEDIAN CUTOFF</span>
-              <h5 style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">122.45 pts</h5>
+              <h5 id="demo-median-pts" style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">122.45 pts</h5>
               <span style="font-size:0.78rem; color:#A1A1AA;">Top 50% Win Cutoff</span>
             </div>
             <div style="background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); border-radius:12px; padding:0.85rem 1rem;">
               <span style="font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#f43f5e; font-weight:800; text-transform:uppercase;">SACKO BLUNDER OF THE WEEK</span>
-              <h5 style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">Waffle House Survivor</h5>
-              <span style="font-size:0.78rem; color:#A1A1AA; font-family:'JetBrains Mono', monospace;">84.20 pts</span>
+              <h5 id="demo-sacko-team" style="margin:0.2rem 0 0; color:#fff; font-size:0.95rem; font-weight:800;">Waffle House Survivor</h5>
+              <span id="demo-sacko-pts" style="font-size:0.78rem; color:#A1A1AA; font-family:'JetBrains Mono', monospace;">84.20 pts</span>
             </div>
           </div>
 
           <!-- Paired Matchup Cards Grid -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1rem;">
+          <div id="demo-matchups-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1rem;">
             
             <!-- Game 1 -->
             <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:16px; padding:1.2rem;">
@@ -907,7 +907,7 @@
           </div>
 
           <div style="margin-top:1.5rem; text-align:center;">
-            <a href="https://ffdashboard.kindofabigdill.world/dynasty-room?arena=matchups&sub=slate" target="_blank" class="btn btn-primary" style="font-size:0.88rem; padding:0.75rem 1.5rem; border-radius:10px; text-decoration:none;">
+            <a href="https://ffdashboard.kindofabigdill.world/dynasty-room/?arena=matchups&sub=slate" target="_blank" class="btn btn-primary" style="font-size:0.88rem; padding:0.75rem 1.5rem; border-radius:10px; text-decoration:none;">
               Open Full 18-Week Matchups & Starters Box Score in Live App →
             </a>
           </div>
@@ -1079,16 +1079,73 @@
       });
     });
 
-    // Tab Switcher Handlers
+    // Tab Switcher Functions & URL Deep Linking
+    function switchDemoTab(tabId) {
+      if (!tabId) return;
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.demo-view-panel').forEach(p => {
+        p.classList.toggle('active', p.id === tabId);
+      });
+    }
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.demo-view-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const targetPanel = document.getElementById(btn.dataset.tab);
-        if (targetPanel) targetPanel.classList.add('active');
+        const targetTab = btn.dataset.tab;
+        switchDemoTab(targetTab);
+        if (history.replaceState) {
+          history.replaceState(null, '', '#' + targetTab);
+        }
       });
     });
+
+    function initDemoTabFromUrl() {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = (params.get('tab') || hash || '').toLowerCase();
+
+      const TAB_MAP = {
+        'tab-matrix': 'tab-matrix',
+        'matrix': 'tab-matrix',
+        'power': 'tab-matrix',
+        'power-matrix': 'tab-matrix',
+        'tab-schedule': 'tab-schedule',
+        'schedule': 'tab-schedule',
+        'matchups': 'tab-schedule',
+        'matchup-schedule': 'tab-schedule',
+        'tab-radar': 'tab-radar',
+        'radar': 'tab-radar',
+        'positional-radar': 'tab-radar',
+        'tab-roster': 'tab-roster',
+        'roster': 'tab-roster',
+        'roster-intel': 'tab-roster',
+        'tab-madden': 'tab-madden',
+        'madden': 'tab-madden',
+        'coach-madden': 'tab-madden',
+        'tab-scatter': 'tab-scatter',
+        'scatter': 'tab-scatter',
+        'crossref': 'tab-scatter',
+        'cross-reference': 'tab-scatter',
+        'tab-sim': 'tab-sim',
+        'sim': 'tab-sim',
+        'simulator': 'tab-sim',
+        'monte-carlo': 'tab-sim',
+        'tab-players': 'tab-players',
+        'players': 'tab-players',
+        'player-analyzer': 'tab-players',
+        'tab-records': 'tab-records',
+        'records': 'tab-records',
+        'record-book': 'tab-records'
+      };
+
+      if (tabParam && TAB_MAP[tabParam]) {
+        switchDemoTab(TAB_MAP[tabParam]);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initDemoTabFromUrl);
+    window.addEventListener('hashchange', initDemoTabFromUrl);
 
     // Voice Synthesis for Coach Madden in Demo
     document.getElementById('demo-voice-trigger')?.addEventListener('click', () => {
@@ -1103,9 +1160,16 @@
     });
 
     // Interactive Scatter Plot presets
-    function setDemoScatter(type) {
+    function setDemoScatter(type, el) {
       const container = document.getElementById('scatter-nodes-container');
       if (!container) return;
+
+      document.querySelectorAll('#tab-scatter .cross-pill').forEach(b => b.classList.remove('active'));
+      if (el) {
+        el.classList.add('active');
+      } else if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+      }
 
       if (type === 'targets') {
         container.innerHTML = `
@@ -1128,6 +1192,214 @@
           <div class="matrix-team-node" style="left: 58%; top: 52%;"><span class="node-dot" style="background:#eab308;"></span> DeAndre Hopkins (28.4% Air Yards)</div>
           <div class="matrix-team-node" style="left: 65%; top: 75%;"><span class="node-dot" style="background:#ef4444;"></span> Tyler Boyd (14.2% Air Yards)</div>
         `;
+      }
+    }
+
+    // Weekly Ribbon Schedule Simulation Data & Handler
+    const weeklyMatchupData = {
+      1: {
+        highTeam: 'CeeDeez Nutz', highPts: '148.60 pts',
+        median: '122.45 pts',
+        sackoTeam: 'Waffle House Survivor', sackoPts: '84.20 pts',
+        games: [
+          {
+            id: 1, margin: '+18.4', status: 'FINAL',
+            teamA: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '148.60', win: true },
+            teamB: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '130.20', win: false }
+          },
+          {
+            id: 2, margin: '+34.2', status: 'FINAL',
+            teamA: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '138.40', win: true },
+            teamB: { name: '1st Round Pick Addicts', tier: 'Tier C Rebuilder', score: '104.20', win: false }
+          }
+        ]
+      },
+      2: {
+        highTeam: 'Run CMC & The Hamstrings', highPts: '154.10 pts',
+        median: '125.80 pts',
+        sackoTeam: '1st Round Pick Addicts', sackoPts: '91.30 pts',
+        games: [
+          {
+            id: 1, margin: '+26.8', status: 'FINAL',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '154.10', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '127.30', win: false }
+          },
+          {
+            id: 2, margin: '+12.4', status: 'FINAL',
+            teamA: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '136.50', win: true },
+            teamB: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '124.10', win: false }
+          }
+        ]
+      },
+      3: {
+        highTeam: 'Puka Nacua Matata', highPts: '162.70 pts',
+        median: '128.40 pts',
+        sackoTeam: 'Waffle House Survivor', sackoPts: '79.10 pts',
+        games: [
+          {
+            id: 1, margin: '+48.2', status: 'FINAL',
+            teamA: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '162.70', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '114.50', win: false }
+          },
+          {
+            id: 2, margin: '+19.6', status: 'FINAL',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '133.40', win: true },
+            teamB: { name: '1st Round Pick Addicts', tier: 'Tier C Rebuilder', score: '113.80', win: false }
+          }
+        ]
+      },
+      4: {
+        highTeam: 'CeeDeez Nutz', highPts: '151.30 pts',
+        median: '124.10 pts',
+        sackoTeam: '1st Round Pick Addicts', sackoPts: '88.50 pts',
+        games: [
+          {
+            id: 1, margin: '+32.4', status: 'FINAL',
+            teamA: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '151.30', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '118.90', win: false }
+          },
+          {
+            id: 2, margin: '+15.2', status: 'FINAL',
+            teamA: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '139.80', win: true },
+            teamB: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '124.60', win: false }
+          }
+        ]
+      },
+      5: {
+        highTeam: 'Hot Chubb Time Machine', highPts: '149.20 pts',
+        median: '126.90 pts',
+        sackoTeam: 'Waffle House Survivor', sackoPts: '86.40 pts',
+        games: [
+          {
+            id: 1, margin: '+8.6', status: 'FINAL',
+            teamA: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '149.20', win: true },
+            teamB: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '140.60', win: false }
+          },
+          {
+            id: 2, margin: '+21.3', status: 'FINAL',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '135.80', win: true },
+            teamB: { name: '1st Round Pick Addicts', tier: 'Tier C Rebuilder', score: '114.50', win: false }
+          }
+        ]
+      },
+      6: {
+        highTeam: 'CeeDeez Nutz', highPts: '158.90 pts',
+        median: '127.30 pts',
+        sackoTeam: '1st Round Pick Addicts', sackoPts: '82.10 pts',
+        games: [
+          {
+            id: 1, margin: '+24.5', status: 'FINAL',
+            teamA: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '158.90', win: true },
+            teamB: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '134.40', win: false }
+          },
+          {
+            id: 2, margin: '+18.1', status: 'FINAL',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '141.20', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '123.10', win: false }
+          }
+        ]
+      },
+      15: {
+        highTeam: 'Puka Nacua Matata', highPts: '164.20 pts',
+        median: '131.50 pts',
+        sackoTeam: 'Hot Chubb Time Machine', sackoPts: '102.40 pts',
+        games: [
+          {
+            id: 1, margin: '+28.4', status: 'PLAYOFFS RD 1',
+            teamA: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '164.20', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '135.80', win: false }
+          },
+          {
+            id: 2, margin: '+14.6', status: 'PLAYOFFS RD 1',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '148.90', win: true },
+            teamB: { name: 'Waffle House Survivor', tier: 'Consolation Bracket', score: '104.30', win: false }
+          }
+        ]
+      },
+      16: {
+        highTeam: 'CeeDeez Nutz', highPts: '168.40 pts',
+        median: '134.10 pts',
+        sackoTeam: 'Hot Chubb Time Machine', sackoPts: '98.70 pts',
+        games: [
+          {
+            id: 1, margin: '+19.8', status: 'SEMIFINALS',
+            teamA: { name: 'CeeDeez Nutz', tier: 'Tier S Contender', score: '168.40', win: true },
+            teamB: { name: 'Run CMC & The Hamstrings', tier: 'Tier A Contender', score: '148.60', win: false }
+          },
+          {
+            id: 2, margin: '+16.5', status: 'SEMIFINALS',
+            teamA: { name: 'Puka Nacua Matata', tier: 'Tier A Dynasty Apex', score: '152.80', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: 'Tier B Contender', score: '136.30', win: false }
+          }
+        ]
+      },
+      17: {
+        highTeam: 'CeeDeez Nutz', highPts: '172.90 pts',
+        median: '138.20 pts',
+        sackoTeam: 'Run CMC & The Hamstrings', sackoPts: '112.50 pts',
+        games: [
+          {
+            id: 1, margin: '+14.3', status: 'CHAMPIONSHIP FINAL',
+            teamA: { name: 'CeeDeez Nutz', tier: 'DYNASTY CHAMPION 🏆', score: '172.90', win: true },
+            teamB: { name: 'Puka Nacua Matata', tier: 'Runner-Up 🥈', score: '158.60', win: false }
+          },
+          {
+            id: 2, margin: '+21.4', status: '3RD PLACE PODIUM',
+            teamA: { name: 'Run CMC & The Hamstrings', tier: 'Bronze Medal 🥉', score: '145.20', win: true },
+            teamB: { name: 'Hot Chubb Time Machine', tier: '4th Place', score: '123.80', win: false }
+          }
+        ]
+      }
+    };
+
+    function selectDemoWeek(weekNum, btn) {
+      document.querySelectorAll('#demo-weeks-ribbon .team-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const data = weeklyMatchupData[weekNum] || weeklyMatchupData[1];
+      
+      const highTeam = document.getElementById('demo-high-team');
+      const highPts = document.getElementById('demo-high-pts');
+      const medianPts = document.getElementById('demo-median-pts');
+      const sackoTeam = document.getElementById('demo-sacko-team');
+      const sackoPts = document.getElementById('demo-sacko-pts');
+
+      if (highTeam) highTeam.textContent = data.highTeam;
+      if (highPts) highPts.textContent = data.highPts;
+      if (medianPts) medianPts.textContent = data.median;
+      if (sackoTeam) sackoTeam.textContent = data.sackoTeam;
+      if (sackoPts) sackoPts.textContent = data.sackoPts;
+
+      const grid = document.getElementById('demo-matchups-grid');
+      if (grid && data.games) {
+        grid.innerHTML = data.games.map(game => `
+          <div style="background:var(--kbd-dark-2); border:1px solid var(--kbd-border); border-radius:16px; padding:1.2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.5rem;">
+              <span style="font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:var(--kbd-smoke); font-weight:800;">MATCHUP #${game.id}</span>
+              <span style="font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#22c55e; font-weight:800; background:rgba(34,197,94,0.15); padding:0.15rem 0.5rem; border-radius:999px;">${game.status} · Margin ${game.margin}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; background:${game.teamA.win ? 'rgba(34,197,94,0.08)' : 'var(--kbd-dark-3)'}; border:1px solid ${game.teamA.win ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.05)'}; border-radius:10px; margin-bottom:0.4rem;">
+              <div>
+                <strong style="color:#fff; font-size:0.9rem;">${game.teamA.name}</strong>
+                <div style="font-size:0.72rem; color:var(--kbd-smoke);">${game.teamA.tier}</div>
+              </div>
+              <div style="text-align:right;">
+                <strong style="color:${game.teamA.win ? '#22c55e' : '#fff'}; font-family:'JetBrains Mono', monospace; font-size:1.15rem;">${game.teamA.score}</strong>
+                <div style="font-size:0.65rem; color:${game.teamA.win ? '#22c55e' : 'var(--kbd-smoke)'}; font-family:'JetBrains Mono', monospace; font-weight:800;">${game.teamA.win ? 'WIN' : 'LOSS'}</div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; background:${game.teamB.win ? 'rgba(34,197,94,0.08)' : 'var(--kbd-dark-3)'}; border:1px solid ${game.teamB.win ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.05)'}; border-radius:10px;">
+              <div>
+                <strong style="color:#fff; font-size:0.9rem;">${game.teamB.name}</strong>
+                <div style="font-size:0.72rem; color:var(--kbd-smoke);">${game.teamB.tier}</div>
+              </div>
+              <div style="text-align:right;">
+                <strong style="color:${game.teamB.win ? '#22c55e' : '#fff'}; font-family:'JetBrains Mono', monospace; font-size:1.15rem;">${game.teamB.score}</strong>
+                <div style="font-size:0.65rem; color:${game.teamB.win ? '#22c55e' : 'var(--kbd-smoke)'}; font-family:'JetBrains Mono', monospace;">${game.teamB.win ? 'WIN' : 'LOSS'}</div>
+              </div>
+            </div>
+          </div>
+        `).join('');
       }
     }
 

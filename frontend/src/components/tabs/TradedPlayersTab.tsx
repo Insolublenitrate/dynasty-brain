@@ -453,7 +453,7 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
                           if (onSelectTradeForAutopsy) {
                             onSelectTradeForAutopsy(trade.transaction_id);
                           } else {
-                            router.push(`/dynasty-room?arena=trade&sub=autopsy&trade_id=${trade.transaction_id}`);
+                            router.push(`/dynasty-room/?arena=trade&sub=autopsy&trade_id=${trade.transaction_id}`);
                           }
                         }}
                         className="px-3 py-1 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 border border-zinc-700 hover:border-zinc-600 shadow-sm group"

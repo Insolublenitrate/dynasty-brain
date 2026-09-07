@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function TradedPlayersRedirect() {
   const router = useRouter();
   useEffect(() => {
-    router.replace('/dynasty-room?arena=trade&sub=ledger');
+    router.replace('/dynasty-room/?arena=trade&sub=ledger');
   }, [router]);
 
   return (

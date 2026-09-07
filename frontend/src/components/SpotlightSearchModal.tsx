@@ -68,7 +68,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Action Center & Executive Verdict",
       description: "Contender vs Rebuilder status, bottom-line directives, and vital signs",
-      href: "/dynasty-room?arena=command&sub=action",
+      href: "/dynasty-room/?arena=command&sub=action",
       icon: Target
     },
     {
@@ -76,7 +76,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Roster Cliff Watch & Clogger Audit",
       description: "Inspect starter volume, aging veterans, and roster depth",
-      href: "/dynasty-room?arena=command&sub=roster",
+      href: "/dynasty-room/?arena=command&sub=roster",
       icon: ShieldAlert
     },
     {
@@ -84,7 +84,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Trade Architect & Auto-Balancer",
       description: "Build 2-way trades with instant draft pick equalization",
-      href: "/dynasty-room?arena=trade&sub=architect",
+      href: "/dynasty-room/?arena=trade&sub=architect",
       icon: Briefcase
     },
     {
@@ -92,7 +92,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Smart Trade Partner Matcher",
       description: "Identify high-synergy trade partners and 1-click deal blueprints",
-      href: "/dynasty-room?arena=trade&sub=partners",
+      href: "/dynasty-room/?arena=trade&sub=partners",
       icon: Users
     },
     {
@@ -100,7 +100,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Franchise Power Tiers & Standings",
       description: "Max PF tier rankings, title windows, and roster valuation",
-      href: "/dynasty-room?arena=power&sub=tiers",
+      href: "/dynasty-room/?arena=power&sub=tiers",
       icon: Crown
     },
     {
@@ -108,7 +108,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Navigation",
       title: "Weekly Matchup Slate & Projections",
       description: "Head-to-head weekly matchups and starter comparisons",
-      href: "/dynasty-room?arena=matchups&sub=slate",
+      href: "/dynasty-room/?arena=matchups&sub=slate",
       icon: CalendarDays
     },
     {
@@ -116,7 +116,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Tools",
       title: "Player Analyzer & Archetype Intel",
       description: "Deep-dive career trajectories, film grades, and valuation",
-      href: "/dynasty-room?arena=players&sub=analyzer",
+      href: "/dynasty-room/?arena=players&sub=analyzer",
       icon: Activity
     },
     {
@@ -124,7 +124,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Tools",
       title: "Cross Reference Radar",
       description: "Direct stat-for-stat visual radar and multi-metric player comparison",
-      href: "/dynasty-room?arena=players&sub=crossref",
+      href: "/dynasty-room/?arena=players&sub=crossref",
       icon: Radar
     },
     {
@@ -132,7 +132,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Tools",
       title: "Monte Carlo Matchup Simulator",
       description: "Run 10,000 algorithmic simulations between any two rosters",
-      href: "/dynasty-room?arena=matchups&sub=simulator",
+      href: "/dynasty-room/?arena=matchups&sub=simulator",
       icon: Swords
     },
     {
@@ -140,7 +140,7 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       category: "Tools",
       title: "Dynasty Bounty Ledger",
       description: "Active high-roller weekly bounties and trophy payouts",
-      href: "/dynasty-room?arena=power&sub=bounties",
+      href: "/dynasty-room/?arena=power&sub=bounties",
       icon: Coins
     },
     {
@@ -213,9 +213,9 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
       if (item.data.href) router.push(item.data.href);
       else if (item.data.onClick) item.data.onClick();
     } else if (item.type === 'team') {
-      router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${item.data.roster_id}`);
+      router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${item.data.roster_id}`);
     } else if (item.type === 'player') {
-      router.push(`/dynasty-room?arena=trade&sub=architect&player_id=${item.data.player_id}&player_name=${encodeURIComponent(item.data.player_name)}`);
+      router.push(`/dynasty-room/?arena=trade&sub=architect&player_id=${item.data.player_id}&player_name=${encodeURIComponent(item.data.player_name)}`);
     }
   };
 

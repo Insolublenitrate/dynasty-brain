@@ -11,10 +11,10 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const MAIN_NAV = [
-  { href: "/dynasty-room", label: "Dynasty Room", icon: Users },
-  { href: "/player-analyzer", label: "Research", icon: BarChart3 },
-  { href: "/war-room", label: "War Room", icon: Flame },
-  { href: "/database", label: "Database", icon: Database },
+  { href: "/dynasty-room/", label: "Dynasty Room", icon: Users },
+  { href: "/dynasty-room/?arena=players&sub=analyzer", label: "Research", icon: BarChart3 },
+  { href: "/war-room/", label: "War Room", icon: Flame },
+  { href: "/dynasty-room/?arena=players&sub=database", label: "Database", icon: Database },
 ];
 
 export default function Sidebar() {

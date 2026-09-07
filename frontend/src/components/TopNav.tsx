@@ -17,10 +17,39 @@ import SpotlightSearchModal from "@/components/SpotlightSearchModal";
 import { useTheme } from "@/context/ThemeContext";
 import { useLeague } from "@/context/LeagueContext";
 
+const SUB_TO_ARENA_MAP: Record<string, string> = {
+  action: 'command',
+  roster: 'command',
+  diagnostics: 'command',
+  analyzer: 'players',
+  database: 'players',
+  rookies: 'players',
+  leaders: 'players',
+  crossref: 'players',
+  compare: 'players',
+  slate: 'matchups',
+  simulator: 'matchups',
+  rivalries: 'matchups',
+  allplay: 'matchups',
+  tiers: 'power',
+  matrix: 'power',
+  records: 'power',
+  bounties: 'power',
+  studio: 'power',
+  architect: 'trade',
+  partners: 'trade',
+  capital: 'trade',
+  ledger: 'trade',
+  trends: 'trade',
+  autopsy: 'trade',
+};
+
 function TopNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentArena = searchParams.get("arena") || "command";
+  const subParam = searchParams.get("sub");
+  const rawArena = searchParams.get("arena");
+  const currentArena = (subParam && SUB_TO_ARENA_MAP[subParam]) || rawArena || "command";
   const { leagueName, leagueId, myRosterId, setMyRosterId, leagueRosters } = useLeague();
   const { currentTheme, cleanMode, setCleanMode } = useTheme();
 
@@ -61,28 +90,29 @@ function TopNavInner() {
   }, []);
 
   const mainArenas = [
-    { id: "command", href: "/dynasty-room?arena=command&sub=action", label: "Command", icon: Target, isDynasty: true },
-    { id: "players", href: "/dynasty-room?arena=players&sub=analyzer", label: "Players", icon: Users, isDynasty: true },
-    { id: "matchups", href: "/dynasty-room?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynasty: true },
-    { id: "power", href: "/dynasty-room?arena=power&sub=tiers", label: "Power", icon: Crown, isDynasty: true },
-    { id: "trade", href: "/dynasty-room?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynasty: true },
-    { id: "madden", href: "/ask-madden", label: "Ask Madden", icon: Sparkles, isDynasty: false },
+    { id: "command", href: "/dynasty-room/?arena=command&sub=action", label: "Command", icon: Target, isDynasty: true },
+    { id: "players", href: "/dynasty-room/?arena=players&sub=analyzer", label: "Players", icon: Users, isDynasty: true },
+    { id: "matchups", href: "/dynasty-room/?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynasty: true },
+    { id: "power", href: "/dynasty-room/?arena=power&sub=tiers", label: "Power", icon: Crown, isDynasty: true },
+    { id: "trade", href: "/dynasty-room/?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynasty: true },
+    { id: "madden", href: "/ask-madden/", label: "Ask Madden", icon: Sparkles, isDynasty: false },
   ];
 
   const secondaryTools = [
-    { href: "/glossary", label: "Field Guide Encyclopedia", icon: BookOpen },
-    { href: "/player-analyzer", label: "Player Analyzer", icon: Search },
-    { href: "/cross-reference", label: "Cross Reference Radar", icon: Radar },
-    { href: "/top-performers", label: "Top Performers", icon: Trophy },
-    { href: "/rookie-analyzer", label: "Rookie Draft Board", icon: GraduationCap },
-    { href: "/war-room", label: "Draft War Room", icon: Flame },
-    { href: "/database", label: "Player Database", icon: Database },
-    { href: "/support", label: "Help & Sync Guide", icon: HelpCircle },
+    { href: "/glossary/", label: "Field Guide Encyclopedia", icon: BookOpen },
+    { href: "/dynasty-room/?arena=players&sub=analyzer", label: "Player Analyzer", icon: Search },
+    { href: "/dynasty-room/?arena=players&sub=crossref", label: "Cross Reference Radar", icon: Radar },
+    { href: "/dynasty-room/?arena=players&sub=leaders", label: "Top Performers", icon: Trophy },
+    { href: "/dynasty-room/?arena=players&sub=rookies", label: "Rookie Draft Board", icon: GraduationCap },
+    { href: "/war-room/", label: "Draft War Room", icon: Flame },
+    { href: "/dynasty-room/?arena=players&sub=database", label: "Player Database", icon: Database },
+    { href: "/support/", label: "Help & Sync Guide", icon: HelpCircle },
   ];
 
   const isArenaActive = (item: typeof mainArenas[0]) => {
+    const isDynastyPath = pathname.startsWith("/dynasty-room") || pathname === "/";
     if (item.id === "players") {
-      return ((pathname === "/dynasty-room" || pathname === "/") && currentArena === "players") ||
+      return (isDynastyPath && currentArena === "players") ||
         pathname.startsWith("/player-analyzer") ||
         pathname.startsWith("/database") ||
         pathname.startsWith("/rookie-analyzer") ||
@@ -92,7 +122,7 @@ function TopNavInner() {
         pathname.startsWith("/players");
     }
     if (item.isDynasty) {
-      return (pathname === "/dynasty-room" || pathname === "/") && currentArena === item.id;
+      return isDynastyPath && currentArena === item.id;
     }
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
   };
@@ -104,7 +134,7 @@ function TopNavInner() {
           
           {/* Left: Logo + League Pill + Franchise Switcher */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <Link href="/dynasty-room" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity">
+            <Link href="/dynasty-room/" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity">
               <PlaybookLogo size={28} animated={true} />
               <div className="flex flex-col min-w-0">
                 <span className="text-xs sm:text-lg font-black text-white italic tracking-wider font-sans leading-none whitespace-nowrap">

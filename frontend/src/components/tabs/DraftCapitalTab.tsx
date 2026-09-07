@@ -347,7 +347,7 @@ export default function DraftCapitalTab({ onSelectTeamForTrade }: DraftCapitalTa
                         if (onSelectTeamForTrade) {
                           onSelectTeamForTrade(team.roster_id);
                         } else {
-                          router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${team.roster_id}`);
+                          router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${team.roster_id}`);
                         }
                       }}
                       className="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-mono font-bold border border-zinc-700 hover:border-zinc-600 transition-all flex items-center gap-1 shrink-0"

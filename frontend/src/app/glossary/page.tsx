@@ -47,7 +47,7 @@ export default function GlossaryPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
         <div>
           <Link 
-            href="/dynasty-room" 
+            href="/dynasty-room/" 
             className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white mb-2 transition-colors"
           >
             <ArrowLeft size={14} />
@@ -72,7 +72,7 @@ export default function GlossaryPage() {
         </div>
 
         <Link
-          href="/dynasty-room?arena=command"
+          href="/dynasty-room/?arena=command&sub=action"
           className="hidden sm:flex px-4 py-2 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono font-bold text-zinc-200 transition-all items-center gap-2 self-start sm:self-auto shadow-md"
         >
           <Sparkles size={14} style={{ color: currentTheme.primary }} />

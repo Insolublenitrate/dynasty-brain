@@ -77,6 +77,22 @@
     });
   });
 
+  // Close dropdown and mobile menu when any dropdown link is clicked
+  const dropdownLinks = document.querySelectorAll('.nav-dropdown-menu a');
+  dropdownLinks.forEach(function (link) {
+    link.addEventListener('click', function () {
+      dropdowns.forEach(function (dropdown) {
+        dropdown.classList.remove('is-open');
+        const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      });
+      if (navLinks) {
+        navLinks.classList.remove('is-open');
+        if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
   document.addEventListener('click', function () {
     dropdowns.forEach(function (dropdown) {
       dropdown.classList.remove('is-open');

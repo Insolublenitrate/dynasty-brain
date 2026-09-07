@@ -723,7 +723,7 @@ export default function RosterIntelTab() {
                         <button
                           onClick={() => {
                             setShoppingPlayer(null);
-                            router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${buyer.roster_id}&player_name=${encodeURIComponent(shoppingPlayer.name)}`);
+                            router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${buyer.roster_id}&player_name=${encodeURIComponent(shoppingPlayer.name)}`);
                           }}
                           className="w-full sm:flex-1 py-1.5 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shadow-md"
                         >

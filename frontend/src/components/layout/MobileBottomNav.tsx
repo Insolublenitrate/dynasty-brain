@@ -6,28 +6,58 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Target, CalendarDays, Crown, Briefcase, Sparkles, Users } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
+const SUB_TO_ARENA_MAP: Record<string, string> = {
+  action: 'command',
+  roster: 'command',
+  diagnostics: 'command',
+  analyzer: 'players',
+  database: 'players',
+  rookies: 'players',
+  leaders: 'players',
+  crossref: 'players',
+  compare: 'players',
+  slate: 'matchups',
+  simulator: 'matchups',
+  rivalries: 'matchups',
+  allplay: 'matchups',
+  tiers: 'power',
+  matrix: 'power',
+  records: 'power',
+  bounties: 'power',
+  studio: 'power',
+  architect: 'trade',
+  partners: 'trade',
+  capital: 'trade',
+  ledger: 'trade',
+  trends: 'trade',
+  autopsy: 'trade',
+};
+
 function MobileBottomNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentArena = searchParams.get("arena") || "command";
+  const subParam = searchParams.get("sub");
+  const rawArena = searchParams.get("arena");
+  const currentArena = (subParam && SUB_TO_ARENA_MAP[subParam]) || rawArena || "command";
   const { currentTheme } = useTheme();
 
   const NAV_ITEMS = [
-    { id: "command", href: "/dynasty-room?arena=command&sub=action", label: "Command", icon: Target, isDynastyTab: true },
-    { id: "players", href: "/dynasty-room?arena=players&sub=analyzer", label: "Players", icon: Users, isDynastyTab: true },
-    { id: "matchups", href: "/dynasty-room?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynastyTab: true },
-    { id: "power", href: "/dynasty-room?arena=power&sub=tiers", label: "Power", icon: Crown, isDynastyTab: true },
-    { id: "trade", href: "/dynasty-room?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynastyTab: true },
-    { id: "madden", href: "/ask-madden", label: "Madden", icon: Sparkles, isDynastyTab: false },
+    { id: "command", href: "/dynasty-room/?arena=command&sub=action", label: "Command", icon: Target, isDynastyTab: true },
+    { id: "players", href: "/dynasty-room/?arena=players&sub=analyzer", label: "Players", icon: Users, isDynastyTab: true },
+    { id: "matchups", href: "/dynasty-room/?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynastyTab: true },
+    { id: "power", href: "/dynasty-room/?arena=power&sub=tiers", label: "Power", icon: Crown, isDynastyTab: true },
+    { id: "trade", href: "/dynasty-room/?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynastyTab: true },
+    { id: "madden", href: "/ask-madden/", label: "Madden", icon: Sparkles, isDynastyTab: false },
   ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full max-w-full overflow-hidden bg-zinc-950/95 backdrop-blur-2xl border-t border-zinc-800/90 shadow-[0_-8px_30px_rgba(0,0,0,0.8)] pb-safe">
       <div className="flex items-center justify-around h-16 px-1 w-full max-w-full overflow-hidden">
         {NAV_ITEMS.map((item) => {
+          const isDynastyPath = pathname.startsWith("/dynasty-room") || pathname === "/";
           let isActive = false;
           if (item.id === "players") {
-            isActive = ((pathname === "/dynasty-room" || pathname === "/") && currentArena === "players") ||
+            isActive = (isDynastyPath && currentArena === "players") ||
               pathname.startsWith("/player-analyzer") ||
               pathname.startsWith("/database") ||
               pathname.startsWith("/rookie-analyzer") ||
@@ -36,7 +66,7 @@ function MobileBottomNavInner() {
               pathname.startsWith("/cross-reference") ||
               pathname.startsWith("/players");
           } else if (item.isDynastyTab) {
-            isActive = (pathname === "/dynasty-room" || pathname === "/") && currentArena === item.id;
+            isActive = isDynastyPath && currentArena === item.id;
           } else {
             isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           }

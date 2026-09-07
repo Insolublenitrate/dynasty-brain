@@ -24,7 +24,7 @@ const ARENA_DEEP_DIVES = [
     color: "from-orange-500/20 to-amber-500/20",
     border: "border-orange-500/40",
     iconColor: "text-orange-400",
-    href: "/dynasty-room?arena=command",
+    href: "/dynasty-room/?arena=command&sub=action",
     subtabs: ["Action Center", "Roster Intel", "Franchise Diagnostics"],
     overview: "The central nervous system for your team. Action Center synthesizes live market discrepancies, urgent waiver pickups, and buy-low/sell-high windows.",
     pillars: [
@@ -54,7 +54,7 @@ const ARENA_DEEP_DIVES = [
     color: "from-cyan-500/20 to-blue-500/20",
     border: "border-cyan-500/40",
     iconColor: "text-cyan-400",
-    href: "/dynasty-room?arena=players",
+    href: "/dynasty-room/?arena=players&sub=analyzer",
     subtabs: ["Analyzer", "Database", "Rookies", "Leaders", "Cross-Ref"],
     overview: "Deep-dive quantitative player research. From 25+ metric 2D scatter correlations to NCAA college dominator rookie boards and side-by-side radars.",
     pillars: [
@@ -84,7 +84,7 @@ const ARENA_DEEP_DIVES = [
     color: "from-rose-500/20 to-red-500/20",
     border: "border-rose-500/40",
     iconColor: "text-rose-400",
-    href: "/dynasty-room?arena=matchups",
+    href: "/dynasty-room/?arena=matchups&sub=slate",
     subtabs: ["Weekly Slate", "Simulator", "Rivalries", "All-Play"],
     overview: "All competition unified into one arena. Live 18-week box scores, 10,000-iteration Monte Carlo odds, and all-time franchise rivalry records.",
     pillars: [
@@ -114,7 +114,7 @@ const ARENA_DEEP_DIVES = [
     color: "from-purple-500/20 to-pink-500/20",
     border: "border-purple-500/40",
     iconColor: "text-purple-400",
-    href: "/dynasty-room?arena=power",
+    href: "/dynasty-room/?arena=power&sub=tiers",
     subtabs: ["Power Tiers", "Lifecycle Matrix", "Records", "Bounties", "Studio"],
     overview: "Statistical Z-Score composite rankings (70% Max PF, 30% Draft Capital) categorizing teams into 4 lifecycle quadrants and league history.",
     pillars: [
@@ -144,7 +144,7 @@ const ARENA_DEEP_DIVES = [
     color: "from-emerald-500/20 to-teal-500/20",
     border: "border-emerald-500/40",
     iconColor: "text-emerald-400",
-    href: "/dynasty-room?arena=trade",
+    href: "/dynasty-room/?arena=trade&sub=architect",
     subtabs: ["Trade Architect", "Smart Partners", "Trade Ledger", "Autopsy"],
     overview: "Engineered to win every negotiation. Algorithmic trade partner matchmaking based on complementary surpluses and deficits, plus historical trade autopsies.",
     pillars: [
@@ -207,7 +207,7 @@ const FEATURES = [
     color: "from-purple-500/20 to-pink-500/20",
     border: "border-purple-500/40",
     iconColor: "text-purple-400",
-    href: "/dynasty-room?arena=power",
+    href: "/dynasty-room/?arena=power&sub=tiers",
     stats: ["Z-Score Standardization", "4-Quadrant Strategic Map", "Archetype Detection"]
   },
   {
@@ -219,7 +219,7 @@ const FEATURES = [
     color: "from-emerald-500/20 to-teal-500/20",
     border: "border-emerald-500/40",
     iconColor: "text-emerald-400",
-    href: "/dynasty-room?arena=trade",
+    href: "/dynasty-room/?arena=trade&sub=architect",
     stats: ["Synergy Compatibility %", "Surplus vs Deficit", "Trade Autopsy"]
   },
   {
@@ -231,7 +231,7 @@ const FEATURES = [
     color: "from-blue-500/20 to-cyan-500/20",
     border: "border-blue-500/40",
     iconColor: "text-cyan-400",
-    href: "/cross-reference",
+    href: "/dynasty-room/?arena=players&sub=crossref",
     stats: ["25+ Metric Combinations", "Quadrant Crosshairs", "Side-by-Side Radar"]
   },
   {
@@ -243,7 +243,7 @@ const FEATURES = [
     color: "from-rose-500/20 to-red-500/20",
     border: "border-rose-500/40",
     iconColor: "text-rose-400",
-    href: "/dynasty-room?arena=matchups",
+    href: "/dynasty-room/?arena=matchups&sub=slate",
     stats: ["Monte Carlo Simulator", "Rivalry Vault", "All-Play Luck Matrix"]
   },
   {
@@ -255,7 +255,7 @@ const FEATURES = [
     color: "from-amber-500/20 to-orange-500/20",
     border: "border-amber-500/40",
     iconColor: "text-amber-400",
-    href: "/player-analyzer",
+    href: "/dynasty-room/?arena=players&sub=analyzer",
     stats: ["NCAA Dominator %", "EPA / Dropback", "Offer Trade 1-Tap"]
   },
   {
@@ -328,7 +328,7 @@ export default function LandingPage() {
         {/* Hero Call-To-Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
           <Link
-            href="/dynasty-room"
+            href="/dynasty-room/"
             className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2 group"
           >
             <span>Launch Tactical War Room</span>
@@ -556,7 +556,7 @@ export default function LandingPage() {
           </div>
 
           <Link
-            href="/dynasty-room?arena=power"
+            href="/dynasty-room/?arena=power&sub=tiers"
             className="px-4 py-2 rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-200 transition-colors flex items-center gap-1.5"
           >
             <span>View Full Standings</span>
@@ -700,14 +700,14 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs font-mono text-zinc-400">
-          <Link href="/dynasty-room?arena=command" className="hover:text-white transition-colors">Command</Link>
-          <Link href="/dynasty-room?arena=players" className="hover:text-white transition-colors">Players</Link>
-          <Link href="/dynasty-room?arena=matchups" className="hover:text-white transition-colors">Matchups</Link>
-          <Link href="/dynasty-room?arena=power" className="hover:text-white transition-colors">Power & League</Link>
-          <Link href="/dynasty-room?arena=trade" className="hover:text-white transition-colors">Trade Desk</Link>
-          <Link href="/ask-madden" className="hover:text-white transition-colors">Ask Madden</Link>
-          <Link href="/glossary" className="hover:text-white transition-colors">Metric Glossary</Link>
-          <Link href="/support" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">Support & FAQ</Link>
+          <Link href="/dynasty-room/?arena=command&sub=action" className="hover:text-white transition-colors">Command</Link>
+          <Link href="/dynasty-room/?arena=players&sub=analyzer" className="hover:text-white transition-colors">Players</Link>
+          <Link href="/dynasty-room/?arena=matchups&sub=slate" className="hover:text-white transition-colors">Matchups</Link>
+          <Link href="/dynasty-room/?arena=power&sub=tiers" className="hover:text-white transition-colors">Power & League</Link>
+          <Link href="/dynasty-room/?arena=trade&sub=architect" className="hover:text-white transition-colors">Trade Desk</Link>
+          <Link href="/ask-madden/" className="hover:text-white transition-colors">Ask Madden</Link>
+          <Link href="/glossary/" className="hover:text-white transition-colors">Metric Glossary</Link>
+          <Link href="/support/" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">Support & FAQ</Link>
         </div>
 
         <p className="text-[11px] text-zinc-600 font-mono pt-2">
