@@ -118,9 +118,68 @@ export default function PlayerDatabaseTab() {
         </div>
       </div>
 
-      {/* Table Container */}
+      {/* Table & Cards Container */}
       <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl shadow-xl overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile View: Responsive Player Cards (<sm) */}
+        <div className="sm:hidden divide-y divide-zinc-800/60 font-sans">
+          {loading ? (
+            <div className="py-12 text-center text-zinc-500 font-sans">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-2" style={{ borderColor: currentTheme.primary }}></div>
+              Loading player database...
+            </div>
+          ) : processedData.length === 0 ? (
+            <div className="py-12 text-center text-zinc-500 font-sans">
+              No players found matching your criteria.
+            </div>
+          ) : (
+            processedData.slice(0, 50).map((player) => (
+              <div key={player.player_id} className="p-3.5 hover:bg-zinc-800/40 transition-colors flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white text-sm">{player.player_name}</span>
+                    <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded text-[10px] font-bold font-mono">
+                      {player.position}
+                    </span>
+                  </div>
+                  <span className="text-xs text-zinc-400 font-mono font-medium">
+                    {player.recent_team || 'FA'}
+                  </span>
+                </div>
+                
+                {/* 4-Stat Quad Grid (100% Fit On-Screen, Zero Scroll/Pan) */}
+                <div className="grid grid-cols-4 gap-1.5 bg-zinc-950/60 p-2 rounded-xl border border-zinc-800/60 text-center font-mono">
+                  <div>
+                    <div className="text-[9px] text-zinc-500 uppercase tracking-wider">PPG</div>
+                    <div className="text-xs font-bold" style={{ color: currentTheme.primary }}>
+                      {player.ppg ? player.ppg.toFixed(1) : '-'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-zinc-500 uppercase tracking-wider">Pts</div>
+                    <div className="text-xs font-bold text-zinc-200">
+                      {player.fantasy_points ? player.fantasy_points.toFixed(0) : '-'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-zinc-500 uppercase tracking-wider">GP</div>
+                    <div className="text-xs font-bold text-zinc-400">
+                      {player.games_played || '-'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-zinc-500 uppercase tracking-wider">Tgt %</div>
+                    <div className="text-xs font-bold text-emerald-400">
+                      {player.target_rate ? `${(player.target_rate * 100).toFixed(0)}%` : '-'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Full 8-Column Data Table (>=sm) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-950/80 text-zinc-400 text-[11px] uppercase tracking-wider font-bold">

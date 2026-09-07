@@ -860,7 +860,88 @@ export default function ScheduleTab({ initialViewMode = 'slate' }: { initialView
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile View: Responsive Franchise All-Play Cards (<sm) */}
+          <div className="sm:hidden divide-y divide-zinc-800/80 font-sans">
+            {scheduleData.franchises.map((f: any, idx: number) => {
+              const isPre = scheduleData.is_preseason;
+              const winPct = isPre ? f.projected_all_play_win_pct : f.all_play_win_pct;
+              const actualWinPct = isPre ? (f.projected_wins / 18) * 100 : (f.wins / Math.max(1, f.wins + f.losses)) * 100;
+              const luckDelta = actualWinPct - winPct;
+              const isLucky = luckDelta > 5;
+              const isUnlucky = luckDelta < -5;
+
+              return (
+                <div key={f.roster_id} className="p-3.5 hover:bg-zinc-800/30 transition-colors flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-zinc-500 font-bold font-mono text-xs w-4">#{idx + 1}</span>
+                      {f.avatar ? (
+                        <img 
+                          src={`https://sleepercdn.com/avatars/thumbs/${f.avatar}`} 
+                          alt={f.team_name}
+                          className="w-7 h-7 rounded-lg object-cover" 
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 text-[10px] font-bold">
+                          {f.team_name.slice(0, 2)}
+                        </div>
+                      )}
+                      <span className="font-bold text-white font-sans text-sm">{f.team_name}</span>
+                    </div>
+
+                    {isPre ? (
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        winPct >= 70 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                        winPct >= 50 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40' :
+                        'bg-purple-500/20 text-purple-400 border border-purple-500/40'
+                      }`}>
+                        {winPct >= 70 ? 'Contender' : winPct >= 50 ? 'Playoff Threat' : 'Retooling'}
+                      </span>
+                    ) : (
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        isLucky ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                        isUnlucky ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
+                        'bg-zinc-800 text-zinc-400'
+                      }`}>
+                        {isLucky ? 'Lucky' : isUnlucky ? 'Tough' : 'Balanced'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* 4-Stat Quad Grid (100% Fit On-Screen, Zero Scroll/Pan) */}
+                  <div className="grid grid-cols-4 gap-1.5 bg-zinc-950/60 p-2 rounded-xl border border-zinc-800/60 text-center font-mono">
+                    <div>
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-wider">{isPre ? 'Proj' : 'Record'}</div>
+                      <div className="text-xs font-bold text-white">
+                        {isPre ? f.projected_record : `${f.wins}-${f.losses}`}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-wider">All-Play</div>
+                      <div className="text-xs font-bold text-cyan-400">
+                        {isPre ? f.projected_all_play_record : f.all_play_record}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-wider">Win %</div>
+                      <div className="text-xs font-bold text-zinc-200">
+                        {winPct}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-wider">PF</div>
+                      <div className="text-xs font-bold text-emerald-400">
+                        {isPre ? f.projected_points_for : f.points_for}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop View: Full Table (>=sm) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left font-mono text-xs">
               <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800 uppercase text-[10px]">
                 <tr>

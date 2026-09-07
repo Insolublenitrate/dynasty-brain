@@ -342,7 +342,50 @@ export default function RookieAnalyzerTab() {
                   <Award size={20} className="text-yellow-400" />
                   NCAA College Statistics
                 </h3>
-                <div className="overflow-x-auto">
+                {/* Mobile View: Responsive Season Cards (<sm) */}
+                <div className="sm:hidden divide-y divide-zinc-800 font-sans">
+                  {ncaaStats.map((stat, i) => (
+                    <div key={i} className="py-3 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-sm">{stat.season} {stat.college}</span>
+                        <span className="text-xs text-zinc-400 font-mono">{stat.games_played} Games</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 bg-zinc-950/60 p-2 rounded-xl border border-zinc-800/60 text-center font-mono text-xs">
+                        {stat.passing_yards ? (
+                          <>
+                            <div>
+                              <span className="text-[9px] text-zinc-500 uppercase block">Pass Yds</span>
+                              <span className="font-bold text-zinc-200">{stat.passing_yards}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-zinc-500 uppercase block">Pass TD</span>
+                              <span className="font-bold text-emerald-400">{stat.passing_tds}</span>
+                            </div>
+                          </>
+                        ) : null}
+                        <div>
+                          <span className="text-[9px] text-zinc-500 uppercase block">Rush Yds</span>
+                          <span className="font-bold text-zinc-200">{stat.rushing_yards || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] text-zinc-500 uppercase block">Rush TD</span>
+                          <span className="font-bold text-emerald-400">{stat.rushing_tds || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] text-zinc-500 uppercase block">Rec Yds</span>
+                          <span className="font-bold text-cyan-400">{stat.receiving_yards || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] text-zinc-500 uppercase block">Rec TD</span>
+                          <span className="font-bold text-emerald-400">{stat.receiving_tds || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Full Table (>=sm) */}
+                <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full min-w-[800px] text-left text-sm text-zinc-300">
                     <thead className="text-xs text-zinc-400 uppercase bg-zinc-800/50 border-b border-zinc-700">
                       <tr>

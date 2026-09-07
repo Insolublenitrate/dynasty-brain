@@ -613,7 +613,25 @@ export default function TeamAnalyzerTab() {
           
           <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 rounded-2xl p-6 shadow-xl">
             <h3 className="text-sm font-semibold text-zinc-400 mb-4 tracking-wider uppercase">The Active Roster Data Grid</h3>
-            <div className="overflow-x-auto">
+            {/* Mobile View: Responsive Roster Cards (<sm) */}
+            <div className="sm:hidden divide-y divide-zinc-800">
+              {demographics?.active_grid?.map((player: any) => (
+                <div key={player.id} className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-white text-xs">{player.name}</div>
+                    <div className="text-[10px] text-zinc-500 font-mono">
+                      {player.position} • Age {player.age} • Rank {player.rank}
+                    </div>
+                  </div>
+                  <div className="text-right font-mono text-xs font-bold text-amber-500">
+                    {player.output}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View: Full Table (>=sm) */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left text-sm text-zinc-300">
                 <thead className="text-xs text-zinc-500 uppercase border-b border-zinc-800">
                   <tr>

@@ -514,8 +514,47 @@ export default function CrossReferenceTab() {
           </div>
         </div>
 
-        {/* Scrollable Table */}
-        <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
+        {/* Mobile View: Responsive Player Cards (<sm) */}
+        <div className="sm:hidden max-h-[420px] overflow-y-auto divide-y divide-zinc-800/50 font-sans">
+          {filteredPlayers.slice(0, 50).map((p, idx) => {
+            const isSelected = selectedPlayer?.player_name === p.player_name;
+            const posColor = POSITION_COLORS[p.position] || currentTheme.primary;
+            return (
+              <div 
+                key={p.player_id || idx} 
+                onClick={() => setSelectedPlayer(p)}
+                className={`p-3 hover:bg-zinc-800/40 cursor-pointer transition-colors flex flex-col gap-1.5 ${isSelected ? 'bg-zinc-800/80 border-l-2' : ''}`}
+                style={isSelected ? { borderLeftColor: currentTheme.primary } : {}}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: posColor }}></span>
+                    <span className="font-bold text-white text-xs">{p.player_name}</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">({p.recent_team || p.position})</span>
+                  </div>
+                  <span className="text-[10px] text-zinc-400 font-mono font-bold">VORP: {p.vorp}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 bg-zinc-950/60 p-1.5 rounded-lg text-center font-mono text-[11px]">
+                  <div>
+                    <span className="text-zinc-500 text-[9px] block uppercase truncate">{xLabel}</span>
+                    <span className="text-zinc-200 font-bold">
+                      {xMeta?.format === 'pct' ? `${(p.x * 100).toFixed(1)}%` : p.x < 2 ? p.x.toFixed(2) : p.x.toFixed(1)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-500 text-[9px] block uppercase truncate">{yLabel}</span>
+                    <span className="font-black" style={{ color: currentTheme.primary }}>
+                      {yMeta?.format === 'pct' ? `${(p.y * 100).toFixed(1)}%` : p.y < 2 ? p.y.toFixed(2) : p.y.toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop View: Full Data Table (>=sm) */}
+        <div className="hidden sm:block overflow-x-auto max-h-[420px] overflow-y-auto">
           <table className="w-full text-left text-xs">
             <thead className="text-zinc-500 uppercase font-mono sticky top-0 bg-zinc-900/95 backdrop-blur-sm z-10 border-b border-zinc-800">
               <tr>

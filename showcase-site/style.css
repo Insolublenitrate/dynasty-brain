@@ -886,7 +886,9 @@ section:nth-of-type(even) {
   font-size: 0.78rem;
   color: var(--kbd-turf);
   margin: 0.5rem 0;
-  overflow-x: auto;
+  overflow-x: hidden;
+  word-break: break-all;
+  white-space: normal;
 }
 
 /* ── Interactive App Shots & UI Cards ────────────────── */
@@ -1850,23 +1852,34 @@ footer {
   .podium-score { font-size: 0.6rem; }
   
   .theme-hud-bar {
-    bottom: 12px;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
     right: 12px;
     padding: 4px 8px;
     gap: 6px;
+    z-index: 999;
   }
   .theme-hud-label { display: none; }
   .theme-dot { width: 18px; height: 18px; }
 
   .cross-matrix-bar {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    overflow-x: hidden;
+    flex-wrap: wrap;
     padding-bottom: 4px;
-    scrollbar-width: none;
   }
-  .cross-matrix-bar::-webkit-scrollbar { display: none; }
-  .cross-pill { flex-shrink: 0; }
+  .cross-pill {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    min-height: 44px;
+    padding: 0.5rem 0.5rem;
+    box-sizing: border-box;
+    flex-shrink: 1;
+  }
 
   .nav-brand span.kbd-tag { display: none; }
   .install-hub-card, .qr-scan-card {
@@ -1880,8 +1893,14 @@ footer {
   .nav-brand { font-size: 0.95rem; }
   .radar-stats-grid { grid-template-columns: 1fr; }
   .matrix-quadrant-grid { aspect-ratio: 4/3; }
-  .matrix-team-node { padding: 2px 5px; font-size: 0.62rem; }
-  .cross-pill { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
+  .matrix-team-node {
+    padding: 2px 5px;
+    font-size: 0.62rem;
+    max-width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cross-pill { padding: 0.4rem 0.5rem; font-size: 0.72rem; }
   .platform-switch { grid-template-columns: 1fr; }
   .download-cta-bar { flex-direction: column; }
   .download-cta-bar .btn { width: 100%; min-height: 48px; }
@@ -2068,7 +2087,27 @@ footer {
 
 @media (max-width: 900px) {
   .access-wrap {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 1.5rem;
+  }
+  .access-info-card,
+  .access-form-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .access-info-card,
+  .access-form-card {
+    padding: 1.25rem 0.85rem;
+    border-radius: 16px;
   }
 }
 
@@ -2078,6 +2117,8 @@ footer {
   border-radius: 20px;
   padding: 2.25rem;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px var(--theme-subtle);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .access-info-card h3 {
@@ -2138,6 +2179,8 @@ footer {
   border-radius: 20px;
   padding: 2.25rem;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .access-form-grid {
@@ -2429,13 +2472,80 @@ footer {
   line-height: 1.45;
 }
 
-.academy-manager-rule strong {
-  color: #ffedd5;
-}
-
 .rule-icon {
   font-size: 1rem;
   line-height: 1;
   flex-shrink: 0;
   margin-top: 1px;
+}
+
+/* ── Tactical Mobile Bottom Dock (App Synchronized) ── */
+.site-mobile-dock {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  
+  .site-mobile-dock {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(9, 9, 11, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    justify-content: space-around;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .site-mobile-dock-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #A1A1AA;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    gap: 3px;
+    flex: 1;
+    height: 100%;
+    transition: color 0.15s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .site-mobile-dock-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .site-mobile-dock-btn:hover,
+  .site-mobile-dock-btn.active {
+    color: var(--theme-primary);
+  }
+  
+  .site-mobile-dock-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+  }
+  
+  .site-mobile-dock-btn.primary-action {
+    color: var(--theme-primary);
+    font-weight: 900;
+  }
 }
