@@ -2242,3 +2242,200 @@ footer {
   border-radius: 999px;
   margin-bottom: 0.75rem;
 }
+
+/* ── How It Works: 4-Step Playbook Grid ─────────────────────── */
+.playbook-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  width: 100%;
+}
+
+.playbook-step-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--kbd-border);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.playbook-step-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--theme-border);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 25px var(--theme-subtle);
+}
+
+.step-num-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.75rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.05);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.step-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.step-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--theme-primary);
+  margin-bottom: 0.4rem;
+}
+
+.playbook-step-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.75rem;
+  line-height: 1.35;
+}
+
+.playbook-step-card p {
+  font-size: 0.88rem;
+  color: var(--kbd-smoke);
+  line-height: 1.55;
+  margin: 0 0 1.25rem;
+  flex-grow: 1;
+}
+
+.step-tip-box {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--theme-primary);
+  border-radius: 0 10px 10px 0;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.8rem;
+  color: #d4d4d8;
+  line-height: 1.45;
+}
+
+.step-tip-box strong {
+  color: #ffffff;
+}
+
+/* ── Dynasty IQ Academy ─────────────────────────────────────── */
+.academy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .academy-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.academy-card {
+  background: var(--kbd-dark-2);
+  border: 1px solid var(--kbd-border);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.academy-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.academy-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.academy-term-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.academy-term-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.academy-definition {
+  font-size: 0.88rem;
+  color: #e4e4e7;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.academy-why-matters {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: var(--kbd-smoke);
+  line-height: 1.5;
+}
+
+.academy-why-matters strong {
+  color: #ffffff;
+}
+
+.academy-manager-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: #fed7aa;
+  line-height: 1.45;
+}
+
+.academy-manager-rule strong {
+  color: #ffedd5;
+}
+
+.rule-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+}

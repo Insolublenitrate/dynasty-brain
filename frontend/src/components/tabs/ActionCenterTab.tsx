@@ -5,13 +5,15 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { 
   AlertTriangle, TrendingUp, Info, Target, Sparkles, ArrowRight, 
   ArrowRightLeft, Radio, MessageSquare, Clock, Zap, Coins, 
-  ShieldAlert, ShieldCheck, ChevronDown, Flame, CheckCircle2
+  ShieldAlert, ShieldCheck, ChevronDown, Flame, CheckCircle2,
+  Trophy, BookOpen, HelpCircle
 } from "lucide-react";
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/config/api';
 import MetricExplainer from '@/components/ui/MetricExplainer';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 
 export default function ActionCenterTab() {
   const { leagueId, myRosterId, setMyRosterId, leagueRosters, isLoading: isLeagueLoading } = useLeague();
@@ -230,9 +232,89 @@ export default function ActionCenterTab() {
       };
     });
 
+  // Rank calculations across league
+  const starterRank = matrixData.length > 0 && myRoster
+    ? matrixData.filter(t => (t.starter_ppg || 0) > (myRoster.starter_ppg || 0)).length + 1
+    : 1;
+
+  const maxPfRank = matrixData.length > 0 && myRoster
+    ? matrixData.filter(t => (t.max_pf || 0) > (myRoster.max_pf || 0)).length + 1
+    : 1;
+
+  // Executive Dynasty Verdict summary
+  const getExecutiveVerdict = () => {
+    if (myRoster?.lifecycle_state?.includes('Contender') || myRoster?.lifecycle_state?.includes('Juggernaut')) {
+      return {
+        badge: "🏆 TITLE WINDOW: ALL-IN CONTENDER",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+        headline: "Championship Apex: Consolidate Bench Depth Into Elite Weekly Firepower",
+        summary: `Your starting lineup ranks #${starterRank} in firepower across the league (${myRoster?.starter_ppg?.toFixed(1) || '155.0'} PPG). Your championship window is open right now.`,
+        action: "Do not hoard bench depth or mid-round draft picks. Package bench players + 2nd/3rd round picks to buy an elite top-tier starter from a rebuilding rival before trade deadlines lock.",
+        bg: "from-emerald-950/40 via-zinc-900/60 to-zinc-950",
+        border: "border-emerald-500/30",
+        icon: Trophy,
+        iconColor: "text-emerald-400"
+      };
+    }
+    if (myRoster?.lifecycle_state?.includes('Rebuild')) {
+      return {
+        badge: "⚡ REBUILD WINDOW: PRODUCTIVE STRUGGLE",
+        badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+        headline: "Productive Rebuild: Protect Draft Slot & Stockpile Future 1st Round Picks",
+        summary: `Your priority is securing the #1 overall rookie draft pick (1.01) while accumulating long-term appreciating assets.`,
+        action: "Points on your bench hurt your Max PF and worsen your rookie draft slot. Liquidate any veteran RB (26+) or WR (29+) to win-now contenders for future 1sts and young injured upside.",
+        bg: "from-cyan-950/40 via-zinc-900/60 to-zinc-950",
+        border: "border-cyan-500/30",
+        icon: Zap,
+        iconColor: "text-cyan-400"
+      };
+    }
+    return {
+      badge: "⏳ STRATEGIC CROSSROADS: PICK A DIRECTION",
+      badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+      headline: "Dynasty Purgatory: Avoid the Middle — Either Push All-In or Sell Aging Points",
+      summary: "Finishing 5th or 6th is the worst outcome in dynasty: you miss the championship and lose out on elite rookie draft capital.",
+      action: "Evaluate your Starting PPG: if you are 1-2 moves away from top-3 firepower, trade future capital for proven studs. If not, sell aging veterans now before their trade market value permanently collapses.",
+      bg: "from-amber-950/40 via-zinc-900/60 to-zinc-950",
+      border: "border-amber-500/30",
+      icon: Clock,
+      iconColor: "text-amber-400"
+    };
+  };
+
+  const executiveVerdict = getExecutiveVerdict();
+  const ExecIcon = executiveVerdict.icon;
+
   return (
     <div className="space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-500">
       
+      {/* ── DYNASTY MANAGER PLAYBOOK GUIDE ─────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Dynasty War Room Playbook: The 4 Golden Rules of Dynasty Management"
+        subtitle="How to translate these quant metrics into league-dominating trade and roster decisions"
+        badge="DYNASTY PLAYBOOK GUIDE"
+        points={[
+          {
+            icon: Trophy,
+            label: "1. Max PF vs Win-Loss",
+            text: "Your win-loss record is distorted by weekly matchup luck. Max PF (best possible lineup) reveals your true roster ceiling and determines non-playoff rookie draft slots.",
+            color: "#22c55e"
+          },
+          {
+            icon: Zap,
+            label: "2. Starters Win Titles",
+            text: "In standard dynasty formats (Start 9/10), bench depth doesn't score in playoffs. Always consolidate 2-for-1: three WR3s will never beat an elite top-5 superstar.",
+            color: "#f59e0b"
+          },
+          {
+            icon: ShieldAlert,
+            label: "3. Age Cliff Timing",
+            text: "RBs crash at age 27, WRs at age 30. Selling an aging star 1 season too early nets multiple future 1sts; holding 1 season too late leaves you with unmovable dead weight.",
+            color: "#f43f5e"
+          }
+        ]}
+      />
+
       {/* ── 1. DYNASTY EXECUTIVE HORIZON COCKPIT ────────────────────────────── */}
       <div className="bg-gradient-to-b from-zinc-900/95 via-zinc-900/80 to-zinc-950 border border-zinc-800 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-xl relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl pointer-events-none opacity-15" style={{ background: currentTheme.primary }} />
@@ -257,11 +339,13 @@ export default function ActionCenterTab() {
                 </span>
                 <MetricExplainer term="archetype" size="xs" />
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mt-1">
+              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mt-1 flex-wrap">
                 <Clock size={13} className={windowMeta.color} />
                 <span className="font-bold text-zinc-300">{windowMeta.window}</span>
                 <span className="text-zinc-600">•</span>
                 <span>Power Index: <strong className="text-white">{myRoster?.power_index ? Math.round(myRoster.power_index) : 2500}</strong></span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-emerald-400 font-bold">Starter Firepower Rank #{starterRank}</span>
               </div>
             </div>
           </div>
@@ -303,58 +387,111 @@ export default function ActionCenterTab() {
           </div>
         </div>
 
-        {/* 4 Quant Vital Signs */}
+        {/* Executive Verdict Tactical Callout Banner */}
+        <div className={`mt-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r ${executiveVerdict.bg} border ${executiveVerdict.border} shadow-lg relative overflow-hidden`}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black uppercase tracking-wider border w-fit ${executiveVerdict.badgeColor}`}>
+              <ExecIcon size={12} className={executiveVerdict.iconColor} />
+              <span>{executiveVerdict.badge}</span>
+            </span>
+            <span className="text-[10px] font-mono text-zinc-400">Tactical Bottom Line</span>
+          </div>
+          <h3 className="text-sm sm:text-base font-bold text-white font-display leading-snug">
+            {executiveVerdict.headline}
+          </h3>
+          <p className="text-xs text-zinc-300 mt-1 font-sans leading-relaxed">
+            {executiveVerdict.summary}
+          </p>
+          <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-start gap-2 text-xs font-mono text-amber-300/90">
+            <ArrowRight size={13} className="shrink-0 mt-0.5 text-amber-400" />
+            <span><strong className="text-white">Recommended Move:</strong> {executiveVerdict.action}</span>
+          </div>
+        </div>
+
+        {/* 4 Quant Vital Signs (Clear Dynasty Translations) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-5">
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Starter Firepower</span>
-              <Zap size={14} className="text-amber-400" />
+          {/* 1. Starter Firepower */}
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Starter Firepower</span>
+                <Zap size={14} className="text-amber-400" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+                {myRoster?.starter_ppg ? `${myRoster.starter_ppg.toFixed(1)}` : '155.0'}
+                <span className="text-xs text-zinc-500 font-sans font-normal ml-1">PPG</span>
+              </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono text-white">
-              {myRoster?.starter_ppg ? `${myRoster.starter_ppg.toFixed(1)}` : '155.0'}
-              <span className="text-xs text-zinc-500 font-sans font-normal ml-1">PPG</span>
+            <div className="mt-2 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[10px] font-mono">
+                <span className="text-emerald-400 font-bold">Rank #{starterRank} of {matrixData.length || 12}</span>
+                <span className="text-zinc-500">Starters</span>
+              </div>
+              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Average starting lineup score. Wins playoff matchups.</p>
             </div>
-            <p className="text-[10px] font-mono text-emerald-400 mt-0.5">Top-Tier Starting Lineup</p>
           </div>
 
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Draft War Chest</span>
-              <Coins size={14} className="text-emerald-400" />
+          {/* 2. Draft War Chest */}
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Draft War Chest</span>
+                <Coins size={14} className="text-emerald-400" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">
+                {futureFirstsCount}
+                <span className="text-xs text-zinc-400 font-sans font-normal ml-1">Future 1sts</span>
+              </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">
-              {futureFirstsCount}
-              <span className="text-xs text-zinc-400 font-sans font-normal ml-1">Future 1sts</span>
+            <div className="mt-2 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[10px] font-mono">
+                <span className="text-zinc-300 font-bold">{Math.round((myRoster?.future_capital_score || 21000) / 1000)}k Pts</span>
+                <span className="text-emerald-400">Liquid</span>
+              </div>
+              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Liquid currency. Appreciates leading to rookie draft.</p>
             </div>
-            <p className="text-[10px] font-mono text-zinc-400 mt-0.5">
-              Equity: {myRoster?.future_capital_score ? Math.round(myRoster.future_capital_score).toLocaleString() : '21,000'} pts
-            </p>
           </div>
 
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Roster Mean Age</span>
-              <Clock size={14} className="text-cyan-400" />
+          {/* 3. Roster Mean Age */}
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Roster Mean Age</span>
+                <Clock size={14} className="text-cyan-400" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+                {myRoster?.roster_age_score ? `${myRoster.roster_age_score.toFixed(1)}` : '25.4'}
+                <span className="text-xs text-zinc-500 font-sans font-normal ml-1">yrs</span>
+              </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono text-white">
-              {myRoster?.roster_age_score ? `${myRoster.roster_age_score.toFixed(1)}` : '25.4'}
-              <span className="text-xs text-zinc-500 font-sans font-normal ml-1">yrs</span>
+            <div className="mt-2 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[10px] font-mono">
+                <span className="text-cyan-400 font-bold">{myRoster?.roster_age_score && myRoster.roster_age_score < 26 ? 'Young Core' : 'Aging Core'}</span>
+                <span className="text-zinc-500">RB 27 / WR 30</span>
+              </div>
+              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Cliff alert: RBs drop sharply at 27, WRs at 30.</p>
             </div>
-            <p className="text-[10px] font-mono text-cyan-400 mt-0.5">
-              {myRoster?.roster_age_score && myRoster.roster_age_score < 26 ? 'Prime Championship Age' : 'Aging Roster Window'}
-            </p>
           </div>
 
-          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Optimal Ceiling</span>
-              <Target size={14} style={{ color: currentTheme.primary }} />
+          {/* 4. Optimal Ceiling (Max PF) */}
+          <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-3.5 sm:p-4 shadow-inner flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] sm:text-xs font-mono uppercase font-bold text-zinc-400">Optimal Ceiling</span>
+                <Target size={14} style={{ color: currentTheme.primary }} />
+              </div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-white">
+                {myRoster?.max_pf ? Math.round(myRoster.max_pf).toLocaleString() : '2,800'}
+                <span className="text-xs text-zinc-500 font-sans font-normal ml-1">Max PF</span>
+              </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono text-white">
-              {myRoster?.max_pf ? Math.round(myRoster.max_pf).toLocaleString() : '2,800'}
-              <span className="text-xs text-zinc-500 font-sans font-normal ml-1">Max PF</span>
+            <div className="mt-2 pt-1.5 border-t border-zinc-900">
+              <div className="flex items-center justify-between text-[10px] font-mono">
+                <span className="text-white font-bold">Draft Slot #{maxPfRank}</span>
+                <span className="text-zinc-500">True Power</span>
+              </div>
+              <p className="text-[9.5px] text-zinc-400 mt-0.5 leading-tight">Best possible lineup points. Determines rookie draft slot.</p>
             </div>
-            <p className="text-[10px] font-mono text-zinc-400 mt-0.5">True Roster Potential</p>
           </div>
         </div>
       </div>

@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { Search, ArrowRightLeft, UserPlus, X, Briefcase, Sparkles, Scale, Ticket, Plus } from 'lucide-react';
+import { Search, ArrowRightLeft, UserPlus, X, Briefcase, Sparkles, Scale, Ticket, Plus, Coins, ShieldAlert } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useLeague } from '@/context/LeagueContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 
 interface TradeAsset {
   id: string;
@@ -159,6 +160,33 @@ export default function TradeArchitectTab() {
           </p>
         </div>
       </div>
+
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Dynasty Trade Machine: The Golden Rules of Trade Value"
+        subtitle="How to balance immediate player production with future draft pick liquidity"
+        badge="TRADE MACHINE GUIDE"
+        points={[
+          {
+            icon: Ticket,
+            label: "1. Draft Pick Liquidity",
+            text: "Future 1sts are the most liquid, risk-free asset in dynasty. They never suffer injuries, never get benched, and steadily gain 25%+ in perceived trade value heading into draft day.",
+            color: "#fbbf24"
+          },
+          {
+            icon: Scale,
+            label: "2. 2-for-1 Consolidation",
+            text: "Do not trade three nickels for a quarter. Starting lineup firepower wins titles; three WR3s will never replace an elite top-5 superstar. Require an overpay if downgrading a stud.",
+            color: "#38bdf8"
+          },
+          {
+            icon: ArrowRightLeft,
+            label: "3. Timeline Asymmetry",
+            text: "Trade with teams on the opposite end of the championship timeline. Contenders want immediate points; Rebuilders want rookie picks and young injured assets.",
+            color: "#34d399"
+          }
+        ]}
+      />
 
       <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 relative shadow-xl space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

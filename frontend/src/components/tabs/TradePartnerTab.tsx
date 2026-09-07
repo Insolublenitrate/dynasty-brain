@@ -9,6 +9,7 @@ import {
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
+import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 
 interface TradePartnerTabProps {
   onSelectPartner?: (rosterId: number, teamName: string) => void;
@@ -217,6 +218,33 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
           </div>
         )}
       </div>
+
+      {/* ── TACTICAL BRIEFING GUIDE ─────────────────────────────────────────── */}
+      <TacticalBriefingCard
+        title="Smart Trade Partner Finder: The Synergy Matching Algorithm"
+        subtitle="How to identify trade partners with opposing roster needs and timelines"
+        badge="PARTNER FINDER GUIDE"
+        points={[
+          {
+            icon: Users,
+            label: "1. Timeline Asymmetry",
+            text: "Trade with franchises in opposing lifecycles. Win-Now Contenders overpay with future picks for immediate starters; Rebuilders eagerly sell veteran points to protect draft slots.",
+            color: "#22c55e"
+          },
+          {
+            icon: Target,
+            label: "2. Positional Surplus Swaps",
+            text: "Target teams with complementary rosters. If you are deep at WR but thin at RB, find the manager with an RB surplus and weak pass-catchers to construct an instant win-win trade.",
+            color: "#38bdf8"
+          },
+          {
+            icon: Sparkles,
+            label: "3. Leverage The Slump",
+            text: "Look for contenders experiencing negative luck variance. Target their high-ceiling assets before positive regression kicks in and their asking price jumps back up.",
+            color: "#f59e0b"
+          }
+        ]}
+      />
 
       {/* Filter Ribbon */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-zinc-900/80 backdrop-blur-md p-3 rounded-2xl border border-zinc-800">
