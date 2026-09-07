@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { 
   Database, GraduationCap, Radar, Trophy, Settings, Flame, Search, 
   Sparkles, Smartphone, Activity, HelpCircle, ChevronDown, Target, 
-  CalendarDays, Crown, Briefcase, BookOpen, Compass, Users
+  CalendarDays, Crown, Briefcase, BookOpen, Compass, Users, Layers
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -21,7 +21,7 @@ function TopNavInner() {
   const searchParams = useSearchParams();
   const currentArena = searchParams.get("arena") || "command";
   const { leagueName, leagueId, myRosterId, setMyRosterId, leagueRosters } = useLeague();
-  const { currentTheme } = useTheme();
+  const { currentTheme, cleanMode, setCleanMode } = useTheme();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
@@ -249,8 +249,31 @@ function TopNavInner() {
             </div>
           </nav>
 
-          {/* Right Actions: Field Guide, Tour, Get App, Settings (Fits 100% on Mobile) */}
+          {/* Right Actions: Clean/Stadium View Switcher, Field Guide, Tour, Get App, Settings */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* View Mode Toggle: Stadium vs Clean */}
+            <button
+              onClick={() => setCleanMode(!cleanMode)}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl border transition-all flex items-center gap-1.5 text-xs font-mono font-bold shadow-sm ${
+                cleanMode
+                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/50 shadow-sm'
+                  : 'bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700/80 text-zinc-300 hover:text-white'
+              }`}
+              title={cleanMode ? "Current: Clean Minimalist View (Click for Stadium Playbook)" : "Current: Stadium Playbook View (Click for Clean Minimalist)"}
+            >
+              {cleanMode ? (
+                <>
+                  <Sparkles size={13} className="text-teal-400" />
+                  <span className="hidden sm:inline font-black">Clean</span>
+                </>
+              ) : (
+                <>
+                  <Layers size={13} className="text-zinc-400" />
+                  <span className="hidden sm:inline">Stadium</span>
+                </>
+              )}
+            </button>
+
             {/* Quick Tour Button */}
             <button
               onClick={() => setIsTourOpen(true)}

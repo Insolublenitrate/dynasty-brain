@@ -78,6 +78,8 @@ interface ThemeContextType {
   setCarbonEnabled: (enabled: boolean) => void;
   playbookEnabled: boolean;
   setPlaybookEnabled: (enabled: boolean) => void;
+  cleanMode: boolean;
+  setCleanMode: (enabled: boolean) => void;
   currentTheme: ThemeConfig;
 }
 
@@ -88,6 +90,8 @@ const ThemeContext = createContext<ThemeContextType>({
   setCarbonEnabled: () => {},
   playbookEnabled: true,
   setPlaybookEnabled: () => {},
+  cleanMode: false,
+  setCleanMode: () => {},
   currentTheme: THEME_CONFIGS.orange,
 });
 
@@ -95,11 +99,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [accent, setAccentState] = useState<AccentColor>('orange');
   const [carbonEnabled, setCarbonEnabledState] = useState<boolean>(true);
   const [playbookEnabled, setPlaybookEnabledState] = useState<boolean>(true);
+  const [cleanMode, setCleanModeState] = useState<boolean>(false);
 
   useEffect(() => {
     const savedAccent = localStorage.getItem('dynasty_accent_color') as AccentColor;
     const savedCarbon = localStorage.getItem('dynasty_carbon_bg');
     const savedPlaybook = localStorage.getItem('dynasty_playbook_bg');
+    const savedCleanMode = localStorage.getItem('dynasty_clean_mode');
 
     if (savedAccent && THEME_CONFIGS[savedAccent]) {
       setAccentState(savedAccent);
@@ -109,6 +115,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
     if (savedPlaybook !== null) {
       setPlaybookEnabledState(savedPlaybook === 'true');
+    }
+    if (savedCleanMode !== null) {
+      setCleanModeState(savedCleanMode === 'true');
     }
   }, []);
 
@@ -126,6 +135,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setPlaybookEnabled = (enabled: boolean) => {
     setPlaybookEnabledState(enabled);
     localStorage.setItem('dynasty_playbook_bg', String(enabled));
+  };
+
+  const setCleanMode = (enabled: boolean) => {
+    setCleanModeState(enabled);
+    localStorage.setItem('dynasty_clean_mode', String(enabled));
   };
 
   const applyThemeCssVariables = (color: AccentColor) => {
@@ -154,6 +168,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setCarbonEnabled,
         playbookEnabled,
         setPlaybookEnabled,
+        cleanMode,
+        setCleanMode,
         currentTheme,
       }}
     >

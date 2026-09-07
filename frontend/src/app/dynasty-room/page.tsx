@@ -30,6 +30,7 @@ import TopPerformersTab from '@/components/tabs/TopPerformersTab';
 import PlayerCompareTab from '@/components/tabs/PlayerCompareTab';
 import CrossReferenceTab from '@/components/tabs/CrossReferenceTab';
 import TradePartnerTab from '@/components/tabs/TradePartnerTab';
+import DraftCapitalTab from '@/components/tabs/DraftCapitalTab';
 
 function DynastyRoomContent() {
   const { leagueId, leagueName, isLoading: isLeagueLoading } = useLeague();
@@ -47,7 +48,7 @@ function DynastyRoomContent() {
   const [matchupsSub, setMatchupsSub] = useState<'slate' | 'simulator' | 'rivalries' | 'allplay'>((subParam as any) || 'slate');
   const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'crossref' | 'compare'>((subParam as any) || 'analyzer');
   const [powerSub, setPowerSub] = useState<'tiers' | 'matrix' | 'records' | 'bounties' | 'studio'>((subParam as any) || 'tiers');
-  const [tradeSub, setTradeSub] = useState<'architect' | 'partners' | 'ledger' | 'autopsy'>((subParam as any) || 'architect');
+  const [tradeSub, setTradeSub] = useState<'architect' | 'partners' | 'capital' | 'ledger' | 'autopsy'>((subParam as any) || 'architect');
   const [selectedAutopsyTradeId, setSelectedAutopsyTradeId] = useState<string | null>(searchParams.get('trade_id') || null);
 
   useEffect(() => {
@@ -55,6 +56,23 @@ function DynastyRoomContent() {
       setActiveArena(arenaParam);
     }
   }, [arenaParam]);
+
+  useEffect(() => {
+    if (subParam) {
+      if (['action', 'roster', 'diagnostics'].includes(subParam)) setCommandSub(subParam as any);
+      if (['slate', 'simulator', 'rivalries', 'allplay'].includes(subParam)) setMatchupsSub(subParam as any);
+      if (['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(subParam)) setPlayersSub(subParam as any);
+      if (['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(subParam)) setPowerSub(subParam as any);
+      if (['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(subParam)) setTradeSub(subParam as any);
+    } else {
+      // If arena switched without subParam, ensure the active arena has a valid sub selected
+      if (!['action', 'roster', 'diagnostics'].includes(commandSub)) setCommandSub('action');
+      if (!['slate', 'simulator', 'rivalries', 'allplay'].includes(matchupsSub)) setMatchupsSub('slate');
+      if (!['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(playersSub)) setPlayersSub('analyzer');
+      if (!['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(powerSub)) setPowerSub('tiers');
+      if (!['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(tradeSub)) setTradeSub('architect');
+    }
+  }, [arenaParam, subParam, commandSub, matchupsSub, playersSub, powerSub, tradeSub]);
 
   const handleArenaChange = (newArena: string) => {
     setActiveArena(newArena);
@@ -337,7 +355,7 @@ function DynastyRoomContent() {
           )}
 
           {activeArena === 'trade' && (
-            <div className="grid grid-cols-4 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
+            <div className="grid grid-cols-5 w-full sm:w-auto sm:flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner">
               <button
                 onClick={() => setTradeSub('architect')}
                 className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
@@ -357,6 +375,16 @@ function DynastyRoomContent() {
               >
                 <Users size={13} className="shrink-0" />
                 <span className="truncate">Partners</span>
+              </button>
+              <button
+                onClick={() => setTradeSub('capital')}
+                className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center ${
+                  tradeSub === 'capital' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                style={tradeSub === 'capital' ? { color: currentTheme.primary } : {}}
+              >
+                <Coins size={13} className="shrink-0" />
+                <span className="truncate">Capital</span>
               </button>
               <button
                 onClick={() => setTradeSub('ledger')}
@@ -434,6 +462,14 @@ function DynastyRoomContent() {
             {tradeSub === 'partners' && (
               <TradePartnerTab 
                 onSelectPartner={(rosterId) => {
+                  router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${rosterId}`, { scroll: false });
+                  setTradeSub('architect');
+                }} 
+              />
+            )}
+            {tradeSub === 'capital' && (
+              <DraftCapitalTab 
+                onSelectTeamForTrade={(rosterId) => {
                   router.push(`/dynasty-room?arena=trade&sub=architect&partner_roster=${rosterId}`, { scroll: false });
                   setTradeSub('architect');
                 }} 

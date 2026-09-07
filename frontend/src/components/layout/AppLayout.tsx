@@ -9,7 +9,7 @@ import { useTheme } from "@/context/ThemeContext";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { carbonEnabled, playbookEnabled } = useTheme();
+  const { carbonEnabled, playbookEnabled, cleanMode } = useTheme();
   const isSplash = pathname === "/";
 
   if (isSplash) {
@@ -21,9 +21,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col ${carbonEnabled ? 'bg-carbon-mesh' : 'bg-zinc-950'} text-zinc-100 transition-colors relative selection:bg-orange-500/30`}>
-      {/* Animated Coaches Playbook Background Layer */}
-      {playbookEnabled && <PlaybookBackground />}
+    <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col ${
+      cleanMode 
+        ? 'bg-[#09090b] clean-view' 
+        : (carbonEnabled ? 'bg-carbon-mesh' : 'bg-zinc-950')
+    } text-zinc-100 transition-colors relative ${cleanMode ? 'selection:bg-zinc-800' : 'selection:bg-orange-500/30'}`}>
+      {/* Animated Coaches Playbook Background Layer (Suppressed in Clean Mode) */}
+      {!cleanMode && playbookEnabled && <PlaybookBackground />}
       
       <TopNav />
       <main className="flex-1 flex flex-col w-full max-w-[100vw] min-w-0 pb-28 sm:pb-16 relative">

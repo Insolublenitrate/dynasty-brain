@@ -19,7 +19,7 @@ export default function RosterIntelTab() {
   const [selectedRosterId, setSelectedRosterId] = useState<number>(myRosterId || 1);
   const [rosterData, setRosterData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [benchFilter, setBenchFilter] = useState<'ALL' | 'QB' | 'RB' | 'WR' | 'TE' | 'TAXI' | 'IR'>('ALL');
+  const [benchFilter, setBenchFilter] = useState<'ALL' | 'QB' | 'RB' | 'WR' | 'TE' | 'TAXI' | 'IR' | 'CLOGGERS' | 'HANDCUFFS'>('ALL');
 
   useEffect(() => {
     if (myRosterId) {
@@ -128,11 +128,13 @@ export default function RosterIntelTab() {
     );
   }
 
-  const { team_info, starters, bench, taxi, reserve, position_audits, draft_picks, diagnostics } = rosterData;
+  const { team_info, starters, bench, taxi, reserve, position_audits, draft_picks, diagnostics, horizon_projection, roster_audit } = rosterData;
 
   let filteredBench = bench || [];
   if (benchFilter === 'TAXI') filteredBench = taxi || [];
   else if (benchFilter === 'IR') filteredBench = reserve || [];
+  else if (benchFilter === 'CLOGGERS') filteredBench = roster_audit?.cloggers || [];
+  else if (benchFilter === 'HANDCUFFS') filteredBench = roster_audit?.handcuffs || [];
   else if (benchFilter !== 'ALL') {
     filteredBench = bench.filter((p: any) => p.position === benchFilter);
   }
@@ -388,6 +390,11 @@ export default function RosterIntelTab() {
                           {p.injury_status}
                         </span>
                       )}
+                      {p.age >= (p.position === 'RB' ? 27 : (p.position === 'WR' ? 29 : (p.position === 'TE' ? 31 : 34))) && (
+                        <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-tight shrink-0">
+                          CLIFF WATCH
+                        </span>
+                      )}
                     </div>
 
                     {/* Line 2: Position Badge + Team + Age */}
@@ -441,7 +448,7 @@ export default function RosterIntelTab() {
             </h3>
           </div>
 
-          {/* Position Filters */}
+          {/* Position & Dynasty Audit Filters */}
           <div className="flex items-center gap-1 overflow-x-auto pb-1 max-w-full font-mono text-xs">
             {(['ALL', 'QB', 'RB', 'WR', 'TE', 'TAXI', 'IR'] as const).map((filter) => (
               <button
@@ -457,6 +464,30 @@ export default function RosterIntelTab() {
                 {filter}
               </button>
             ))}
+
+            <button
+              onClick={() => setBenchFilter('CLOGGERS')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 flex items-center gap-1 ${
+                benchFilter === 'CLOGGERS'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                  : 'text-amber-400/80 hover:text-amber-300 bg-amber-950/20 border border-amber-900/40'
+              }`}
+            >
+              <AlertTriangle size={12} />
+              <span>Clogger Audit ({roster_audit?.clogger_count || 0})</span>
+            </button>
+
+            <button
+              onClick={() => setBenchFilter('HANDCUFFS')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 flex items-center gap-1 ${
+                benchFilter === 'HANDCUFFS'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                  : 'text-emerald-400/80 hover:text-emerald-300 bg-emerald-950/20 border border-emerald-900/40'
+              }`}
+            >
+              <ShieldCheck size={12} />
+              <span>Handcuffs ({roster_audit?.handcuff_count || 0})</span>
+            </button>
           </div>
         </div>
 
@@ -467,24 +498,49 @@ export default function RosterIntelTab() {
             {filteredBench.map((p: any) => (
               <div 
                 key={p.id}
-                className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-3 flex items-center justify-between gap-3 hover:border-zinc-700 transition-all"
+                className={`bg-zinc-950/60 border rounded-xl p-3 flex flex-col justify-between gap-2 hover:border-zinc-700 transition-all ${
+                  p.clogger_reason ? 'border-amber-500/40 bg-amber-950/10' : 'border-zinc-800/80'
+                }`}
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-[10px] border shrink-0 ${getPositionBadgeClass(p.position)}`}>
-                    {p.position}
-                  </span>
-                  <div className="min-w-0">
-                    <h6 className="text-xs font-bold text-white truncate">{p.name}</h6>
-                    <span className="text-[10px] font-mono text-zinc-400 block">
-                      {p.team} · Age {p.age} · {p.role_tag}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-[10px] border shrink-0 ${getPositionBadgeClass(p.position)}`}>
+                      {p.position}
                     </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h6 className="text-xs font-bold text-white truncate">{p.name}</h6>
+                        {p.clogger_reason && (
+                          <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-black bg-amber-500/25 text-amber-300 border border-amber-500/40">
+                            CLOGGER
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-mono text-zinc-400 block">
+                        {p.team} · Age {p.age} · {p.role_tag}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0 font-mono">
+                    <span className="text-xs font-bold text-zinc-300 block">{p.ppg} PPG</span>
+                    <span className="text-[9px] text-zinc-400">{p.slot || 'BN'}</span>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0 font-mono">
-                  <span className="text-xs font-bold text-zinc-300 block">{p.ppg} PPG</span>
-                  <span className="text-[9px] text-zinc-400">{p.slot || 'BN'}</span>
-                </div>
+                {/* Audit Contextual Banner */}
+                {p.clogger_reason && (
+                  <div className="bg-zinc-950/90 border border-amber-900/40 rounded-lg p-2 text-[10px] font-mono text-amber-300/90 leading-tight">
+                    <div className="text-amber-400 font-bold mb-0.5">⚠️ {p.clogger_reason}</div>
+                    <div className="text-zinc-400 text-[9px]">{p.clogger_action}</div>
+                  </div>
+                )}
+                {p.handcuff_verdict && (
+                  <div className="bg-zinc-950/90 border border-emerald-900/40 rounded-lg p-2 text-[10px] font-mono text-emerald-300/90 leading-tight">
+                    <div className="text-emerald-400 font-bold mb-0.5">🛡️ High-Leverage Handcuff</div>
+                    <div className="text-zinc-400 text-[9px]">{p.handcuff_verdict}</div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

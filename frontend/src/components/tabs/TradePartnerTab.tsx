@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, ArrowRightLeft, Sparkles, TrendingUp, ShieldAlert, 
   CheckCircle2, ArrowRight, Zap, Target, Search, Filter,
-  Layers, Trophy, AlertTriangle
+  Layers, Trophy, AlertTriangle, ChevronDown, ChevronUp, Lightbulb
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -22,6 +22,7 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
   const [teams, setTeams] = useState<any[]>([]);
   const [selectedPhase, setSelectedPhase] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedPartnerId, setExpandedPartnerId] = useState<number | null>(null);
 
   const myRosterId = globalRosterId || (teams.length > 0 ? teams[0].roster_id : 1);
 
@@ -362,8 +363,89 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                   </div>
                 </div>
 
+                {/* 1-Click Trade Blueprints Drawer */}
+                <div className="mt-3 pt-2.5 border-t border-zinc-800/80 space-y-2">
+                  <button
+                    onClick={() => setExpandedPartnerId(expandedPartnerId === partner.roster_id ? null : partner.roster_id)}
+                    className="w-full py-1.5 px-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-mono font-bold text-amber-400 flex items-center justify-between transition-all"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Lightbulb size={13} />
+                      <span>💡 3 Concrete Deal Blueprints</span>
+                    </span>
+                    {expandedPartnerId === partner.roster_id ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                  </button>
+
+                  {expandedPartnerId === partner.roster_id && (
+                    <div className="space-y-2 animate-in fade-in duration-200">
+                      {/* Blueprint 1: Win-Now Veteran Push */}
+                      <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-[11px] font-mono space-y-1.5">
+                        <div className="flex items-center justify-between text-amber-300 font-bold">
+                          <span>1. The Win-Now Starter Push</span>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">98% FAIR</span>
+                        </div>
+                        <div className="text-[10px] text-zinc-400">
+                          <div><strong>Send:</strong> High-Scoring Veteran RB/WR</div>
+                          <div><strong>Receive:</strong> Young Developmental Asset + 2026 2nd</div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
+                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                          }}
+                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                        >
+                          Load Blueprint into Architect →
+                        </button>
+                      </div>
+
+                      {/* Blueprint 2: Mutual Need Positional Swap */}
+                      <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-[11px] font-mono space-y-1.5">
+                        <div className="flex items-center justify-between text-cyan-300 font-bold">
+                          <span>2. Positional Need 1-for-1 Swap</span>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">100% PARITY</span>
+                        </div>
+                        <div className="text-[10px] text-zinc-400">
+                          <div><strong>Send:</strong> Your Surplus ({partner.needs[0] || 'WR'})</div>
+                          <div><strong>Receive:</strong> Their Surplus ({partner.strengths[0] || 'RB'})</div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
+                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                          }}
+                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                        >
+                          Load Blueprint into Architect →
+                        </button>
+                      </div>
+
+                      {/* Blueprint 3: 2-for-1 Consolidation */}
+                      <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-[11px] font-mono space-y-1.5">
+                        <div className="flex items-center justify-between text-purple-300 font-bold">
+                          <span>3. Tier-Up Consolidation (2-for-1)</span>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30">ELITE ANCHOR</span>
+                        </div>
+                        <div className="text-[10px] text-zinc-400">
+                          <div><strong>Send:</strong> Two Solid Depth Starters</div>
+                          <div><strong>Receive:</strong> Tier 1 Cornerstone Asset</div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (onSelectPartner) onSelectPartner(partner.roster_id, partner.team_name);
+                            else window.location.href = `/dynasty-room?arena=trade&sub=architect&partner_roster=${partner.roster_id}`;
+                          }}
+                          className="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold transition-all mt-1"
+                        >
+                          Load Blueprint into Architect →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Action Button */}
-                <div className="mt-4 pt-3 border-t border-zinc-800/80">
+                <div className="mt-3 pt-2 border-t border-zinc-800/80">
                   <button
                     onClick={() => {
                       if (onSelectPartner) {
@@ -375,7 +457,7 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                     className="w-full py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shadow-sm border border-zinc-700 hover:border-zinc-600"
                     style={{ color: currentTheme.primary }}
                   >
-                    <span>BUILD TRADE PROPOSAL</span>
+                    <span>CUSTOM TRADE IN ARCHITECT</span>
                     <ArrowRight size={14} />
                   </button>
                 </div>

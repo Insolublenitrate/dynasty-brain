@@ -4,7 +4,8 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend
 } from 'recharts';
 import { 
-  ShieldAlert, Activity, Info, AlertTriangle, TrendingUp, Swords, Skull, Zap, Search
+  ShieldAlert, Activity, Info, AlertTriangle, TrendingUp, Swords, Skull, Zap, Search,
+  Clock, Flame, ArrowRight
 } from 'lucide-react';
 import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -80,7 +81,8 @@ export default function TeamAnalyzerTab() {
 
   const {
     progression, position_grades, asset_allocation, league_asset_allocation, analog, 
-    rookie_metrics, weekly_metrics, fun_metrics, demographics, volumes, record_book
+    rookie_metrics, weekly_metrics, fun_metrics, demographics, volumes, record_book,
+    horizon_projection
   } = analyzerData;
 
   const posGradesOrder = ['QB', 'RB', 'WR', 'TE', 'FLEX'];
@@ -163,6 +165,110 @@ export default function TeamAnalyzerTab() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* ── 3-YEAR CHAMPIONSHIP WINDOW & AGING CURVE HORIZON ── */}
+        {horizon_projection && (
+          <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xl backdrop-blur-md lg:col-span-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-zinc-800/80">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black border ${
+                    horizon_projection.window_color === 'emerald'
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      : horizon_projection.window_color === 'cyan'
+                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  }`}>
+                    {horizon_projection.window_badge}
+                  </span>
+                  <h3 className="text-xl font-black text-white font-display">
+                    {horizon_projection.window_status}
+                  </h3>
+                </div>
+                <p className="text-zinc-400 text-xs mt-1">
+                  {horizon_projection.window_sub}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-xl border border-zinc-800 self-start sm:self-auto">
+                <Clock size={13} style={{ color: currentTheme.primary }} />
+                <span>3-Year Empirical Positional Decay Horizon</span>
+              </div>
+            </div>
+
+            {/* Projection Chart & Trajectory */}
+            <div className="h-64 sm:h-72 w-full mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={horizon_projection.projections} margin={{ top: 10, right: 20, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis dataKey="year" stroke="#71717a" fontSize={12} tickLine={false} />
+                  <YAxis stroke="#71717a" fontSize={12} tickLine={false} />
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                    itemStyle={{ fontSize: '13px', fontWeight: 'bold' }}
+                    formatter={(val: any, name: any) => [`${val} PPG`, name === 'projected_ppg' ? 'Projected Starter Output' : 'League Median']}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="projected_ppg" 
+                    name="Projected Starter Output (PPG)" 
+                    stroke={currentTheme.primary} 
+                    strokeWidth={3} 
+                    dot={{ r: 5, fill: currentTheme.primary }} 
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="league_median_ppg" 
+                    name="League Median Threshold" 
+                    stroke="#71717a" 
+                    strokeWidth={2} 
+                    strokeDasharray="4 4" 
+                    dot={false} 
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Positional Cliff Watch Alerts */}
+            {horizon_projection.cliff_watch && horizon_projection.cliff_watch.length > 0 && (
+              <div className="mt-5 pt-4 border-t border-zinc-800/80">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShieldAlert size={16} className="text-amber-400" />
+                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+                    Positional Age Cliff Watch ({horizon_projection.cliff_watch.length} Starters)
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {horizon_projection.cliff_watch.map((p: any) => (
+                    <div key={p.player_id} className="bg-zinc-950/80 border border-zinc-800/90 rounded-xl p-3 flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200 border border-zinc-700">
+                            {p.position}
+                          </span>
+                          <span className="text-sm font-black text-white">{p.name}</span>
+                          <span className="text-xs text-zinc-500 font-mono">Age {p.current_age}</span>
+                        </div>
+                        <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                          {p.urgency}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-zinc-400 mt-2 font-mono leading-relaxed">
+                        {p.advice}
+                      </p>
+                      <div className="mt-2.5 flex items-center justify-between text-[10px] font-mono text-zinc-500 border-t border-zinc-900 pt-2">
+                        <span>Baseline: <strong className="text-zinc-300">{p.ppg} PPG</strong></span>
+                        <span>Cliff Horizon: <strong className="text-amber-400">{p.cliff_year}</strong></span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Value Over Time */}
         <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl p-6 shadow-md lg:col-span-2">
           <h4 className="text-white font-bold text-lg flex items-center gap-2 mb-4">

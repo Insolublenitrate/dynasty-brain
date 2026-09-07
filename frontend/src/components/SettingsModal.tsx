@@ -15,7 +15,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { accent, setAccent, carbonEnabled, setCarbonEnabled, playbookEnabled, setPlaybookEnabled } = useTheme();
+  const { accent, setAccent, carbonEnabled, setCarbonEnabled, playbookEnabled, setPlaybookEnabled, cleanMode, setCleanMode } = useTheme();
   const { leagueId, platform, leagueName, setLeagueId } = useLeague();
   
   // Platform selection state
@@ -356,6 +356,27 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Clean Minimalist Mode Toggle */}
+            <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800 flex items-center justify-between mt-2">
+              <div className="space-y-0.5">
+                <div className="text-xs font-bold text-white flex items-center gap-2">
+                  <Sparkles size={14} className="text-teal-400" /> Clean Minimalist View
+                </div>
+                <div className="text-[10px] text-zinc-400">
+                  Flat matte obsidian canvas, zero background yard lines, calm typography, and reduced visual noise
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCleanMode(!cleanMode)}
+                className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors ${
+                  cleanMode ? 'bg-teal-500 justify-end' : 'bg-zinc-700 justify-start'
+                }`}
+              >
+                <div className="bg-white w-4 h-4 rounded-full shadow-md transform transition-transform" />
+              </button>
             </div>
 
             {/* Coaches Playbook Toggle */}

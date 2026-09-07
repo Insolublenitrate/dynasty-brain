@@ -21,7 +21,32 @@ def safe_extract_roster_id(val):
     if '_' in val_str:
         parts = val_str.split('_')
         return int(parts[-1]) if parts[-1].isdigit() else 1
-    return int(val_str) if val_str.isdigit() else 1
+def get_age_factor(pos, age):
+    if pos == "RB":
+        if age <= 25: return 1.02
+        if age == 26: return 0.97
+        if age == 27: return 0.88
+        if age == 28: return 0.72
+        if age == 29: return 0.50
+        return 0.30
+    elif pos == "WR":
+        if age <= 26: return 1.05
+        if age <= 28: return 1.00
+        if age == 29: return 0.93
+        if age == 30: return 0.82
+        if age == 31: return 0.68
+        return 0.45
+    elif pos == "TE":
+        if age <= 25: return 1.05
+        if age <= 29: return 1.00
+        if age <= 31: return 0.88
+        return 0.65
+    elif pos == "QB":
+        if age <= 26: return 1.04
+        if age <= 32: return 1.00
+        if age <= 35: return 0.92
+        return 0.75
+    return 0.90
 
 
 @router.get("/api/quant/team-analyzer/{league_id}/{roster_id}")
@@ -473,13 +498,133 @@ def get_team_analyzer(league_id: str, roster_id: int):
             if finish:
                 record_book.append({"season": h.season, "finish": finish})
         
-        record_book = sorted(record_book, key=lambda x: x["season"], reverse=True)
+        # 11. Forward-Looking Dynasty Championship Window & Aging Cliff Horizon
+        def get_age_factor(pos, age):
+            if pos == "RB":
+                if age <= 25: return 1.02
+                if age == 26: return 0.97
+                if age == 27: return 0.88
+                if age == 28: return 0.72
+                if age == 29: return 0.50
+                return 0.30
+            elif pos == "WR":
+                if age <= 26: return 1.05
+                if age <= 28: return 1.00
+                if age == 29: return 0.93
+                if age == 30: return 0.82
+                if age == 31: return 0.68
+                return 0.45
+            elif pos == "TE":
+                if age <= 25: return 1.05
+                if age <= 29: return 1.00
+                if age <= 31: return 0.88
+                return 0.65
+            elif pos == "QB":
+                if age <= 26: return 1.04
+                if age <= 32: return 1.00
+                if age <= 35: return 0.92
+                return 0.75
+            return 0.90
+
+        starters_pids = roster.starters or []
+        starter_players = []
+        for sid in starters_pids:
+            if not sid or str(sid) in ("0", "none", "null"): continue
+            p_data = sp_cache.get(str(sid), {})
+            p_pos = p_data.get("position", "WR")
+            p_age = p_data.get("age")
+            if not p_age and p_data.get("birth_date"):
+                try:
+                    p_age = current_year - int(p_data["birth_date"].split("-")[0])
+                except:
+                    p_age = 25
+            if not p_age: p_age = 25
+            
+            p_stats = [s for s in stats if s.player_id == str(sid) and s.season and s.season >= 2022]
+            p_fpts = sum(s.fantasy_points_ppr for s in p_stats) if p_stats else 0.0
+            p_ppg = round(p_fpts / max(len(p_stats) * 17.0, 1.0), 1) if p_fpts > 0 else (16.0 if p_pos == "QB" else (12.5 if p_pos in ["RB", "WR"] else 9.0))
+            if p_ppg < 5.0: p_ppg = 12.0
+            
+            name = f"{p_data.get('first_name', '')} {p_data.get('last_name', '')}".strip() or f"Player {sid}"
+            starter_players.append({
+                "id": str(sid),
+                "name": name,
+                "position": p_pos,
+                "current_age": p_age,
+                "baseline_ppg": p_ppg
+            })
+
+        projected_years = [2026, 2027, 2028, 2029]
+        team_projections = []
+        cliff_alerts = []
+        
+        for idx, yr in enumerate(projected_years):
+            yr_total_ppg = 0.0
+            for sp in starter_players:
+                proj_age = sp["current_age"] + idx
+                decay = get_age_factor(sp["position"], proj_age)
+                proj_player_ppg = sp["baseline_ppg"] * decay
+                yr_total_ppg += proj_player_ppg
+                
+                if idx in [1, 2] and decay <= 0.82:
+                    cliff_alerts.append({
+                        "player_id": sp["id"],
+                        "name": sp["name"],
+                        "position": sp["position"],
+                        "current_age": sp["current_age"],
+                        "ppg": sp["baseline_ppg"],
+                        "cliff_year": yr,
+                        "urgency": "HIGH (Immediate Cliff)" if decay <= 0.70 else "MEDIUM (Approaching)",
+                        "advice": f"Sell high window. At age {proj_age} in {yr}, positional models project a steep reduction in weekly volume and dynasty liquidity."
+                    })
+            team_projections.append({
+                "year": str(yr),
+                "projected_ppg": round(yr_total_ppg, 1) if yr_total_ppg > 0 else round(current_power / 10.0, 1),
+                "league_median_ppg": round(avg_fpts / 17.0, 1)
+            })
+
+        seen_cliff_pids = set()
+        deduped_cliffs = []
+        for ca in cliff_alerts:
+            if ca["player_id"] not in seen_cliff_pids:
+                seen_cliff_pids.add(ca["player_id"])
+                deduped_cliffs.append(ca)
+
+        p26 = team_projections[0]["projected_ppg"]
+        p27 = team_projections[1]["projected_ppg"]
+        p28 = team_projections[2]["projected_ppg"]
+        
+        if p26 >= p27 and p26 >= 130:
+            window_status = "2026 Apex Contender"
+            window_sub = "Championship Window is OPEN. Peak starter firepower across starting lineup; capitalize this season before age cliff acceleration."
+            window_badge = "WIN-NOW APEX"
+            window_color = "emerald"
+        elif p27 > p26 or p28 > p26:
+            window_status = "2027 - 2028 Ascending Horizon"
+            window_sub = "Productive Struggle / Young Core. Your starters will appreciate into championship contention over the next 12-24 months."
+            window_badge = "ASCENDING DYNASTY"
+            window_color = "cyan"
+        else:
+            window_status = "Strategic Retool Window"
+            window_sub = "Crossroads build. Roster average age suggests points erosion over the next 24 months. Pivot aging veterans into 2026/2027 draft capital."
+            window_badge = "STRATEGIC RETOOL"
+            window_color = "amber"
+
+        horizon_projection = {
+            "projections": team_projections,
+            "window_status": window_status,
+            "window_sub": window_sub,
+            "window_badge": window_badge,
+            "window_color": window_color,
+            "cliff_watch": deduped_cliffs
+        }
 
         return {
             "roster_id": roster.roster_id,
             "team_name": owner_name,
             "avatar": roster.user.avatar if roster.user else None,
             "progression": history,
+            "horizon_projection": horizon_projection,
             "positional_radar": positional_radar,
             "position_grades": position_grades,
             "asset_allocation": asset_allocation,
@@ -1158,6 +1303,87 @@ def get_roster_details(league_id: str, roster_id: int):
         
         owner_name = roster.user.display_name if roster.user and roster.user.display_name else f"Team {roster.roster_id}"
         
+        # Compute 3-Year Horizon Projection for get_roster_details
+        projected_years = [2026, 2027, 2028, 2029]
+        horizon_projections = []
+        cliff_alerts = []
+        
+        for idx, yr in enumerate(projected_years):
+            yr_total_ppg = 0.0
+            for sp in starters_list:
+                proj_age = sp["age"] + idx
+                decay = get_age_factor(sp["position"], proj_age)
+                proj_player_ppg = sp["ppg"] * decay
+                yr_total_ppg += proj_player_ppg
+                
+                if idx in [1, 2] and decay <= 0.82:
+                    cliff_alerts.append({
+                        "player_id": sp["id"],
+                        "name": sp["name"],
+                        "position": sp["position"],
+                        "current_age": sp["age"],
+                        "ppg": sp["ppg"],
+                        "cliff_year": yr,
+                        "urgency": "HIGH (Immediate Cliff)" if decay <= 0.70 else "MEDIUM (Approaching)",
+                        "advice": f"Sell high window. At age {proj_age} in {yr}, positional models project a steep reduction in volume and dynasty liquidity."
+                    })
+            horizon_projections.append({
+                "year": str(yr),
+                "projected_ppg": round(yr_total_ppg, 1),
+                "league_median_ppg": 115.0
+            })
+
+        seen_cliff_pids = set()
+        deduped_cliffs = []
+        for ca in cliff_alerts:
+            if ca["player_id"] not in seen_cliff_pids:
+                seen_cliff_pids.add(ca["player_id"])
+                deduped_cliffs.append(ca)
+
+        p26 = horizon_projections[0]["projected_ppg"] if horizon_projections else 0
+        p27 = horizon_projections[1]["projected_ppg"] if len(horizon_projections) > 1 else 0
+        p28 = horizon_projections[2]["projected_ppg"] if len(horizon_projections) > 2 else 0
+
+        if p26 >= p27 and p26 >= 130:
+            window_status = "2026 Apex Contender"
+            window_sub = "Championship Window is OPEN. Peak starter firepower across starting lineup; capitalize this season before age cliff acceleration."
+            window_badge = "WIN-NOW APEX"
+            window_color = "emerald"
+        elif p27 > p26 or p28 > p26:
+            window_status = "2027 - 2028 Ascending Horizon"
+            window_sub = "Productive Struggle / Young Core. Your starters will appreciate into championship contention over the next 12-24 months."
+            window_badge = "ASCENDING DYNASTY"
+            window_color = "cyan"
+        else:
+            window_status = "Strategic Retool Window"
+            window_sub = "Crossroads build. Roster average age suggests points erosion over the next 24 months. Pivot aging veterans into 2026/2027 draft capital."
+            window_badge = "STRATEGIC RETOOL"
+            window_color = "amber"
+
+        # End-of-bench Clogger Auditor & Taxi Optimizer
+        cloggers = []
+        handcuffs = []
+        taxi_candidates = []
+
+        for bp in bench_list:
+            if bp["age"] >= 26 and bp["ppg"] < 7.5 and bp["position"] != "QB":
+                cloggers.append({
+                    **bp,
+                    "clogger_reason": f"Low ceiling {bp['position']} at age {bp['age']}. Averaging only {bp['ppg']} PPG.",
+                    "clogger_action": "Cut/trade candidate. Release for high-upside rookie stash or backup RB handcuff."
+                })
+            elif bp["position"] == "RB" and (bp.get("role_tag") == "Premium Handcuff" or bp["ppg"] >= 5.0):
+                handcuffs.append({
+                    **bp,
+                    "handcuff_verdict": "High-leverage handcuff. Stash on bench for immediate spike week if starter misses time."
+                })
+            
+            if bp["years_exp"] <= 1 and bp["age"] <= 23:
+                taxi_candidates.append({
+                    **bp,
+                    "taxi_advice": "Taxi-eligible prospect currently occupying an active bench spot."
+                })
+
         return {
             "team_info": {
                 "roster_id": roster.roster_id,
@@ -1178,11 +1404,142 @@ def get_roster_details(league_id: str, roster_id: int):
             "reserve": reserve_list,
             "position_audits": pos_audits,
             "draft_picks": draft_picks_list,
+            "horizon_projection": {
+                "projections": horizon_projections,
+                "window_status": window_status,
+                "window_sub": window_sub,
+                "window_badge": window_badge,
+                "window_color": window_color,
+                "cliff_watch": deduped_cliffs
+            },
+            "roster_audit": {
+                "cloggers": cloggers,
+                "handcuffs": handcuffs,
+                "taxi_candidates": taxi_candidates,
+                "clogger_count": len(cloggers),
+                "handcuff_count": len(handcuffs),
+                "taxi_candidate_count": len(taxi_candidates)
+            },
             "diagnostics": {
                 "strengths": strengths,
                 "vulnerabilities": vulnerabilities,
                 "action_plan": actions
             }
+        }
+    except Exception as err:
+        return {"error": str(err)}
+    finally:
+        session.close()
+
+
+@router.get("/api/quant/draft-capital-matrix/{league_id}")
+def get_draft_capital_matrix(league_id: str):
+    session = SessionLocal()
+    try:
+        all_rosters = session.query(Roster).filter(Roster.league_id == league_id).all()
+        if not all_rosters:
+            return {"error": "No rosters found"}
+            
+        owner_name_map = {}
+        for r in all_rosters:
+            owner_name_map[r.roster_id] = r.user.display_name if r.user and r.user.display_name else f"Team {r.roster_id}"
+            
+        all_picks = session.query(DraftPick).filter(DraftPick.league_id == league_id).all()
+        
+        pick_values = {
+            1: {"2026": 5000, "2027": 4200, "2028": 3500, "default": 4000},
+            2: {"2026": 2500, "2027": 2100, "2028": 1800, "default": 2000},
+            3: {"2026": 1200, "2027": 1000, "2028": 800, "default": 900},
+            4: {"2026": 500, "2027": 400, "2028": 300, "default": 350}
+        }
+        
+        picks_by_owner = {}
+        for r in all_rosters:
+            picks_by_owner[r.roster_id] = []
+            
+        for p in all_picks:
+            owner_rid = safe_extract_roster_id(p.owner_id)
+            orig_rid = safe_extract_roster_id(p.roster_id)
+            orig_name = owner_name_map.get(orig_rid, f"Team {orig_rid}")
+            season_str = str(p.season)
+            rnd = p.round or 1
+            val = pick_values.get(rnd, {}).get(season_str, pick_values.get(rnd, {}).get("default", 1000))
+            
+            pick_obj = {
+                "season": season_str,
+                "round": rnd,
+                "original_team": orig_name,
+                "is_original": (owner_rid == orig_rid),
+                "estimated_value": val
+            }
+            if owner_rid in picks_by_owner:
+                picks_by_owner[owner_rid].append(pick_obj)
+
+        team_matrices = []
+        for r in all_rosters:
+            rid = r.roster_id
+            name = owner_name_map.get(rid, f"Team {rid}")
+            team_picks = picks_by_owner.get(rid, [])
+            team_picks.sort(key=lambda x: (x["season"], x["round"]))
+            
+            by_season = {}
+            for tp in team_picks:
+                s = tp["season"]
+                if s not in by_season:
+                    by_season[s] = []
+                by_season[s].append(tp)
+                
+            r1_count = sum(1 for p in team_picks if p["round"] == 1)
+            r2_count = sum(1 for p in team_picks if p["round"] == 2)
+            r3_count = sum(1 for p in team_picks if p["round"] == 3)
+            r4_count = sum(1 for p in team_picks if p["round"] == 4)
+            total_equity = sum(p["estimated_value"] for p in team_picks)
+            
+            if r1_count >= 4 or total_equity >= 25000:
+                tier = "War Chest Hoarder"
+                tier_color = "emerald"
+                strategy = "Prime buyer in seller's market. Holds multiple 1sts to absorb tier-1 veteran talent."
+            elif r1_count >= 2 or total_equity >= 16000:
+                tier = "High Liquidity"
+                tier_color = "cyan"
+                strategy = "Strong draft optionality. Can maneuver up the draft board or buy a missing piece."
+            elif r1_count == 1 and r2_count >= 1:
+                tier = "Standard / Balanced"
+                tier_color = "blue"
+                strategy = "Standard draft capital allocation. Protect 1st rounder unless contending."
+            elif r1_count == 0 and r2_count >= 1:
+                tier = "Leveraged Contender"
+                tier_color = "amber"
+                strategy = "1st-round capital committed. Must maximize current roster's competitive window."
+            else:
+                tier = "Pick Bankrupt"
+                tier_color = "rose"
+                strategy = "Severely depleted future capital. Cannot afford injuries to starting core."
+                
+            team_matrices.append({
+                "roster_id": rid,
+                "team_name": name,
+                "avatar": r.user.avatar if r.user else None,
+                "total_picks": len(team_picks),
+                "round_1_count": r1_count,
+                "round_2_count": r2_count,
+                "round_3_count": r3_count,
+                "round_4_count": r4_count,
+                "total_equity": total_equity,
+                "liquidity_tier": tier,
+                "tier_color": tier_color,
+                "strategy": strategy,
+                "picks_by_season": by_season
+            })
+            
+        team_matrices.sort(key=lambda x: x["total_equity"], reverse=True)
+        league_total_equity = sum(t["total_equity"] for t in team_matrices)
+        avg_equity = round(league_total_equity / len(team_matrices)) if team_matrices else 0
+        
+        return {
+            "league_id": league_id,
+            "average_equity": avg_equity,
+            "teams": team_matrices
         }
     except Exception as err:
         return {"error": str(err)}

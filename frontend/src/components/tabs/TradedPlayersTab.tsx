@@ -351,6 +351,36 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
       {/* ───────────────────────────────────────────────────────────── */}
       {activeView === 'feed' && (
         <div className="space-y-4">
+          {/* ── LEAGUE ECONOMY & TRADE RIPPLE INTEL BANNER ──────────────── */}
+          {tradesList.length > 0 && (
+            <div className="bg-gradient-to-r from-zinc-900/95 via-zinc-900/80 to-zinc-950 border border-teal-500/30 rounded-2xl p-4 sm:p-5 shadow-lg relative overflow-hidden backdrop-blur-md">
+              <div className="flex items-center gap-2 mb-2 text-teal-400 font-mono text-xs font-bold uppercase tracking-wider">
+                <Sparkles size={14} className="text-teal-400" />
+                <span>LEAGUE ECONOMY & TRADE RIPPLE INTEL</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 text-xs font-mono">
+                  <div className="text-[10px] uppercase font-bold text-zinc-500 mb-1">
+                    LATEST MARKET SHIFT
+                  </div>
+                  <p className="text-zinc-200 leading-relaxed">
+                    {tradesList[0]?.team_a?.name || 'Franchise'} & {tradesList[0]?.team_b?.name || 'Rival'} completed the most recent transaction ({tradesList[0]?.season} Wk {tradesList[0]?.week || 1}). Draft liquidity and veteran starters have exchanged hands, adjusting the competitive window across the division.
+                  </p>
+                </div>
+
+                <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 text-xs font-mono">
+                  <div className="text-[10px] uppercase font-bold text-amber-400 mb-1">
+                    TACTICAL OPPORTUNITY FOR YOUR ROSTER
+                  </div>
+                  <p className="text-zinc-300 leading-relaxed">
+                    Monitor trade partners who recently gave up draft picks. They will aggressively pursue bench depth before the playoff push, giving you maximum leverage on veteran trade packages.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Active Filter Indicator */}
           {teamFilter !== 'all' && (
             <div className="flex items-center justify-between bg-zinc-950/80 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-mono">

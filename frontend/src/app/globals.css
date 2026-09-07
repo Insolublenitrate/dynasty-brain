@@ -124,6 +124,46 @@ body {
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 12px 32px -4px rgba(0, 0, 0, 0.7);
 }
 
+/* ── EXECUTIVE CLEAN / MINIMALIST VIEW OVERRIDES ── */
+.clean-view {
+  background-color: #09090b !important;
+  background-image: none !important;
+}
+
+.clean-view .card-bezel {
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.clean-view .card-bezel:hover {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Calm, non-slanted, refined typography in clean mode */
+.clean-view h1,
+.clean-view h2,
+.clean-view h3 {
+  font-style: normal !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* Flatten translucent backgrounds in clean mode */
+.clean-view .backdrop-blur-md,
+.clean-view .backdrop-blur-xl,
+.clean-view .backdrop-blur-2xl {
+  backdrop-filter: none !important;
+  background-color: #111114 !important;
+}
+
+/* Subtle flat cards in clean mode */
+.clean-view .bg-zinc-900\/80,
+.clean-view .bg-zinc-900\/90 {
+  background-color: #121216 !important;
+}
+
 /* Tactical Spring Easing Button */
 .btn-tactical {
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
