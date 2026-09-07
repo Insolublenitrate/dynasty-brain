@@ -117,14 +117,14 @@ export default function TopPerformersTab() {
       </div>
 
       {/* Position Scope Filter Ribbon for General Stats */}
-      <div className="flex items-center justify-between flex-wrap gap-2 bg-zinc-900/60 p-2 rounded-2xl border border-zinc-800">
-        <div className="flex items-center gap-2 text-xs text-zinc-400 font-bold px-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-zinc-900/60 p-2 sm:p-2.5 rounded-2xl border border-zinc-800">
+        <div className="flex items-center gap-2 text-xs text-zinc-400 font-bold px-1">
           <Filter size={14} style={{ color: currentTheme.primary }} />
           <span>SCORED POSITION FILTER:</span>
         </div>
-        <div className="flex gap-1.5 overflow-x-auto">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 w-full sm:w-auto">
           {[
-            { label: "SKILL (WR/RB/TE)", key: "SKILL" },
+            { label: "SKILL", key: "SKILL" },
             { label: "WR", key: "WR" },
             { label: "RB", key: "RB" },
             { label: "TE", key: "TE" },
@@ -134,7 +134,7 @@ export default function TopPerformersTab() {
             <button
               key={scope.key}
               onClick={() => setPositionScope(scope.key)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+              className={`px-2 py-1.5 rounded-xl text-xs font-mono font-bold transition-all text-center active:scale-95 ${
                 positionScope === scope.key
                   ? "bg-zinc-800 text-white shadow-md border border-zinc-700"
                   : "bg-zinc-950/60 text-zinc-400 hover:text-zinc-200 border border-zinc-900"

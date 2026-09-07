@@ -441,23 +441,25 @@ export default function ScheduleTab({ initialViewMode = 'slate' }: { initialView
           
           {/* Week Selection Ribbon (Weeks 1 to 18) */}
           <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3 backdrop-blur-sm">
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
+            <div className="grid grid-cols-6 sm:grid-cols-9 md:flex md:flex-wrap gap-1 sm:gap-1.5 w-full">
               {scheduleData.weeks.map((w: any) => {
                 const isSelected = selectedWeek === w.week;
                 return (
                   <button
                     key={w.week}
                     onClick={() => setSelectedWeek(w.week)}
-                    className={`flex-shrink-0 px-3.5 py-2 rounded-xl font-mono text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    className={`px-1 sm:px-3 py-1.5 sm:py-2 rounded-xl font-mono text-[11px] sm:text-xs font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 active:scale-95 ${
                       isSelected
-                        ? 'bg-orange-500 text-zinc-950 shadow-lg scale-105'
+                        ? 'bg-orange-500 text-zinc-950 shadow-lg font-black'
                         : 'bg-zinc-950 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 border border-zinc-800/80'
                     }`}
                   >
-                    <span>WEEK {w.week}</span>
+                    <span className="hidden sm:inline">WEEK</span>
+                    <span>{w.week}</span>
                     {w.is_playoffs && (
-                      <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isSelected ? 'bg-zinc-950/20 text-zinc-950' : 'bg-purple-500/20 text-purple-300'}`}>
-                        PLAYOFFS
+                      <span className={`text-[8px] sm:text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${isSelected ? 'bg-zinc-950/20 text-zinc-950' : 'bg-purple-500/20 text-purple-300'}`}>
+                        <span className="sm:hidden">★</span>
+                        <span className="hidden sm:inline">PLAYOFFS</span>
                       </span>
                     )}
                   </button>

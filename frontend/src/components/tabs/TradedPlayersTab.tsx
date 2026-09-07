@@ -226,19 +226,19 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
       {/* ── VIEW SWITCHER & FILTERS COMMAND BAR ────────────────────── */}
       <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 shadow-xl backdrop-blur-md flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         
-        {/* View Mode Tabs */}
-        <div className="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 shrink-0 overflow-x-auto">
+        {/* View Mode Tabs (100% Fit On-Screen, Zero Scroll/Pan) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 w-full lg:w-auto">
           <button
             onClick={() => setActiveView('feed')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all text-center active:scale-95 ${
               activeView === 'feed'
                 ? 'bg-zinc-800 text-white shadow-md border border-zinc-700'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
             style={activeView === 'feed' ? { color: currentTheme.primary } : {}}
           >
-            <FileText size={13} />
-            <span>Completed Deals Feed</span>
+            <FileText size={13} className="shrink-0" />
+            <span>Completed Deals</span>
             <span className="ml-1 text-[10px] px-1.5 py-0.2 bg-zinc-900 rounded-full text-zinc-400 font-mono">
               {tradesList.length}
             </span>
@@ -246,14 +246,14 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
 
           <button
             onClick={() => setActiveView('trajectory')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all text-center active:scale-95 ${
               activeView === 'trajectory'
                 ? 'bg-zinc-800 text-white shadow-md border border-zinc-700'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
             style={activeView === 'trajectory' ? { color: currentTheme.primary } : {}}
           >
-            <TrendingUp size={13} />
+            <TrendingUp size={13} className="shrink-0" />
             <span>Player Post-Trade ROI</span>
             <span className="ml-1 text-[10px] px-1.5 py-0.2 bg-zinc-900 rounded-full text-zinc-400 font-mono">
               {tradedPlayers.length}
@@ -262,14 +262,14 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
 
           <button
             onClick={() => setActiveView('scorecards')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all text-center active:scale-95 ${
               activeView === 'scorecards'
                 ? 'bg-zinc-800 text-white shadow-md border border-zinc-700'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
             style={activeView === 'scorecards' ? { color: currentTheme.primary } : {}}
           >
-            <Award size={13} />
+            <Award size={13} className="shrink-0" />
             <span>Manager Report Cards</span>
             <span className="ml-1 text-[10px] px-1.5 py-0.2 bg-zinc-900 rounded-full text-zinc-400 font-mono">
               {teamScorecards.length}
@@ -615,8 +615,8 @@ export default function TradedPlayersTab({ onSelectTradeForAutopsy }: TradedPlay
       {activeView === 'trajectory' && (
         <div className="space-y-4">
           
-          {/* Trajectory Filter Pills */}
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 flex items-center gap-1.5 overflow-x-auto">
+          {/* Trajectory Filter Pills (100% Fit On-Screen, Zero Scroll/Pan) */}
+          <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 flex flex-wrap items-center gap-1.5 w-full">
             <span className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1 shrink-0 mr-1">
               <Filter size={12} style={{ color: currentTheme.primary }} /> Status:
             </span>

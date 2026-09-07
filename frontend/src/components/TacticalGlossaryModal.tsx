@@ -286,8 +286,8 @@ export default function TacticalGlossaryModal({
             )}
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {/* Category Filter Pills (100% Fit On-Screen, Zero Scroll/Pan) */}
+          <div className="flex flex-wrap items-center gap-1.5 w-full">
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.id;
@@ -295,7 +295,7 @@ export default function TacticalGlossaryModal({
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all border ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border active:scale-95 ${
                     isActive
                       ? "bg-zinc-800 text-white border-zinc-600 shadow-md"
                       : "bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:bg-zinc-800/40"

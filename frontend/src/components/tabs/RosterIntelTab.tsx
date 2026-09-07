@@ -494,16 +494,16 @@ export default function RosterIntelTab() {
             </h3>
           </div>
 
-          {/* Position & Dynasty Audit Filters */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 max-w-full font-mono text-xs">
+          {/* Position & Dynasty Audit Filters (100% Fit On-Screen, Zero Scroll/Pan) */}
+          <div className="flex flex-wrap items-center gap-1 w-full font-mono text-xs">
             {(['ALL', 'QB', 'RB', 'WR', 'TE', 'TAXI', 'IR'] as const).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setBenchFilter(filter)}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 ${
+                className={`px-2 py-1 rounded-lg font-bold transition-all active:scale-95 ${
                   benchFilter === filter
                     ? 'bg-zinc-800 text-white border border-zinc-700 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    : 'text-zinc-400 hover:text-zinc-200 bg-zinc-950/40 border border-zinc-900'
                 }`}
                 style={benchFilter === filter ? { color: currentTheme.primary } : {}}
               >
@@ -513,19 +513,19 @@ export default function RosterIntelTab() {
 
             <button
               onClick={() => setBenchFilter('CLOGGERS')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 flex items-center gap-1 ${
+              className={`px-2 py-1 rounded-lg font-bold transition-all active:scale-95 flex items-center gap-1 ${
                 benchFilter === 'CLOGGERS'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
                   : 'text-amber-400/80 hover:text-amber-300 bg-amber-950/20 border border-amber-900/40'
               }`}
             >
               <AlertTriangle size={12} />
-              <span>Clogger Audit ({roster_audit?.clogger_count || 0})</span>
+              <span>Cloggers ({roster_audit?.clogger_count || 0})</span>
             </button>
 
             <button
               onClick={() => setBenchFilter('HANDCUFFS')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 flex items-center gap-1 ${
+              className={`px-2 py-1 rounded-lg font-bold transition-all active:scale-95 flex items-center gap-1 ${
                 benchFilter === 'HANDCUFFS'
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
                   : 'text-emerald-400/80 hover:text-emerald-300 bg-emerald-950/20 border border-emerald-900/40'

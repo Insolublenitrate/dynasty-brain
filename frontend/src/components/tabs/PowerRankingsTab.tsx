@@ -178,8 +178,8 @@ export default function PowerRankingsTab() {
         </div>
       )}
 
-      {/* Quick Tier Filters */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+      {/* Quick Tier Filters (100% Fit On-Screen, Zero Scroll/Pan) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full">
         {[
           { id: 'ALL', label: 'All Tiers' },
           { id: 'CONTENDER', label: 'Contenders (S/A)' },
@@ -189,7 +189,7 @@ export default function PowerRankingsTab() {
           <button
             key={f.id}
             onClick={() => setTierFilter(f.id as any)}
-            className={`px-2.5 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all shrink-0 border ${
+            className={`px-2 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all text-center border active:scale-95 ${
               tierFilter === f.id
                 ? 'bg-zinc-800 text-white shadow-md border-zinc-600'
                 : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 border-zinc-800'

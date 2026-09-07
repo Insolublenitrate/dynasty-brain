@@ -212,21 +212,21 @@ export default function DraftCapitalTab({ onSelectTeamForTrade }: DraftCapitalTa
 
       {/* ── CONTROLS & FILTER ROW ──────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
           {[
             { id: 'ALL', label: 'All Franchises' },
-            { id: 'HOARDERS', label: 'War Chest Hoarders' },
+            { id: 'HOARDERS', label: 'War Chest' },
             { id: 'LIQUID', label: 'High Liquidity' },
-            { id: 'LEVERAGED', label: 'Leveraged Contenders' },
+            { id: 'LEVERAGED', label: 'Leveraged' },
             { id: 'BANKRUPT', label: 'Pick Bankrupt' }
           ].map(f => (
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all ${
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all active:scale-95 ${
                 activeFilter === f.id
                   ? 'bg-zinc-800 text-white border border-zinc-700 shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  : 'text-zinc-400 hover:text-zinc-200 bg-zinc-950/40 border border-zinc-900'
               }`}
               style={activeFilter === f.id ? { color: currentTheme.primary } : {}}
             >

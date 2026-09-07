@@ -185,253 +185,253 @@ function DynastyRoomContent() {
             </button>
           </div>
 
-          {/* Sub-View Controls for Currently Active Arena */}
-          <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto overflow-x-auto no-scrollbar momentum-scroll overscroll-x-contain py-0.5">
+          {/* Sub-View Controls for Currently Active Arena (100% Fit On-Screen, Zero Scroll/Pan) */}
+          <div className="w-full sm:w-auto">
             {/* Arena 1: Command Sub-Views */}
             {activeArena === 'command' && (
-              <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner min-w-max sm:min-w-0 sm:w-auto">
+              <div className="grid grid-cols-3 sm:flex sm:items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => handleSubChange('command', 'action')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     commandSub === 'action' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={commandSub === 'action' ? { color: currentTheme.primary } : {}}
                 >
                   <Target size={13} className="shrink-0" />
-                  <span>Action Center</span>
+                  <span className="truncate">Action Center</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('command', 'roster')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     commandSub === 'roster' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={commandSub === 'roster' ? { color: currentTheme.primary } : {}}
                 >
                   <Radar size={13} className="shrink-0" />
-                  <span>Roster Intel</span>
+                  <span className="truncate">Roster Intel</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('command', 'diagnostics')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     commandSub === 'diagnostics' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={commandSub === 'diagnostics' ? { color: currentTheme.primary } : {}}
                 >
                   <Activity size={13} className="shrink-0" />
-                  <span>Diagnostics</span>
+                  <span className="truncate">Diagnostics</span>
                 </button>
               </div>
             )}
 
             {/* Arena 2: Players Sub-Views (Cross-Ref directly accessible) */}
             {activeArena === 'players' && (
-              <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner min-w-max sm:min-w-0 sm:w-auto">
+              <div className="grid grid-cols-5 sm:flex sm:items-center gap-0.5 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => handleSubChange('players', 'analyzer')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     playersSub === 'analyzer' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={playersSub === 'analyzer' ? { color: currentTheme.primary } : {}}
                 >
-                  <Search size={13} className="shrink-0" />
-                  <span>Analyzer</span>
+                  <Search size={12} className="shrink-0" />
+                  <span className="truncate">Analyzer</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('players', 'crossref')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     playersSub === 'crossref' || playersSub === 'compare' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={(playersSub === 'crossref' || playersSub === 'compare') ? { color: currentTheme.primary } : {}}
                 >
-                  <Radar size={13} className="shrink-0" />
-                  <span>Cross-Ref</span>
+                  <Radar size={12} className="shrink-0" />
+                  <span className="truncate">Cross-Ref</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('players', 'rookies')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     playersSub === 'rookies' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={playersSub === 'rookies' ? { color: currentTheme.primary } : {}}
                 >
-                  <GraduationCap size={13} className="shrink-0" />
-                  <span>Rookies</span>
+                  <GraduationCap size={12} className="shrink-0" />
+                  <span className="truncate">Rookies</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('players', 'database')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     playersSub === 'database' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={playersSub === 'database' ? { color: currentTheme.primary } : {}}
                 >
-                  <Database size={13} className="shrink-0" />
-                  <span>Database</span>
+                  <Database size={12} className="shrink-0" />
+                  <span className="truncate">Database</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('players', 'leaders')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     playersSub === 'leaders' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={playersSub === 'leaders' ? { color: currentTheme.primary } : {}}
                 >
-                  <BarChart3 size={13} className="shrink-0" />
-                  <span>Leaders</span>
+                  <BarChart3 size={12} className="shrink-0" />
+                  <span className="truncate">Leaders</span>
                 </button>
               </div>
             )}
 
             {/* Arena 3: Matchups Sub-Views */}
             {activeArena === 'matchups' && (
-              <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner min-w-max sm:min-w-0 sm:w-auto">
+              <div className="grid grid-cols-4 sm:flex sm:items-center gap-0.5 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => handleSubChange('matchups', 'slate')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     matchupsSub === 'slate' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={matchupsSub === 'slate' ? { color: currentTheme.primary } : {}}
                 >
                   <CalendarDays size={13} className="shrink-0" />
-                  <span>Slate</span>
+                  <span className="truncate">Slate</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('matchups', 'simulator')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     matchupsSub === 'simulator' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={matchupsSub === 'simulator' ? { color: currentTheme.primary } : {}}
                 >
                   <Swords size={13} className="shrink-0" />
-                  <span>Simulator</span>
+                  <span className="truncate">Simulator</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('matchups', 'rivalries')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     matchupsSub === 'rivalries' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={matchupsSub === 'rivalries' ? { color: currentTheme.primary } : {}}
                 >
                   <Flame size={13} className="shrink-0" />
-                  <span>Rivalries</span>
+                  <span className="truncate">Rivalries</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('matchups', 'allplay')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1.5 px-1 sm:px-3 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     matchupsSub === 'allplay' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={matchupsSub === 'allplay' ? { color: currentTheme.primary } : {}}
                 >
                   <Layers size={13} className="shrink-0" />
-                  <span>All-Play</span>
+                  <span className="truncate">All-Play</span>
                 </button>
               </div>
             )}
 
             {/* Arena 4: Power & League Sub-Views */}
             {activeArena === 'power' && (
-              <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner min-w-max sm:min-w-0 sm:w-auto">
+              <div className="grid grid-cols-5 sm:flex sm:items-center gap-0.5 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => handleSubChange('power', 'tiers')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     powerSub === 'tiers' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={powerSub === 'tiers' ? { color: currentTheme.primary } : {}}
                 >
-                  <Crown size={13} className="shrink-0" />
-                  <span>Tiers</span>
+                  <Crown size={12} className="shrink-0" />
+                  <span className="truncate">Tiers</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('power', 'matrix')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     powerSub === 'matrix' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={powerSub === 'matrix' ? { color: currentTheme.primary } : {}}
                 >
-                  <Target size={13} className="shrink-0" />
-                  <span>Matrix</span>
+                  <Target size={12} className="shrink-0" />
+                  <span className="truncate">Matrix</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('power', 'records')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     powerSub === 'records' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={powerSub === 'records' ? { color: currentTheme.primary } : {}}
                 >
-                  <Trophy size={13} className="shrink-0" />
-                  <span>Records</span>
+                  <Trophy size={12} className="shrink-0" />
+                  <span className="truncate">Records</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('power', 'bounties')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     powerSub === 'bounties' ? 'bg-emerald-500 text-zinc-950 font-black' : 'text-emerald-400 hover:text-emerald-300'
                   }`}
                 >
-                  <Coins size={13} className="shrink-0" />
-                  <span>Bounties</span>
+                  <Coins size={12} className="shrink-0" />
+                  <span className="truncate">Bounties</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('power', 'studio')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     powerSub === 'studio' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={powerSub === 'studio' ? { color: currentTheme.primary } : {}}
                 >
-                  <Radio size={13} className="shrink-0" />
-                  <span>Studio</span>
+                  <Radio size={12} className="shrink-0" />
+                  <span className="truncate">Studio</span>
                 </button>
               </div>
             )}
 
             {/* Arena 5: Trade Hub Sub-Views */}
             {activeArena === 'trade' && (
-              <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner min-w-max sm:min-w-0 sm:w-auto">
+              <div className="grid grid-cols-5 sm:flex sm:items-center gap-0.5 sm:gap-1.5 bg-zinc-900/90 p-1 sm:p-1.5 rounded-2xl border border-zinc-800 shadow-inner w-full sm:w-auto">
                 <button
                   onClick={() => handleSubChange('trade', 'architect')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     tradeSub === 'architect' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={tradeSub === 'architect' ? { color: currentTheme.primary } : {}}
                 >
-                  <Briefcase size={13} className="shrink-0" />
-                  <span>Architect</span>
+                  <Briefcase size={12} className="shrink-0" />
+                  <span className="truncate">Architect</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('trade', 'partners')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     tradeSub === 'partners' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={tradeSub === 'partners' ? { color: currentTheme.primary } : {}}
                 >
-                  <Users size={13} className="shrink-0" />
-                  <span>Partners</span>
+                  <Users size={12} className="shrink-0" />
+                  <span className="truncate">Partners</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('trade', 'capital')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     tradeSub === 'capital' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={tradeSub === 'capital' ? { color: currentTheme.primary } : {}}
                 >
-                  <Coins size={13} className="shrink-0" />
-                  <span>Capital</span>
+                  <Coins size={12} className="shrink-0" />
+                  <span className="truncate">Capital</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('trade', 'ledger')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     tradeSub === 'ledger' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={tradeSub === 'ledger' ? { color: currentTheme.primary } : {}}
                 >
-                  <TrendingUp size={13} className="shrink-0" />
-                  <span>Ledger</span>
+                  <TrendingUp size={12} className="shrink-0" />
+                  <span className="truncate">Ledger</span>
                 </button>
                 <button
                   onClick={() => handleSubChange('trade', 'autopsy')}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 text-center shrink-0 whitespace-nowrap active:scale-95 ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-3 rounded-xl text-[9.5px] sm:text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center active:scale-95 ${
                     tradeSub === 'autopsy' ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
                   }`}
                   style={tradeSub === 'autopsy' ? { color: currentTheme.primary } : {}}
                 >
-                  <ArrowRightLeft size={13} className="shrink-0" />
-                  <span>Autopsy</span>
+                  <ArrowRightLeft size={12} className="shrink-0" />
+                  <span className="truncate">Autopsy</span>
                 </button>
               </div>
             )}

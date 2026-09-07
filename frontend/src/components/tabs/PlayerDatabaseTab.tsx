@@ -95,16 +95,16 @@ export default function PlayerDatabaseTab() {
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto hide-scrollbar">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full md:w-auto">
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1 shrink-0">
             <Filter size={14} /> Position:
           </span>
-          <div className="flex bg-zinc-950 p-1 rounded-xl border border-zinc-800 shrink-0">
+          <div className="grid grid-cols-5 sm:flex bg-zinc-950 p-1 rounded-xl border border-zinc-800 w-full sm:w-auto">
             {['ALL', 'QB', 'RB', 'WR', 'TE'].map(pos => (
               <button
                 key={pos}
                 onClick={() => setPositionFilter(pos)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all text-center active:scale-95 ${
                   positionFilter === pos
                     ? 'bg-zinc-800 text-white shadow border'
                     : 'text-zinc-400 hover:text-white'

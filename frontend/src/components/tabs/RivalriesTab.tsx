@@ -245,11 +245,11 @@ export default function RivalriesTab() {
             </div>
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-start sm:self-center">
+          {/* View Mode Toggle (100% Fit On-Screen, Zero Scroll/Pan) */}
+          <div className="grid grid-cols-2 gap-1 w-full sm:w-auto bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-stretch sm:self-center">
             <button
               onClick={() => setMobileTab('cards')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-center active:scale-95 ${
                 mobileTab === 'cards' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -258,7 +258,7 @@ export default function RivalriesTab() {
             </button>
             <button
               onClick={() => setMobileTab('matrix')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-center active:scale-95 ${
                 mobileTab === 'matrix' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-white'
               }`}
             >
