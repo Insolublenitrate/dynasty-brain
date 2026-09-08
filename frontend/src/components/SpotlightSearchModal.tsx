@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 import { useLeague } from "@/context/LeagueContext";
 import { getApiUrl } from "@/config/api";
+import { navigateDynasty, DynastyArena } from "@/utils/navigation";
 
 interface SpotlightSearchModalProps {
   isOpen: boolean;
@@ -210,12 +211,22 @@ export default function SpotlightSearchModal({ isOpen, onClose }: SpotlightSearc
   const executeItem = (item: { type: 'action' | 'team' | 'player', data: any }) => {
     onClose();
     if (item.type === 'action') {
-      if (item.data.href) router.push(item.data.href);
-      else if (item.data.onClick) item.data.onClick();
+      if (item.data.href) {
+        if (item.data.href.startsWith('/dynasty-room')) {
+          const url = new URL(item.data.href, 'http://dummy');
+          const arena = (url.searchParams.get('arena') || 'command') as DynastyArena;
+          const sub = url.searchParams.get('sub') || undefined;
+          navigateDynasty(arena, sub);
+        } else {
+          router.push(item.data.href);
+        }
+      } else if (item.data.onClick) {
+        item.data.onClick();
+      }
     } else if (item.type === 'team') {
-      router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${item.data.roster_id}`);
+      navigateDynasty('trade', 'architect', { partner_roster: item.data.roster_id });
     } else if (item.type === 'player') {
-      router.push(`/dynasty-room/?arena=trade&sub=architect&player_id=${item.data.player_id}&player_name=${encodeURIComponent(item.data.player_name)}`);
+      navigateDynasty('trade', 'architect', { player_id: item.data.player_id, player_name: item.data.player_name });
     }
   };
 

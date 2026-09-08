@@ -11,6 +11,7 @@ import { useLeague } from '@/context/LeagueContext';
 import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import { navigateDynasty } from '@/utils/navigation';
 
 interface TradePartnerTabProps {
   onSelectPartner?: (rosterId: number, teamName: string) => void;
@@ -420,7 +421,10 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=win_now`);
+                            navigateDynasty('trade', 'architect', {
+                              partner_roster: partner.roster_id,
+                              blueprint: 'win_now'
+                            });
                           }}
                           className="w-full py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
@@ -441,7 +445,10 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=need_swap`);
+                            navigateDynasty('trade', 'architect', {
+                              partner_roster: partner.roster_id,
+                              blueprint: 'need_swap'
+                            });
                           }}
                           className="w-full py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
@@ -462,7 +469,10 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                         </div>
                         <button
                           onClick={() => {
-                            router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${partner.roster_id}&blueprint=consolidation`);
+                            navigateDynasty('trade', 'architect', {
+                              partner_roster: partner.roster_id,
+                              blueprint: 'consolidation'
+                            });
                           }}
                           className="w-full py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-[10px] font-bold font-mono transition-all mt-1 flex items-center justify-center gap-1"
                         >
@@ -481,7 +491,9 @@ export default function TradePartnerTab({ onSelectPartner }: TradePartnerTabProp
                       if (onSelectPartner) {
                         onSelectPartner(partner.roster_id, partner.team_name);
                       } else {
-                        router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${partner.roster_id}`);
+                        navigateDynasty('trade', 'architect', {
+                          partner_roster: partner.roster_id
+                        });
                       }
                     }}
                     className="w-full py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 shadow-sm border border-zinc-700 hover:border-zinc-600"

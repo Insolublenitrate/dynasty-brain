@@ -184,7 +184,7 @@ export default function SupportPage() {
         </div>
 
         <Link
-          href="/dynasty-room/"
+          href="/dynasty-room/?arena=power&sub=tiers"
           className="bg-zinc-900/80 hover:bg-zinc-800/80 border border-zinc-800 rounded-2xl p-5 shadow-lg transition-all hover:scale-[1.02] group"
         >
           <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center mb-3">

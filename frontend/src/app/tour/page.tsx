@@ -328,7 +328,7 @@ export default function LandingPage() {
         {/* Hero Call-To-Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
           <Link
-            href="/dynasty-room/"
+            href="/dynasty-room/?arena=command&sub=action"
             className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(249,115,22,0.4)] flex items-center justify-center gap-2 group"
           >
             <span>Launch Tactical War Room</span>

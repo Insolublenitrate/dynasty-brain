@@ -32,32 +32,14 @@ import CrossReferenceTab from '@/components/tabs/CrossReferenceTab';
 import TradePartnerTab from '@/components/tabs/TradePartnerTab';
 import DraftCapitalTab from '@/components/tabs/DraftCapitalTab';
 
-const SUB_TO_ARENA_MAP: Record<string, string> = {
-  action: 'command',
-  roster: 'command',
-  diagnostics: 'command',
-  analyzer: 'players',
-  database: 'players',
-  rookies: 'players',
-  leaders: 'players',
-  crossref: 'players',
-  compare: 'players',
-  slate: 'matchups',
-  simulator: 'matchups',
-  rivalries: 'matchups',
-  allplay: 'matchups',
-  tiers: 'power',
-  matrix: 'power',
-  records: 'power',
-  bounties: 'power',
-  studio: 'power',
-  architect: 'trade',
-  partners: 'trade',
-  capital: 'trade',
-  ledger: 'trade',
-  trends: 'trade',
-  autopsy: 'trade',
-};
+import { 
+  navigateDynasty, 
+  getSavedDynastyState, 
+  SUB_TO_ARENA_MAP, 
+  DEFAULT_SUB_MAP, 
+  DynastyArena,
+  DynastyNavDetail
+} from '@/utils/navigation';
 
 function DynastyRoomContent() {
   const { leagueId, leagueName, isLoading: isLeagueLoading } = useLeague();
@@ -66,43 +48,116 @@ function DynastyRoomContent() {
   const router = useRouter();
 
   // Primary Arena (command, matchups, power, trade, players)
-  const rawArena = searchParams.get('arena');
+  const rawArena = searchParams.get('arena') as DynastyArena | null;
   const subParam = searchParams.get('sub');
-  const initialArena = (subParam && SUB_TO_ARENA_MAP[subParam]) || rawArena || 'command';
-  const [activeArena, setActiveArena] = useState(initialArena);
+  
+  // Resolve initial arena: URL query > saved localStorage > 'command'
+  const savedState = getSavedDynastyState();
+  const initialArena: DynastyArena = 
+    (subParam && SUB_TO_ARENA_MAP[subParam]) || 
+    (rawArena && DEFAULT_SUB_MAP[rawArena] ? rawArena : null) || 
+    savedState.arena || 
+    'command';
+
+  const [activeArena, setActiveArena] = useState<DynastyArena>(initialArena);
 
   // Sub-tab selectors for multi-module arenas
   const [commandSub, setCommandSub] = useState<'action' | 'roster' | 'diagnostics'>(
-    ['action', 'roster', 'diagnostics'].includes(subParam || '') ? (subParam as any) : 'action'
+    ['action', 'roster', 'diagnostics'].includes(subParam || '') 
+      ? (subParam as any) 
+      : (savedState.arena === 'command' && ['action', 'roster', 'diagnostics'].includes(savedState.sub) ? (savedState.sub as any) : 'action')
   );
   const [matchupsSub, setMatchupsSub] = useState<'slate' | 'simulator' | 'rivalries' | 'allplay'>(
-    ['slate', 'simulator', 'rivalries', 'allplay'].includes(subParam || '') ? (subParam as any) : 'slate'
+    ['slate', 'simulator', 'rivalries', 'allplay'].includes(subParam || '') 
+      ? (subParam as any) 
+      : (savedState.arena === 'matchups' && ['slate', 'simulator', 'rivalries', 'allplay'].includes(savedState.sub) ? (savedState.sub as any) : 'slate')
   );
   const [playersSub, setPlayersSub] = useState<'analyzer' | 'database' | 'rookies' | 'leaders' | 'crossref' | 'compare'>(
-    ['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(subParam || '') ? (subParam as any) : 'analyzer'
+    ['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(subParam || '') 
+      ? (subParam as any) 
+      : (savedState.arena === 'players' && ['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(savedState.sub) ? (savedState.sub as any) : 'analyzer')
   );
   const [powerSub, setPowerSub] = useState<'tiers' | 'matrix' | 'records' | 'bounties' | 'studio'>(
-    ['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(subParam || '') ? (subParam as any) : 'tiers'
+    ['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(subParam || '') 
+      ? (subParam as any) 
+      : (savedState.arena === 'power' && ['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(savedState.sub) ? (savedState.sub as any) : 'tiers')
   );
   const [tradeSub, setTradeSub] = useState<'architect' | 'partners' | 'capital' | 'ledger' | 'autopsy'>(
-    ['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(subParam || '') ? (subParam as any) : 'architect'
+    ['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(subParam || '') 
+      ? (subParam as any) 
+      : (savedState.arena === 'trade' && ['architect', 'partners', 'capital', 'ledger', 'autopsy'].includes(savedState.sub) ? (savedState.sub as any) : 'architect')
   );
   const [selectedAutopsyTradeId, setSelectedAutopsyTradeId] = useState<string | null>(searchParams.get('trade_id') || null);
 
+  // Synchronize state when custom event 'dynasty_arena_change' fires or browser popstate occurs
   useEffect(() => {
-    // 1. Determine target arena from subParam mapping or rawArena
-    let targetArena = rawArena;
+    const handleDynastyChange = (e: Event) => {
+      const detail = (e as CustomEvent<DynastyNavDetail>).detail;
+      if (!detail) return;
+      const { arena, sub, extraParams } = detail;
+      if (arena) setActiveArena(arena);
+      if (sub) {
+        if (['action', 'roster', 'diagnostics'].includes(sub)) setCommandSub(sub as any);
+        if (['slate', 'simulator', 'rivalries', 'allplay'].includes(sub)) setMatchupsSub(sub as any);
+        if (['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(sub)) setPlayersSub(sub as any);
+        if (['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(sub)) setPowerSub(sub as any);
+        if (['architect', 'partners', 'capital', 'ledger', 'autopsy', 'trends'].includes(sub)) {
+          setTradeSub(sub === 'trends' ? 'ledger' : (sub as any));
+        }
+      }
+      if (extraParams?.trade_id) {
+        setSelectedAutopsyTradeId(String(extraParams.trade_id));
+      }
+    };
+
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      const params = new URLSearchParams(window.location.search);
+      const urlArena = params.get('arena') as DynastyArena | null;
+      const urlSub = params.get('sub');
+      const tradeId = params.get('trade_id');
+      
+      const targetArena: DynastyArena = 
+        (urlSub && SUB_TO_ARENA_MAP[urlSub]) || 
+        (urlArena && DEFAULT_SUB_MAP[urlArena] ? urlArena : null) || 
+        activeArena;
+
+      setActiveArena(targetArena);
+
+      if (urlSub) {
+        if (['action', 'roster', 'diagnostics'].includes(urlSub)) setCommandSub(urlSub as any);
+        if (['slate', 'simulator', 'rivalries', 'allplay'].includes(urlSub)) setMatchupsSub(urlSub as any);
+        if (['analyzer', 'database', 'rookies', 'leaders', 'crossref', 'compare'].includes(urlSub)) setPlayersSub(urlSub as any);
+        if (['tiers', 'matrix', 'records', 'bounties', 'studio'].includes(urlSub)) setPowerSub(urlSub as any);
+        if (['architect', 'partners', 'capital', 'ledger', 'autopsy', 'trends'].includes(urlSub)) {
+          setTradeSub(urlSub === 'trends' ? 'ledger' : (urlSub as any));
+        }
+      }
+      if (tradeId) setSelectedAutopsyTradeId(tradeId);
+    };
+
+    window.addEventListener('dynasty_arena_change', handleDynastyChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('dynasty_arena_change', handleDynastyChange);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [activeArena]);
+
+  // Synchronize when searchParams update from initial mount or direct URL navigation
+  useEffect(() => {
+    if (!rawArena && !subParam) return; // Do NOT reset to command if search params are absent
+    let targetArena: DynastyArena | null = null;
     if (subParam && SUB_TO_ARENA_MAP[subParam]) {
       targetArena = SUB_TO_ARENA_MAP[subParam];
-    } else if (!targetArena) {
-      targetArena = 'command';
+    } else if (rawArena && DEFAULT_SUB_MAP[rawArena as DynastyArena]) {
+      targetArena = rawArena as DynastyArena;
     }
 
     if (targetArena && targetArena !== activeArena) {
       setActiveArena(targetArena);
     }
 
-    // 2. Synchronize sub-view states
     if (subParam) {
       if (['action', 'roster', 'diagnostics'].includes(subParam)) setCommandSub(subParam as any);
       if (['slate', 'simulator', 'rivalries', 'allplay'].includes(subParam)) setMatchupsSub(subParam as any);
@@ -111,37 +166,28 @@ function DynastyRoomContent() {
       if (['architect', 'partners', 'capital', 'ledger', 'autopsy', 'trends'].includes(subParam)) {
         setTradeSub(subParam === 'trends' ? 'ledger' : (subParam as any));
       }
-    } else {
-      if (targetArena === 'command') setCommandSub('action');
-      else if (targetArena === 'players') setPlayersSub('analyzer');
-      else if (targetArena === 'matchups') setMatchupsSub('slate');
-      else if (targetArena === 'power') setPowerSub('tiers');
-      else if (targetArena === 'trade') setTradeSub('architect');
     }
   }, [rawArena, subParam]);
 
-  const handleSubChange = (arena: string, sub: string) => {
+  const handleSubChange = (arena: DynastyArena, sub: string) => {
     setActiveArena(arena);
     if (arena === 'command') setCommandSub(sub as any);
     if (arena === 'players') setPlayersSub(sub as any);
     if (arena === 'matchups') setMatchupsSub(sub as any);
     if (arena === 'power') setPowerSub(sub as any);
     if (arena === 'trade') setTradeSub(sub as any);
-    router.push(`/dynasty-room/?arena=${arena}&sub=${sub}`, { scroll: false });
+    navigateDynasty(arena, sub);
   };
 
-  const handleArenaChange = (newArena: string) => {
+  const handleArenaChange = (newArena: DynastyArena) => {
     setActiveArena(newArena);
-    let targetSub = 'action';
+    let targetSub = DEFAULT_SUB_MAP[newArena] || 'action';
     if (newArena === 'players') targetSub = playersSub;
     else if (newArena === 'matchups') targetSub = matchupsSub;
     else if (newArena === 'power') targetSub = powerSub;
     else if (newArena === 'trade') targetSub = tradeSub;
     else if (newArena === 'command') targetSub = commandSub;
-    router.push(`/dynasty-room/?arena=${newArena}&sub=${targetSub}`, { scroll: false });
-    if (typeof window !== 'undefined' && window.scrollY > 40) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    navigateDynasty(newArena, targetSub);
   };
 
   const TICKER_MESSAGES = [
@@ -535,16 +581,16 @@ function DynastyRoomContent() {
             {tradeSub === 'partners' && (
               <TradePartnerTab 
                 onSelectPartner={(rosterId) => {
-                  router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${rosterId}`, { scroll: false });
                   setTradeSub('architect');
+                  navigateDynasty('trade', 'architect', { partner_roster: rosterId });
                 }} 
               />
             )}
             {tradeSub === 'capital' && (
               <DraftCapitalTab 
                 onSelectTeamForTrade={(rosterId) => {
-                  router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${rosterId}`, { scroll: false });
                   setTradeSub('architect');
+                  navigateDynasty('trade', 'architect', { partner_roster: rosterId });
                 }} 
               />
             )}
@@ -553,8 +599,8 @@ function DynastyRoomContent() {
                 onSelectTradeForAutopsy={(tradeId) => {
                   setSelectedAutopsyTradeId(tradeId);
                   setTradeSub('autopsy');
-                  router.push(`/dynasty-room/?arena=trade&sub=autopsy&trade_id=${tradeId}`, { scroll: false });
-                }}
+                  navigateDynasty('trade', 'autopsy', { trade_id: tradeId });
+                }} 
               />
             )}
             {tradeSub === 'autopsy' && (

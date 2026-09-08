@@ -17,39 +17,57 @@ import SpotlightSearchModal from "@/components/SpotlightSearchModal";
 import { useTheme } from "@/context/ThemeContext";
 import { useLeague } from "@/context/LeagueContext";
 
-const SUB_TO_ARENA_MAP: Record<string, string> = {
-  action: 'command',
-  roster: 'command',
-  diagnostics: 'command',
-  analyzer: 'players',
-  database: 'players',
-  rookies: 'players',
-  leaders: 'players',
-  crossref: 'players',
-  compare: 'players',
-  slate: 'matchups',
-  simulator: 'matchups',
-  rivalries: 'matchups',
-  allplay: 'matchups',
-  tiers: 'power',
-  matrix: 'power',
-  records: 'power',
-  bounties: 'power',
-  studio: 'power',
-  architect: 'trade',
-  partners: 'trade',
-  capital: 'trade',
-  ledger: 'trade',
-  trends: 'trade',
-  autopsy: 'trade',
-};
+import { 
+  navigateDynasty, 
+  getSavedDynastyState, 
+  SUB_TO_ARENA_MAP, 
+  DEFAULT_SUB_MAP, 
+  DynastyArena,
+  DynastyNavDetail
+} from "@/utils/navigation";
 
 function TopNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const subParam = searchParams.get("sub");
-  const rawArena = searchParams.get("arena");
-  const currentArena = (subParam && SUB_TO_ARENA_MAP[subParam]) || rawArena || "command";
+  const rawArena = searchParams.get("arena") as DynastyArena | null;
+  const initialArena: DynastyArena = 
+    (subParam && SUB_TO_ARENA_MAP[subParam]) || 
+    (rawArena && DEFAULT_SUB_MAP[rawArena] ? rawArena : null) || 
+    getSavedDynastyState().arena || 
+    "command";
+  const [currentArena, setCurrentArena] = useState<DynastyArena>(initialArena);
+
+  useEffect(() => {
+    const handleDynastyChange = (e: Event) => {
+      const detail = (e as CustomEvent<DynastyNavDetail>).detail;
+      if (detail?.arena) {
+        setCurrentArena(detail.arena);
+      }
+    };
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const sub = params.get('sub');
+      const arena = params.get('arena') as DynastyArena | null;
+      const targetArena = (sub && SUB_TO_ARENA_MAP[sub]) || (arena && DEFAULT_SUB_MAP[arena] ? arena : null) || currentArena;
+      setCurrentArena(targetArena);
+    };
+    window.addEventListener('dynasty_arena_change', handleDynastyChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('dynasty_arena_change', handleDynastyChange);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [currentArena]);
+
+  useEffect(() => {
+    if (!rawArena && !subParam) return;
+    const target = (subParam && SUB_TO_ARENA_MAP[subParam]) || (rawArena && DEFAULT_SUB_MAP[rawArena] ? rawArena : null);
+    if (target && target !== currentArena) {
+      setCurrentArena(target);
+    }
+  }, [rawArena, subParam]);
+
   const { leagueName, leagueId, myRosterId, setMyRosterId, leagueRosters } = useLeague();
   const { currentTheme, cleanMode, setCleanMode } = useTheme();
 
@@ -89,12 +107,12 @@ function TopNavInner() {
     }
   }, []);
 
-  const mainArenas = [
-    { id: "command", href: "/dynasty-room/?arena=command&sub=action", label: "Command", icon: Target, isDynasty: true },
-    { id: "players", href: "/dynasty-room/?arena=players&sub=analyzer", label: "Players", icon: Users, isDynasty: true },
-    { id: "matchups", href: "/dynasty-room/?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynasty: true },
-    { id: "power", href: "/dynasty-room/?arena=power&sub=tiers", label: "Power", icon: Crown, isDynasty: true },
-    { id: "trade", href: "/dynasty-room/?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynasty: true },
+  const mainArenas: Array<{ id: DynastyArena | "madden"; href: string; label: string; icon: any; isDynasty: boolean; defaultSub?: string }> = [
+    { id: "command", href: "/dynasty-room/?arena=command&sub=action", label: "Command", icon: Target, isDynasty: true, defaultSub: "action" },
+    { id: "players", href: "/dynasty-room/?arena=players&sub=analyzer", label: "Players", icon: Users, isDynasty: true, defaultSub: "analyzer" },
+    { id: "matchups", href: "/dynasty-room/?arena=matchups&sub=slate", label: "Matchups", icon: CalendarDays, isDynasty: true, defaultSub: "slate" },
+    { id: "power", href: "/dynasty-room/?arena=power&sub=tiers", label: "Power", icon: Crown, isDynasty: true, defaultSub: "tiers" },
+    { id: "trade", href: "/dynasty-room/?arena=trade&sub=architect", label: "Trade", icon: Briefcase, isDynasty: true, defaultSub: "architect" },
     { id: "madden", href: "/ask-madden/", label: "Ask Madden", icon: Sparkles, isDynasty: false },
   ];
 
@@ -134,7 +152,16 @@ function TopNavInner() {
           
           {/* Left: Logo + League Pill + Franchise Switcher */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <Link href="/dynasty-room/" className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity">
+            <Link 
+              href="/dynasty-room/?arena=command&sub=action" 
+              onClick={(e) => {
+                if (pathname.startsWith("/dynasty-room") || pathname === "/") {
+                  e.preventDefault();
+                  navigateDynasty("command", "action");
+                }
+              }}
+              className="flex items-center gap-1.5 sm:gap-2.5 hover:opacity-90 transition-opacity"
+            >
               <PlaybookLogo size={28} animated={true} />
               <div className="flex flex-col min-w-0">
                 <span className="text-xs sm:text-lg font-black text-white italic tracking-wider font-sans leading-none whitespace-nowrap">
@@ -240,6 +267,12 @@ function TopNavInner() {
                 <Link 
                   key={item.id} 
                   href={item.href} 
+                  onClick={(e) => {
+                    if (item.isDynasty && (pathname.startsWith("/dynasty-room") || pathname === "/")) {
+                      e.preventDefault();
+                      navigateDynasty(item.id as DynastyArena, item.defaultSub);
+                    }
+                  }}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all whitespace-nowrap ${
                     active 
                       ? "bg-zinc-800 text-white shadow-md border border-zinc-700" 
@@ -276,7 +309,16 @@ function TopNavInner() {
                       <Link
                         key={tool.href}
                         href={tool.href}
-                        onClick={() => setIsToolsMenuOpen(false)}
+                        onClick={(e) => {
+                          setIsToolsMenuOpen(false);
+                          if (tool.href.startsWith("/dynasty-room") && (pathname.startsWith("/dynasty-room") || pathname === "/")) {
+                            e.preventDefault();
+                            const url = new URL(tool.href, "http://dummy");
+                            const arena = (url.searchParams.get("arena") || "players") as DynastyArena;
+                            const sub = url.searchParams.get("sub") || undefined;
+                            navigateDynasty(arena, sub);
+                          }
+                        }}
                         className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-mono transition-all ${
                           isToolActive 
                             ? "bg-zinc-800 text-white font-bold" 

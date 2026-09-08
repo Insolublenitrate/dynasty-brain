@@ -11,6 +11,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { getApiUrl } from '@/config/api';
+import { navigateDynasty } from '@/utils/navigation';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -414,7 +415,10 @@ export default function PlayerAnalyzerTab() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    router.push(`/dynasty-room/?arena=trade&sub=architect&player_id=${selectedPlayer.player_id}&player_name=${encodeURIComponent(selectedPlayer.player_name)}`);
+                    navigateDynasty('trade', 'architect', {
+                      player_id: selectedPlayer.player_id,
+                      player_name: selectedPlayer.player_name,
+                    });
                   }}
                   className="px-3 py-1.5 rounded-xl bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/40 text-xs font-mono font-bold transition-all flex items-center gap-1.5"
                 >

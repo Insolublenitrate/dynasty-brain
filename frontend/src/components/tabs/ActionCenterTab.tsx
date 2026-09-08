@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/config/api';
 import MetricExplainer from '@/components/ui/MetricExplainer';
 import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
+import { navigateDynasty } from '@/utils/navigation';
 
 export default function ActionCenterTab() {
   const { leagueId, myRosterId, setMyRosterId, leagueRosters, isLoading: isLeagueLoading } = useLeague();
@@ -146,7 +147,7 @@ export default function ActionCenterTab() {
       title: "Consolidate Depth into Elite Weekly Starters",
       desc: "Your championship window is open. Trade back-end bench depth or future 2nd/3rd round picks to secure top-tier weekly starter firepower.",
       cta: "Trade in Architect →",
-      onClick: () => router.push(`/dynasty-room/?arena=trade&sub=architect&partner=${bestPartner?.roster_id || ''}`)
+      onClick: () => navigateDynasty('trade', 'architect', { partner: bestPartner?.roster_id || '' })
     });
     if (ageCliffPlayers.length > 0) {
       directives.push({
@@ -156,7 +157,7 @@ export default function ActionCenterTab() {
         title: `Monitor Veteran Drop-Off: ${ageCliffPlayers[0]?.name} (${ageCliffPlayers[0]?.position}, Age ${ageCliffPlayers[0]?.age})`,
         desc: "RBs 27+ and WRs 29+ face steep post-peak depreciation. Plan an exit window before value hits terminal drop-off.",
         cta: "Audit Roster Intel →",
-        onClick: () => router.push('/dynasty-room/?arena=command&sub=roster')
+        onClick: () => navigateDynasty('command', 'roster')
       });
     }
     if (bestPartner) {
@@ -167,7 +168,7 @@ export default function ActionCenterTab() {
         title: `Prime Market Partner: ${bestPartner.team_name} (${bestPartner.lifecycle_state})`,
         desc: `This franchise holds divergent assets. Engage them for immediate starter production while offering youth or draft equity.`,
         cta: `Propose Trade with ${bestPartner.team_name} →`,
-        onClick: () => router.push(`/dynasty-room/?arena=trade&sub=architect&partner=${bestPartner.roster_id}`)
+        onClick: () => navigateDynasty('trade', 'architect', { partner: bestPartner.roster_id })
       });
     }
   } else {
@@ -178,7 +179,7 @@ export default function ActionCenterTab() {
       title: "Liquidate High-Scoring Veterans for 2026/2027 Capital",
       desc: "Protect your rookie draft slot by selling points off your bench to desperate contenders in exchange for future 1st and 2nd round picks.",
       cta: "Find Trade Buyers →",
-      onClick: () => router.push('/dynasty-room/?arena=trade&sub=partners')
+      onClick: () => navigateDynasty('trade', 'partners')
     });
     directives.push({
       id: "d2",
@@ -187,7 +188,7 @@ export default function ActionCenterTab() {
       title: `War Chest Status: ${futureFirstsCount} Future 1st Round Picks Owned`,
       desc: "Draft pick equity appreciates leading into rookie drafts. Hold picks until draft season apex or use them to buy injured young studs.",
       cta: "Draft Board & Rookies →",
-      onClick: () => router.push('/dynasty-room/?arena=players&sub=rookies')
+      onClick: () => navigateDynasty('players', 'rookies')
     });
     if (bestPartner) {
       directives.push({
@@ -197,7 +198,7 @@ export default function ActionCenterTab() {
         title: `Target Win-Now Contender: ${bestPartner.team_name}`,
         desc: "Contenders will overpay with future picks for immediate starter production. Shop your veteran assets to them now.",
         cta: `Open Trade in Architect →`,
-        onClick: () => router.push(`/dynasty-room/?arena=trade&sub=architect&partner=${bestPartner.roster_id}`)
+        onClick: () => navigateDynasty('trade', 'architect', { partner: bestPartner.roster_id })
       });
     }
   }
@@ -605,7 +606,7 @@ export default function ActionCenterTab() {
           </div>
 
           <button
-            onClick={() => router.push('/ask-madden')}
+            onClick={() => router.push('/ask-madden/')}
             className="px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-mono text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shrink-0"
           >
             <MessageSquare size={16} />
@@ -651,7 +652,7 @@ export default function ActionCenterTab() {
                 </div>
 
                 <button
-                  onClick={() => router.push(`/dynasty-room/?arena=trade&sub=architect&partner=${action.partnerId}`)}
+                  onClick={() => navigateDynasty('trade', 'architect', { partner: action.partnerId })}
                   className="w-full sm:w-auto px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md border border-zinc-700 shrink-0"
                 >
                   <ArrowRightLeft size={13} style={{ color: currentTheme.primary }} />

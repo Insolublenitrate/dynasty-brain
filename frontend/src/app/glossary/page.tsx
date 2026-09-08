@@ -47,7 +47,7 @@ export default function GlossaryPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
         <div>
           <Link 
-            href="/dynasty-room/" 
+            href="/dynasty-room/?arena=command&sub=action" 
             className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white mb-2 transition-colors"
           >
             <ArrowLeft size={14} />

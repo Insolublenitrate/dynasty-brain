@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import PlaybookLogo from "@/components/PlaybookLogo";
 import { useTheme } from "@/context/ThemeContext";
+import { getSavedDynastyState } from "@/utils/navigation";
 
 function SplashContent() {
   const router = useRouter();
@@ -25,7 +26,8 @@ function SplashContent() {
       if (currentQuery) {
         router.replace(`/dynasty-room/?${currentQuery}`);
       } else {
-        router.replace("/dynasty-room/?arena=command&sub=action");
+        const saved = getSavedDynastyState();
+        router.replace(`/dynasty-room/?arena=${saved.arena}&sub=${saved.sub}`);
       }
     }, 250);
   };

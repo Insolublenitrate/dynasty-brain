@@ -12,6 +12,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { getApiUrl } from '@/config/api';
 import TacticalBriefingCard from '@/components/ui/TacticalBriefingCard';
 import MetricExplainer from '@/components/ui/MetricExplainer';
+import { navigateDynasty } from '@/utils/navigation';
 
 interface PickItem {
   season: string;
@@ -347,7 +348,9 @@ export default function DraftCapitalTab({ onSelectTeamForTrade }: DraftCapitalTa
                         if (onSelectTeamForTrade) {
                           onSelectTeamForTrade(team.roster_id);
                         } else {
-                          router.push(`/dynasty-room/?arena=trade&sub=architect&partner_roster=${team.roster_id}`);
+                          navigateDynasty('trade', 'architect', {
+                            partner_roster: team.roster_id
+                          });
                         }
                       }}
                       className="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-mono font-bold border border-zinc-700 hover:border-zinc-600 transition-all flex items-center gap-1 shrink-0"
